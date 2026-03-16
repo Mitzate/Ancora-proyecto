@@ -413,15 +413,19 @@
             <!-- TABLA DE HISTORIAL -->
             <div class="row mb-4">
               <div class="col-12">
-                <div class="card">
-                  <div class="card-header">
-                    <h5 class="card-title">📋 Historial de Datos - Todos los Registros</h5>
-                    <div class="card-tools mt-2">
+                <div class="card border-primary">
+                  <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">📋 Historial de Datos - Todos los Registros</h5>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#historyCollapse" aria-expanded="true" aria-controls="historyCollapse">
+                        <i class="bi bi-chevron-down"></i> Ver/Ocultar historial
+                      </button>
                       <button id="loadMoreHistoryBtn" class="btn btn-sm btn-info">Cargar más</button>
                       <button id="deleteAllHistoryBtn" class="btn btn-sm btn-danger">Borrar todos</button>
                     </div>
                   </div>
-                  <div class="card-body">
+                  <div id="historyCollapse" class="collapse show">
+                    <div class="card-body">
                     <div id="noHistoryMsg" class="alert alert-secondary d-none">No hay historial disponible.</div>
                     
                     <!-- Tabla Historial CAÍDAS -->
@@ -430,13 +434,16 @@
                         <table class="table table-bordered table-sm" id="sensorHistoryTable">
                           <thead class="table-light">
                             <tr>
-                              <th style="width:5%">#</th>
+                              <th style="width:4%">#</th>
                               <th>Fecha / Hora</th>
+                              <th>Dispositivo</th>
+                              <th>Lugar instalación</th>
                               <th>Presencia</th>
                               <th>Movimiento</th>
                               <th>Parámetro Mov.</th>
                               <th>Estado Caída</th>
                               <th>Estado Inmovilidad</th>
+                              <th>Estado módulo</th>
                               <th style="width:8%">Acción</th>
                             </tr>
                           </thead>
@@ -453,14 +460,17 @@
                         <table class="table table-bordered table-sm" id="sensorHistoryTable">
                           <thead class="table-light">
                             <tr>
-                              <th style="width:5%">#</th>
+                              <th style="width:4%">#</th>
                               <th>Fecha / Hora</th>
+                              <th>Dispositivo</th>
+                              <th>Lugar instalación</th>
                               <th>En Cama</th>
                               <th>Estado Sueño</th>
                               <th>Duración Sueño (min)</th>
                               <th>Calidad</th>
                               <th>FC Prom.</th>
                               <th>FR Prom.</th>
+                              <th>Estado módulo</th>
                               <th style="width:8%">Acción</th>
                             </tr>
                           </thead>
@@ -479,10 +489,12 @@
                             <tr>
                               <th style="width:5%">#</th>
                               <th>Fecha / Hora</th>
-                              <th>ID Dispositivo</th>
+                              <th>Dispositivo</th>
+                              <th>Lugar instalación</th>
                               <th>Presencia</th>
                               <th>Movimiento</th>
                               <th>Estado Caída</th>
+                              <th>Estado módulo</th>
                               <th style="width:8%">Acción</th>
                             </tr>
                           </thead>
@@ -501,11 +513,13 @@
                             <tr>
                               <th style="width:5%">#</th>
                               <th>Fecha / Hora</th>
-                              <th>ID Dispositivo</th>
+                              <th>Dispositivo</th>
+                              <th>Lugar instalación</th>
                               <th>En Cama</th>
                               <th>Estado Sueño</th>
                               <th>Calidad</th>
                               <th>FC Prom.</th>
+                              <th>Estado módulo</th>
                               <th style="width:8%">Acción</th>
                             </tr>
                           </thead>
@@ -1525,22 +1539,33 @@
         const tbody = document.getElementById('sensorGlobalTableBody');
         if (!tbody) return;
         if (!rows || rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay lecturas</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="9" class="text-center">No hay lecturas</td></tr>';
           return;
         }
         let html = '';
         rows.forEach((r, idx) => {
           if (r.origen !== 'caidas') return;
+
+          const lastTime = new Date(r.fecha_hora).getTime();
+          const online = !Number.isNaN(lastTime) && (Date.now() - lastTime) < 5 * 60 * 1000;
+          const moduleState = online ? `<span class="badge bg-success">Conectado</span>` : `<span class="badge bg-secondary">Desconectado</span>`;
+
+          const deviceLabel = r.nombre_identificador ? escapeHtml(r.nombre_identificador) : escapeHtml(r.id_dispositivo ?? 'Desconocido');
+          const locationLabel = escapeHtml(r.ubicacion_lugar ?? 'Desconocido');
+
           html += `<tr>` +
             `<td>${idx + 1}</td>` +
-            `<td>${r.fecha_hora}</td>` +
-            `<td>${r.id_dispositivo ?? ''}</td>` +
+            `<td>${escapeHtml(r.fecha_hora ?? '')}</td>` +
+            `<td>${deviceLabel}</td>` +
+            `<td>${locationLabel}</td>` +
             `<td>${escapeHtml(r.presencia ?? '')}</td>` +
             `<td>${escapeHtml(r.informacion_movimiento ?? '')}</td>` +
             `<td>${escapeHtml(r.estado_caida ?? '') || '-'}</td>` +
+            `<td>${moduleState}</td>` +
+            `<td><button class="btn btn-sm btn-danger deleteRowBtn" data-id="${r.id}" data-table="caidas"><i class="bi bi-trash"></i></button></td>` +
             `</tr>`;
         });
-        tbody.innerHTML = html || '<tr><td colspan="6" class="text-center">No hay lecturas de caídas</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="9" class="text-center">No hay lecturas de caídas</td></tr>';
       }
 
       // Render global sueño
@@ -1548,23 +1573,34 @@
         const tbody = document.getElementById('sensorGlobalTableBody');
         if (!tbody) return;
         if (!rows || rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" class="text-center">No hay lecturas</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="10" class="text-center">No hay lecturas</td></tr>';
           return;
         }
         let html = '';
         rows.forEach((r, idx) => {
           if (r.origen !== 'sueno') return;
+
+          const lastTime = new Date(r.fecha_hora).getTime();
+          const online = !Number.isNaN(lastTime) && (Date.now() - lastTime) < 5 * 60 * 1000;
+          const moduleState = online ? `<span class="badge bg-success">Conectado</span>` : `<span class="badge bg-secondary">Desconectado</span>`;
+
+          const deviceLabel = r.nombre_identificador ? escapeHtml(r.nombre_identificador) : escapeHtml(r.id_dispositivo ?? 'Desconocido');
+          const locationLabel = escapeHtml(r.ubicacion_lugar ?? 'Desconocido');
+
           html += `<tr>` +
             `<td>${idx + 1}</td>` +
-            `<td>${r.fecha_hora}</td>` +
-            `<td>${r.id_dispositivo ?? ''}</td>` +
+            `<td>${escapeHtml(r.fecha_hora ?? '')}</td>` +
+            `<td>${deviceLabel}</td>` +
+            `<td>${locationLabel}</td>` +
             `<td>${escapeHtml(r.en_cama ?? '')}</td>` +
             `<td>${escapeHtml(r.estado_sueno ?? '')}</td>` +
             `<td>${r.calidad_sueno_puntaje ?? ''}</td>` +
             `<td>${r.Frecuencia_cardiaca ?? ''}</td>` +
+            `<td>${moduleState}</td>` +
+            `<td><button class="btn btn-sm btn-danger deleteRowBtn" data-id="${r.id}" data-table="sueno"><i class="bi bi-trash"></i></button></td>` +
             `</tr>`;
         });
-        tbody.innerHTML = html || '<tr><td colspan="7" class="text-center">No hay lecturas de sueño</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="10" class="text-center">No hay lecturas de sueño</td></tr>';
       }
 
       // Prepend new rows
@@ -1633,7 +1669,7 @@
         const tbody = document.getElementById('sensorHistoryTableBody');
         if (!tbody) return;
         if (!rows || rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay historial de caídas</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="11" class="text-center">No hay historial de caídas</td></tr>';
           return;
         }
         let html = '';
@@ -1641,22 +1677,33 @@
           if (r.origen !== 'caidas') return;
           const movVal = Number(r.parametro_movimiento ?? 0);
           const isFall = movVal >= 70 || /ca[ií]d/i.test(r.estado_caida || '') || /ca[ií]d/i.test(r.informacion_movimiento || '');
-          const estadoBadge = isFall ? `<span class="badge text-bg-danger">Caída</span>` : '';
+          const estadoBadge = isFall ? `<span class="badge bg-danger">Caída</span>` : '';
           const inmov = r.estado_inmovilidad || '';
           const isInmovil = /inmov|permanencia/i.test(inmov);
-          const inmovBadge = isInmovil ? `<span class="badge text-bg-secondary ms-1">Inmóvil</span>` : '';
+          const inmovBadge = isInmovil ? `<span class="badge bg-secondary ms-1">Inmóvil</span>` : '';
+
+          const lastTime = new Date(r.fecha_hora).getTime();
+          const online = !Number.isNaN(lastTime) && (Date.now() - lastTime) < 5 * 60 * 1000;
+          const moduleState = online ? `<span class="badge bg-success">Conectado</span>` : `<span class="badge bg-secondary">Desconectado</span>`;
+
+          const deviceLabel = r.nombre_identificador ? escapeHtml(r.nombre_identificador) : escapeHtml(r.id_dispositivo ?? 'Desconocido');
+          const locationLabel = escapeHtml(r.ubicacion_lugar ?? 'Desconocido');
+
           html += `<tr>` +
             `<td>${idx + 1}</td>` +
-            `<td>${r.fecha_hora}</td>` +
+            `<td>${escapeHtml(r.fecha_hora ?? '')}</td>` +
+            `<td>${deviceLabel}</td>` +
+            `<td>${locationLabel}</td>` +
             `<td>${escapeHtml(r.presencia ?? '')}</td>` +
             `<td>${escapeHtml(r.informacion_movimiento ?? '')}</td>` +
             `<td>${r.parametro_movimiento ?? ''}</td>` +
             `<td>${escapeHtml(r.estado_caida ?? '') || '-'} ${estadoBadge}</td>` +
             `<td>${escapeHtml(r.estado_inmovilidad ?? '') || '-'} ${inmovBadge}</td>` +
+            `<td>${moduleState}</td>` +
             `<td><button class="btn btn-sm btn-danger deleteRowBtn" data-id="${r.id}" data-table="caidas"><i class="bi bi-trash"></i></button></td>` +
             `</tr>`;
         });
-        tbody.innerHTML = html || '<tr><td colspan="8" class="text-center">No hay historial de caídas</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="11" class="text-center">No hay historial de caídas</td></tr>';
         attachDeleteHandlers();
       }
 
@@ -1665,25 +1712,36 @@
         const tbody = document.getElementById('sensorHistoryTableBody');
         if (!tbody) return;
         if (!rows || rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="9" class="text-center">No hay historial de sueño</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="12" class="text-center">No hay historial de sueño</td></tr>';
           return;
         }
         let html = '';
         rows.forEach((r, idx) => {
           if (r.origen !== 'sueno') return;
+
+          const lastTime = new Date(r.fecha_hora).getTime();
+          const online = !Number.isNaN(lastTime) && (Date.now() - lastTime) < 5 * 60 * 1000;
+          const moduleState = online ? `<span class="badge bg-success">Conectado</span>` : `<span class="badge bg-secondary">Desconectado</span>`;
+
+          const deviceLabel = r.nombre_identificador ? escapeHtml(r.nombre_identificador) : escapeHtml(r.id_dispositivo ?? 'Desconocido');
+          const locationLabel = escapeHtml(r.ubicacion_lugar ?? 'Desconocido');
+
           html += `<tr>` +
             `<td>${idx + 1}</td>` +
-            `<td>${r.fecha_hora}</td>` +
+            `<td>${escapeHtml(r.fecha_hora ?? '')}</td>` +
+            `<td>${deviceLabel}</td>` +
+            `<td>${locationLabel}</td>` +
             `<td>${escapeHtml(r.en_cama ?? '')}</td>` +
             `<td>${escapeHtml(r.estado_sueno ?? '')}</td>` +
             `<td>${r.duracion_sueno_profundo ?? ''}</td>` +
             `<td>${r.calidad_sueno_puntaje ?? ''}</td>` +
             `<td>${r.Frecuencia_cardiaca ?? ''}</td>` +
             `<td>${r.tasa_respiracion ?? ''}</td>` +
+            `<td>${moduleState}</td>` +
             `<td><button class="btn btn-sm btn-danger deleteRowBtn" data-id="${r.id}" data-table="sueno"><i class="bi bi-trash"></i></button></td>` +
             `</tr>`;
         });
-        tbody.innerHTML = html || '<tr><td colspan="9" class="text-center">No hay historial de sueño</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="12" class="text-center">No hay historial de sueño</td></tr>';
         attachDeleteHandlers();
       }
 
