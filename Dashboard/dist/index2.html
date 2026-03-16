@@ -340,6 +340,10 @@
                         <i class="bi bi-pause-circle"></i> Monitoreo pausado
                       </div>
                     </div>
+                    <div class="d-flex gap-3 mt-2 small text-muted">
+                      <div>Módulos conectados: <strong id="connectedModulesCount">0</strong></div>
+                      <div>Estado general: <strong id="overallModuleStatus">Sin datos</strong></div>
+                    </div>
                     <div class="card-tools mt-2">
                       <button id="refreshSensorBtn" class="btn btn-sm btn-primary">Refrescar</button>
                       <button id="pauseResumeBtn" class="btn btn-sm btn-success ms-2" title="Reanudar envío de datos">
@@ -359,15 +363,18 @@
                             <tr>
                               <th>#</th>
                               <th>Fecha / Hora</th>
+                              <th>Dispositivo</th>
+                              <th>Lugar instalación</th>
                               <th>Presencia</th>
                               <th>Movimiento</th>
                               <th>Parámetro Mov.</th>
                               <th>Estado Caída</th>
                               <th>Estado Inmovilidad</th>
+                              <th>Estado módulo</th>
                             </tr>
                           </thead>
                           <tbody id="sensorTableBody">
-                            <tr><td colspan="7" class="text-center">Cargando...</td></tr>
+                            <tr><td colspan="10" class="text-center">Cargando...</td></tr>
                           </tbody>
                         </table>
                       </div>
@@ -381,16 +388,19 @@
                             <tr>
                               <th>#</th>
                               <th>Fecha / Hora</th>
+                              <th>Dispositivo</th>
+                              <th>Lugar instalación</th>
                               <th>En Cama</th>
                               <th>Estado Sueño</th>
                               <th>Duración Sueño (min)</th>
                               <th>Calidad</th>
                               <th>FC Prom.</th>
                               <th>FR Prom.</th>
+                              <th>Estado módulo</th>
                             </tr>
                           </thead>
                           <tbody id="sensorTableBody">
-                            <tr><td colspan="8" class="text-center">Cargando...</td></tr>
+                            <tr><td colspan="11" class="text-center">Cargando...</td></tr>
                           </tbody>
                         </table>
                       </div>
@@ -1366,63 +1376,148 @@
         }
       }
 
-      // Render caídas - SOLO ÚLTIMO DATO EN VIVO
+      function updateConnectedModulesInfo(rows) {
+        const countEl = document.getElementById('connectedModulesCount');
+        const statusEl = document.getElementById('overallModuleStatus');
+        if (!countEl || !statusEl) return;
+
+        if (!rows || rows.length === 0) {
+          countEl.textContent = '0';
+          statusEl.textContent = 'Sin datos';
+          return;
+        }
+
+        const byDevice = new Map();
+        rows.forEach(r => {
+          if (!r.id_dispositivo) return;
+          if (!byDevice.has(r.id_dispositivo)) {
+            byDevice.set(r.id_dispositivo, r);
+          }
+        });
+
+        countEl.textContent = String(byDevice.size);
+
+        const now = Date.now();
+        let active = 0;
+
+        byDevice.forEach(r => {
+          const ts = new Date(r.fecha_hora).getTime();
+          if (!Number.isNaN(ts) && now - ts < 5 * 60 * 1000) active++;
+        });
+
+        if (active === 0) {
+          statusEl.textContent = 'Inactivo';
+        } else if (active < byDevice.size) {
+          statusEl.textContent = `Activo (${active}/${byDevice.size})`;
+        } else {
+          statusEl.textContent = 'Activo';
+        }
+      }
+
+      // Render caídas - MÚLTIPLES MODULOS (último dato por módulo)
       function renderCaidasTable(rows) {
         const tbody = document.getElementById('sensorTableBody');
         if (!tbody) return;
         if (!rows || rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" class="text-center">No hay lecturas</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="10" class="text-center">No hay lecturas</td></tr>';
+          updateConnectedModulesInfo([]);
           return;
         }
-        // ⭐ Mostrar solo el último dato (más reciente)
-        const latestRow = rows.filter(r => r.origen === 'caidas')[0];
-        if (!latestRow) {
-          tbody.innerHTML = '<tr><td colspan="7" class="text-center">No hay lecturas de caídas</td></tr>';
+
+        const caidas = rows.filter(r => r.origen === 'caidas');
+        if (caidas.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="10" class="text-center">No hay lecturas de caídas</td></tr>';
+          updateConnectedModulesInfo([]);
           return;
         }
-        const movVal = Number(latestRow.parametro_movimiento ?? 0);
-        const isFall = movVal >= 80 || /ca[ií]d/i.test(latestRow.estado_caida || '') || /ca[ií]d/i.test(latestRow.informacion_movimiento || '');
-        const estadoBadge = isFall ? `<span class="badge text-bg-danger">Caída</span>` : '';
-        const inmov = latestRow.estado_inmovilidad || '';
-        const isInmovil = /inmov|permanencia/i.test(inmov);
-        const inmovBadge = isInmovil ? `<span class="badge text-bg-secondary ms-1">Inmóvil</span>` : '';
-        const html = `<tr class="table-info">` +
-          `<td>1</td>` +
-          `<td><strong>${latestRow.fecha_hora}</strong></td>` +
-          `<td>${escapeHtml(latestRow.presencia ?? '')}</td>` +
-          `<td>${escapeHtml(latestRow.informacion_movimiento ?? '')}</td>` +
-          `<td>${latestRow.parametro_movimiento ?? ''}</td>` +
-          `<td>${escapeHtml(latestRow.estado_caida ?? '') || '-'} ${estadoBadge}</td>` +
-          `<td>${escapeHtml(latestRow.estado_inmovilidad ?? '') || '-'} ${inmovBadge}</td>` +
-          `</tr>`;
-        tbody.innerHTML = html;
+
+        const latestByDevice = {};
+        caidas.forEach(r => {
+          const id = r.id_dispositivo || 'unknown';
+          if (!latestByDevice[id]) latestByDevice[id] = r;
+        });
+
+        const htmlRows = Object.values(latestByDevice).map((r, idx) => {
+          const movVal = Number(r.parametro_movimiento ?? 0);
+          const isFall = movVal >= 80 || /ca[ií]d/i.test(r.estado_caida || '') || /ca[ií]d/i.test(r.informacion_movimiento || '');
+          const estadoBadge = isFall ? `<span class="badge bg-danger">Caída</span>` : '';
+          const inmov = r.estado_inmovilidad || '';
+          const isInmovil = /inmov|permanencia/i.test(inmov);
+          const inmovBadge = isInmovil ? `<span class="badge bg-secondary ms-1">Inmóvil</span>` : '';
+
+          const lastTime = new Date(r.fecha_hora).getTime();
+          const online = !Number.isNaN(lastTime) && (Date.now() - lastTime) < 5 * 60 * 1000;
+          const stateBadge = online ? `<span class="badge bg-success">Conectado</span>` : `<span class="badge bg-secondary">Desconectado</span>`;
+
+          const deviceLabel = r.nombre_identificador ? escapeHtml(r.nombre_identificador) : escapeHtml(r.id_dispositivo ?? 'Desconocido');
+          const locationLabel = escapeHtml(r.ubicacion_lugar ?? 'Desconocido');
+
+          return `<tr class="table-info">` +
+            `<td>${idx + 1}</td>` +
+            `<td><strong>${escapeHtml(r.fecha_hora ?? '')}</strong></td>` +
+            `<td>${deviceLabel}</td>` +
+            `<td>${locationLabel}</td>` +
+            `<td>${escapeHtml(r.presencia ?? '')}</td>` +
+            `<td>${escapeHtml(r.informacion_movimiento ?? '')}</td>` +
+            `<td>${r.parametro_movimiento ?? ''}</td>` +
+            `<td>${escapeHtml(r.estado_caida ?? '') || '-'} ${estadoBadge}</td>` +
+            `<td>${escapeHtml(r.estado_inmovilidad ?? '') || '-'} ${inmovBadge}</td>` +
+            `<td>${stateBadge}</td>` +
+            `</tr>`;
+        });
+
+        tbody.innerHTML = htmlRows.join('');
+        updateConnectedModulesInfo(caidas);
       }
 
-      // Render sueño - SOLO ÚLTIMO DATO EN VIVO
+      // Render sueño - MÚLTIPLES MODULOS (último dato por módulo)
       function renderSuenioTable(rows) {
         const tbody = document.getElementById('sensorTableBody');
         if (!tbody) return;
         if (!rows || rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay lecturas</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="11" class="text-center">No hay lecturas</td></tr>';
+          updateConnectedModulesInfo([]);
           return;
         }
-        // ⭐ Mostrar solo el último dato (más reciente)
-        const latestRow = rows.filter(r => r.origen === 'sueno')[0];
-        if (!latestRow) {
-          tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay lecturas de sueño</td></tr>';
+
+        const suenos = rows.filter(r => r.origen === 'sueno');
+        if (suenos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="11" class="text-center">No hay lecturas de sueño</td></tr>';
+          updateConnectedModulesInfo([]);
           return;
         }
-        const html = `<tr class="table-info">` +
-          `<td>1</td>` +
-          `<td><strong>${latestRow.fecha_hora}</strong></td>` +
-          `<td>${escapeHtml(latestRow.en_cama ?? '')}</td>` +
-          `<td>${escapeHtml(latestRow.estado_sueno ?? '')}</td>` +
-          `<td>${latestRow.duracion_sueno_profundo ?? ''}</td>` +
-          `<td>${latestRow.calidad_sueno_puntaje ?? ''}</td>` +
-          `<td>${latestRow.Frecuencia_cardiaca ?? ''}</td>` +
-          `<td>${latestRow.tasa_respiracion ?? ''}</td>` +
-          `</tr>`;
-        tbody.innerHTML = html;
+
+        const latestByDevice = {};
+        suenos.forEach(r => {
+          const id = r.id_dispositivo || 'unknown';
+          if (!latestByDevice[id]) latestByDevice[id] = r;
+        });
+
+        const htmlRows = Object.values(latestByDevice).map((r, idx) => {
+          const lastTime = new Date(r.fecha_hora).getTime();
+          const online = !Number.isNaN(lastTime) && (Date.now() - lastTime) < 5 * 60 * 1000;
+          const stateBadge = online ? `<span class="badge bg-success">Conectado</span>` : `<span class="badge bg-secondary">Desconectado</span>`;
+
+          const deviceLabel = r.nombre_identificador ? escapeHtml(r.nombre_identificador) : escapeHtml(r.id_dispositivo ?? 'Desconocido');
+          const locationLabel = escapeHtml(r.ubicacion_lugar ?? 'Desconocido');
+
+          return `<tr class="table-info">` +
+            `<td>${idx + 1}</td>` +
+            `<td><strong>${escapeHtml(r.fecha_hora ?? '')}</strong></td>` +
+            `<td>${deviceLabel}</td>` +
+            `<td>${locationLabel}</td>` +
+            `<td>${escapeHtml(r.en_cama ?? '')}</td>` +
+            `<td>${escapeHtml(r.estado_sueno ?? '')}</td>` +
+            `<td>${r.duracion_sueno_profundo ?? ''}</td>` +
+            `<td>${r.calidad_sueno_puntaje ?? ''}</td>` +
+            `<td>${r.Frecuencia_cardiaca ?? ''}</td>` +
+            `<td>${r.tasa_respiracion ?? ''}</td>` +
+            `<td>${stateBadge}</td>` +
+            `</tr>`;
+        });
+
+        tbody.innerHTML = htmlRows.join('');
+        updateConnectedModulesInfo(suenos);
       }
 
       // Render global caídas
@@ -1794,8 +1889,8 @@
             if (currentMonitoringMode === 'caidas') renderCaidasTable([]);
             else if (currentMonitoringMode === 'sueno') renderSuenioTable([]);
           } else {
-            // ⭐ Cargar solo 1 dato más reciente para "Datos en Vivo"
-            const rows = await fetchSensorDataForDevice(deviceId, 1, null);
+            // ⭐ Cargar los datos recientes para todos los módulos en "Datos en Vivo"
+            const rows = await fetchSensorDataForDevice(deviceId, 100, null);
             // ⭐ Derivar modo de las filas si no está guardado
             if (!monitoringMode && rows && rows.length > 0) {
               monitoringMode = resolveMonitoringMode(rows);
@@ -1833,8 +1928,8 @@
             const deviceId = localStorage.getItem('id_dispositivo');
             if (!deviceId && !debugShowAll) return;
             
-            // ⭐ RECARGAR DATOS EN VIVO (último dato)
-            const liveRows = await fetchSensorDataForDevice(deviceId, 1, null); // Solo 1 más reciente
+            // ⭐ RECARGAR DATOS EN VIVO (datos de todos los módulos activos)
+            const liveRows = await fetchSensorDataForDevice(deviceId, 100, null);
             if (liveRows && liveRows.length > 0) {
               if (!currentMonitoringMode) {
                 const mode = resolveMonitoringMode(liveRows);
