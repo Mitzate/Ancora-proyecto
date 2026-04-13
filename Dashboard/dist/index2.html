@@ -1712,9 +1712,40 @@
           debugToggleBtn.addEventListener('click', () => {
             debugShowAll = !debugShowAll;
             debugToggleBtn.textContent = debugShowAll ? 'Mostrar por dispositivo' : 'Mostrar todas';
-            // Trigger a reload of data for visibility
             lastTimestamp = null;
             initialLoad();
+          });
+        }
+
+        // Control de alarmas físicas
+        let alarmasActivas = true;
+        const alarmasBtn = document.getElementById('alarmasBtn');
+        if (alarmasBtn) {
+          alarmasBtn.addEventListener('click', async () => {
+            alarmasActivas = !alarmasActivas;
+            const deviceId = localStorage.getItem('id_dispositivo');
+            try {
+              await fetch('../../api/coneccion.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  set_alarmas: true,
+                  id_dispositivo: deviceId,
+                  alarmas_activas: alarmasActivas
+                })
+              });
+            } catch (e) {
+              console.error('Error cambiando estado de alarmas:', e);
+            }
+            if (alarmasActivas) {
+              alarmasBtn.classList.remove('btn-secondary');
+              alarmasBtn.classList.add('btn-danger');
+              alarmasBtn.innerHTML = '<i class="bi bi-bell-fill"></i> Alarmas: ON';
+            } else {
+              alarmasBtn.classList.remove('btn-danger');
+              alarmasBtn.classList.add('btn-secondary');
+              alarmasBtn.innerHTML = '<i class="bi bi-bell-slash-fill"></i> Alarmas: OFF';
+            }
           });
         }
 
