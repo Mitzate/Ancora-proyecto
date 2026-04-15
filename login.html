@@ -6,144 +6,234 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     
     <!-- Bootstrap CSS -->
-    <link href="bootstrap.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link href="lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
- <style>
-        /* Estilos adicionales para el sistema de autenticación */
-           * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         .auth-container {
             min-height: 100vh;
-            background: linear-gradient(rgba(3, 32, 31, 0.8), rgba(3, 32, 31, 0.8)), url('img/hero-bg.jpg') center center no-repeat;
+            background: linear-gradient(rgba(3, 32, 31, 0.82), rgba(3, 32, 31, 0.82)),
+                        url('img/hero-bg.jpg') center center no-repeat;
             background-size: cover;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px 0;
+            padding: 30px 20px;
         }
-        
+
         .auth-card {
             background: #fff;
-            border-radius: 0;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
             overflow: hidden;
-            max-width: 450px;
+            max-width: 440px;
             width: 100%;
         }
-        
+
+        /* ── Header ── */
         .auth-header {
-            background: #0d6b68;  
+            background: #0d6b68;
             color: #fff;
-            padding: 15px 20px;
+            padding: 22px 28px 18px;
             text-align: center;
         }
-        
         .auth-header h2 {
-            margin: 0;
+            margin: 0 0 3px;
             font-family: "Space Grotesk", sans-serif;
             font-weight: 600;
+            font-size: 22px;
+            letter-spacing: -0.2px;
         }
-        
-        .auth-body {
-            padding: 15px 20px;
+        .auth-header p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.72);
+            margin: 0;
         }
-        
-        .auth-form .form-group {
-            margin-bottom:10px;
-        }
-        
-        .auth-form .form-control {
-            height: 50px;
-            border: 1px solid #e6f0ef;
-            padding: 10px 15px;
-            border-radius: 0;
-            font-size: 16px;
-        }
-        
-        .auth-form .form-control:focus {
-            border-color: var(--bs-primary);
-            box-shadow: 0 0 0 0.2rem rgba(13, 107, 104, 0.25);
-        }
-        
-        .auth-form .btn {
-            height: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 0;
-            width: 100%;
-        }
-        
-        .auth-switch {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e6f0ef;
-        }
-        
-        .auth-switch a {
-            color: var(--bs-primary);
-            font-weight: 600;
-            text-decoration: none;
-        }
-        
-        .auth-switch a:hover {
-            text-decoration: underline;
-        }
-        
+
+        /* ── Tabs ── */
         .auth-tabs {
             display: flex;
             border-bottom: 1px solid #e6f0ef;
         }
-        
         .auth-tab {
             flex: 1;
             text-align: center;
-            padding: 10px;
-            background: #f8f9fa;
+            padding: 12px 10px;
+            background: #f8fafa;
             border: none;
-            font-weight: 600;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #7a9a97;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.25s;
+            border-bottom: 2px solid transparent;
         }
-        
         .auth-tab.active {
             background: #fff;
-            color: var(--bs-primary);
-            border-bottom: 2px solid var(--bs-primary);
-        }
-        
-        .auth-content {
-            display: none;
-        }
-        
-        .auth-content.active {
-            display: block;
-        }
-        
-        .back-home {
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .back-home a {
-            color: var(--bs-secondary);
-            text-decoration: none;
-        }
-        
-        .back-home a:hover {
-            color: var(--bs-primary);
+            color: #0d6b68;
+            border-bottom: 2px solid #0d6b68;
         }
 
-    
+        /* ── Body ── */
+        .auth-body { padding: 28px 28px 24px; }
+
+        .auth-content { display: none; }
+        .auth-content.active { display: block; }
+
+        /* ── Form fields ── */
+        .auth-form .form-group { margin-bottom: 14px; }
+
+        .auth-form .input-wrapper {
+            position: relative;
+        }
+        .auth-form .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a8c5c2;
+            font-size: 14px;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+        .auth-form .input-wrapper:focus-within i { color: #0d6b68; }
+
+        .auth-form .form-control {
+            height: 46px;
+            border: 1.5px solid #ddecea;
+            padding: 0 14px 0 40px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: "Open Sans", sans-serif;
+            color: #1a2e2c;
+            background: #fafcfb;
+            transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+            width: 100%;
+        }
+        .auth-form .form-control::placeholder { color: #b3cac8; }
+        .auth-form .form-control:focus {
+            outline: none;
+            border-color: #0d6b68;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(13,107,104,0.12);
+        }
+
+        /* ── Remember / Forgot row ── */
+        .form-row-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 4px 0 18px;
+        }
+        .remember-label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12.5px;
+            color: #7a9a97;
+            cursor: pointer;
+            font-family: "Open Sans", sans-serif;
+        }
+        .remember-label input[type="checkbox"] { accent-color: #0d6b68; }
+
+        .forgot-link {
+            font-size: 12.5px;
+            color: #0d6b68;
+            text-decoration: none;
+            font-family: "Open Sans", sans-serif;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .forgot-link:hover { color: #094f4d; text-decoration: underline; }
+
+        /* ── Submit button ── */
+        .auth-form .btn-primary {
+            height: 48px;
+            font-size: 14.5px;
+            font-weight: 600;
+            font-family: "Space Grotesk", sans-serif;
+            letter-spacing: 0.03em;
+            border-radius: 4px;
+            width: 100%;
+            background: #0d6b68;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.25s, transform 0.15s, box-shadow 0.25s;
+            box-shadow: 0 4px 14px rgba(13,107,104,0.22);
+        }
+        .auth-form .btn-primary:hover {
+            background: #0a5855;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(13,107,104,0.28);
+        }
+        .auth-form .btn-primary:active { transform: translateY(0); }
+
+        /* ── Switch & back ── */
+        .auth-switch {
+            text-align: center;
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid #eef4f3;
+            font-size: 13px;
+            font-family: "Open Sans", sans-serif;
+            color: #7a9a97;
+        }
+        .auth-switch a {
+            color: #0d6b68;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .auth-switch a:hover { text-decoration: underline; }
+
+        .back-home {
+            text-align: center;
+            margin-top: 14px;
+        }
+        .back-home a {
+            font-size: 13px;
+            color: #7a9a97;
+            text-decoration: none;
+            font-family: "Open Sans", sans-serif;
+            transition: color 0.2s;
+        }
+        .back-home a:hover { color: #0d6b68; }
+
+        /* ── Terms checkbox ── */
+        .form-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .form-check-input { accent-color: #0d6b68; margin-top: 2px; }
+        .form-check-label {
+            font-size: 12.5px;
+            color: #7a9a97;
+            font-family: "Open Sans", sans-serif;
+        }
+        .form-check-label a { color: #0d6b68; font-weight: 600; text-decoration: none; }
+        .form-check-label a:hover { text-decoration: underline; }
+
+        /* ── Spinner ── */
+        #spinner {
+            opacity: 0; visibility: hidden;
+            transition: opacity .5s ease-out, visibility 0s linear .5s;
+            z-index: 99999;
+        }
+        #spinner.show {
+            transition: opacity .5s ease-out, visibility 0s linear 0s;
+            visibility: visible; opacity: 1;
+        }
     </style>
 </head>
 <body>
+
     <!-- Spinner -->
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -151,85 +241,160 @@
         </div>
     </div>
 
-    <!-- Sistema de Autenticación -->
     <div class="auth-container">
         <div class="auth-card">
+
             <div class="auth-header">
                 <h2>Bienvenido</h2>
-                <p class="mb-0">Accede a tu cuenta o regístrate</p>
+                <p>Accede a tu cuenta o regístrate</p>
             </div>
-            
+
             <div class="auth-tabs">
                 <button class="auth-tab active" data-tab="login">Iniciar Sesión</button>
                 <button class="auth-tab" data-tab="register">Registrarse</button>
             </div>
-            
+
             <div class="auth-body">
-                <!-- Formulario de Login -->
+
+                <!-- ── LOGIN ── -->
                 <div id="login" class="auth-content active">
                     <form class="auth-form" id="loginForm">
+
                         <div class="form-group">
-                            <input type="email" class="form-control" id="loginEmail" placeholder="Correo electrónico" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" class="form-control" id="loginEmail"
+                                       placeholder="Correo electrónico" required>
+                            </div>
                         </div>
+
                         <div class="form-group">
-                            <input type="password" class="form-control" id="loginPassword" placeholder="Contraseña" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" class="form-control" id="loginPassword"
+                                       placeholder="Contraseña" required>
+                            </div>
                         </div>
-                        <!--<div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="rememberMe">
-                            <label class="form-check-label" for="rememberMe">Recordarme</label>
-                            <a href="#" class="float-end">¿Olvidaste tu contraseña?</a>
-                        </div>-->
+
+                        <!-- Remember me + Forgot password -->
+                        <div class="form-row-meta">
+                            <label class="remember-label">
+                                <input type="checkbox" id="rememberMe"> Recordarme
+                            </label>
+                            <a href="recuperar-contrasena.html" class="forgot-link">
+                                ¿Olvidaste tu contraseña?
+                            </a>
+                        </div>
+
                         <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
                     </form>
-                    
+
                     <div class="auth-switch">
                         <p>¿No tienes una cuenta? <a href="#" data-tab="register">Regístrate aquí</a></p>
                     </div>
                 </div>
-                
-                <!-- Formulario de Registro -->
+
+                <!-- ── REGISTER ── -->
                 <div id="register" class="auth-content">
                     <form class="auth-form" id="registerForm">
+
                         <div class="form-group">
-                            <input type="text" class="form-control" id="registerName" placeholder="Nombre(s)" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" class="form-control" id="registerName"
+                                       placeholder="Nombre(s)" required>
+                            </div>
                         </div>
+
                         <div class="form-group">
-                            <input type="text" class="form-control" id="registerApellidoPaterno" placeholder="Apellido paterno" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user-tag"></i>
+                                <input type="text" class="form-control" id="registerApellidoPaterno"
+                                       placeholder="Apellido paterno" required>
+                            </div>
                         </div>
+
                         <div class="form-group">
-                            <input type="text" class="form-control" id="registerApellidoMaterno" placeholder="Apellido materno" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user-tag"></i>
+                                <input type="text" class="form-control" id="registerApellidoMaterno"
+                                       placeholder="Apellido materno" required>
+                            </div>
                         </div>
+
                         <div class="form-group">
-                            <input type="email" class="form-control" id="registerEmail" placeholder="Correo electrónico" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" class="form-control" id="registerEmail"
+                                       placeholder="Correo electrónico" required>
+                            </div>
                         </div>
+
                         <div class="form-group">
-                            <input type="password" class="form-control" id="registerPassword" placeholder="Contraseña" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" class="form-control" id="registerPassword"
+                                       placeholder="Contraseña" required>
+                            </div>
                         </div>
+
                         <div class="form-group">
-                            <input type="password" class="form-control" id="registerConfirmPassword" placeholder="Confirmar contraseña" required>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" class="form-control" id="registerConfirmPassword"
+                                       placeholder="Confirmar contraseña" required>
+                            </div>
                         </div>
-                        <div class="form-group form-check">
+
+                        <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="acceptTerms" required>
-                            <label class="form-check-label" for="acceptTerms">Acepto los <a href="#">términos y condiciones</a></label>
+                            <label class="form-check-label" for="acceptTerms">
+                                Acepto los <a href="#">términos y condiciones</a>
+                            </label>
                         </div>
+
                         <button type="submit" class="btn btn-primary">Registrarse</button>
                     </form>
-                    
+
                     <div class="auth-switch">
                         <p>¿Ya tienes una cuenta? <a href="#" data-tab="login">Inicia sesión aquí</a></p>
                     </div>
                 </div>
-                
+
                 <div class="back-home">
                     <a href="index.html"><i class="fas fa-arrow-left me-2"></i> Volver al inicio</a>
                 </div>
-            </div>
-        </div>
-    </div>
+
+            </div><!-- /.auth-body -->
+        </div><!-- /.auth-card -->
+    </div><!-- /.auth-container -->
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./login.js?v=2"></script>
+
+    <script>
+        // Hide spinner
+        window.addEventListener('load', () => {
+            document.getElementById('spinner').classList.remove('show');
+        });
+
+        // Tab switching
+        document.querySelectorAll('.auth-tab, [data-tab]').forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = this.dataset.tab;
+                if (!target) return;
+
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.auth-content').forEach(c => c.classList.remove('active'));
+
+                document.querySelector(`.auth-tab[data-tab="${target}"]`).classList.add('active');
+                document.getElementById(target).classList.add('active');
+            });
+        });
+    </script>
+
+    <script src="js/login.js?v=2"></script>
 </body>
 </html>
