@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Recuperar Contraseña | Tu Proyecto</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+ 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+ 
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(3,32,31,0.84), rgba(3,32,31,0.84)),
+                        url('img/hero-bg.jpg') center center no-repeat;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            font-family: "Space Grotesk", sans-serif;
+        }
+ 
+        .recovery-card {
+            width: 100%;
+            max-width: 430px;
+            background: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+            animation: slideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+ 
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+ 
+        /* ── Header ── */
+        .recovery-header {
+            background: #0d6b68;
+            padding: 24px 32px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .recovery-header::before {
+            content: '';
+            position: absolute;
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.08);
+            top: -60px; right: -40px;
+        }
+        .recovery-header::after {
+            content: '';
+            position: absolute;
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.06);
+            bottom: -50px; left: -20px;
+        }
+ 
+        .header-icon {
+            position: relative; z-index: 1;
+            width: 54px; height: 54px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px;
+        }
+        .header-icon i { font-size: 20px; color: #fff; }
+ 
+        .recovery-header h2 {
+            position: relative; z-index: 1;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 23px;
+            font-weight: 500;
+            color: #fff;
+            letter-spacing: 0.1px;
+            margin-bottom: 4px;
+        }
+        .recovery-header p {
+            position: relative; z-index: 1;
+            font-size: 12.5px;
+            color: rgba(255,255,255,0.62);
+            font-weight: 300;
+        }
+ 
+        /* ── Progress bar ── */
+        .step-bar {
+            display: flex;
+            height: 3px;
+            background: #eef4f3;
+        }
+        .step-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, #0d6b68, #14a09b);
+            transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+        }
+ 
+        /* ── Body ── */
+        .recovery-body { padding: 30px 32px 28px; }
+ 
+        /* ── Step label ── */
+        .step-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .step-badge {
+            width: 22px; height: 22px;
+            background: #e8f5f4;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 600;
+            color: #0d6b68; flex-shrink: 0;
+        }
+        .step-text {
+            font-size: 11.5px;
+            color: #7a9a97;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+ 
+        /* ── Fields ── */
+        .form-group { margin-bottom: 16px; }
+ 
+        .field-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #0d6b68;
+            margin-bottom: 7px;
+        }
+ 
+        .input-wrapper { position: relative; }
+        .input-wrapper i {
+            position: absolute;
+            left: 14px; top: 50%; transform: translateY(-50%);
+            font-size: 14px;
+            color: #a8c5c2;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+        .input-wrapper:focus-within i { color: #0d6b68; }
+ 
+        .form-control {
+            width: 100%;
+            height: 46px;
+            padding: 0 14px 0 40px;
+            border: 1.5px solid #ddecea;
+            border-radius: 4px;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 14px;
+            color: #1a2e2c;
+            background: #fafcfb;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+        }
+        .form-control::placeholder { color: #b3cac8; font-weight: 300; }
+        .form-control:focus {
+            border-color: #0d6b68;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(13,107,104,0.11);
+        }
+        .form-control.error { border-color: #d97070; box-shadow: 0 0 0 3px rgba(217,112,112,0.1); }
+ 
+        .field-hint {
+            font-size: 11.5px;
+            color: #a0b8b5;
+            margin-top: 6px;
+            font-weight: 300;
+        }
+ 
+        /* ── Button ── */
+        .btn-primary {
+            width: 100%;
+            height: 48px;
+            background: #0d6b68;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 14.5px;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 9px;
+            transition: background 0.25s, transform 0.15s, box-shadow 0.25s;
+            box-shadow: 0 4px 16px rgba(13,107,104,0.22);
+            margin-top: 8px;
+        }
+        .btn-primary:hover {
+            background: #0a5855;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 22px rgba(13,107,104,0.28);
+        }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+ 
+        .btn-spinner {
+            display: none;
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.35);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.65s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+ 
+        /* ── Divider ── */
+        .divider { height: 1px; background: #eef4f3; margin: 22px 0; }
+ 
+        /* ── Back link ── */
+        .back-link {
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            font-size: 13px;
+            color: #7a9a97;
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #0d6b68; }
+ 
+        /* ── SUCCESS STATE ── */
+        .success-state {
+            display: none;
+            text-align: center;
+            padding: 4px 0 12px;
+            animation: fadeIn 0.4s ease both;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+ 
+        .success-icon-wrap {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #14a09b, #0d6b68);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 24px rgba(13,107,104,0.24);
+        }
+        .success-icon-wrap i { font-size: 22px; color: #fff; }
+ 
+        .success-title {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 22px;
+            font-weight: 500;
+            color: #1a2e2c;
+            margin-bottom: 10px;
+        }
+        .success-body {
+            font-size: 13.5px;
+            color: #7a9a97;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+        .email-tag {
+            display: inline-block;
+            background: #eef6f5;
+            border: 1px solid #c8e4e2;
+            color: #0d6b68;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 5px 16px;
+            border-radius: 20px;
+            margin: 8px 0 12px;
+        }
+        .success-note {
+            font-size: 12px;
+            color: #a0b8b5;
+            margin-top: 10px;
+        }
+        .resend-wrap {
+            font-size: 12.5px;
+            color: #a0b8b5;
+            margin-top: 14px;
+            font-weight: 300;
+        }
+        .resend-link {
+            color: #0d6b68;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .resend-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+ 
+    <div class="recovery-card">
+ 
+        <div class="recovery-header">
+            <div class="header-icon">
+                <i class="fas fa-key"></i>
+            </div>
+            <h2>Recuperar contraseña</h2>
+            <p>Te enviaremos un enlace seguro por correo</p>
+        </div>
+ 
+        <div class="step-bar">
+            <div class="step-bar-fill" id="stepBarFill" style="width: 33%"></div>
+        </div>
+ 
+        <div class="recovery-body">
+ 
+            <!-- FORM -->
+            <div id="formState">
+                <div class="step-label">
+                    <div class="step-badge">1</div>
+                    <span class="step-text">Ingresa tu correo registrado</span>
+                </div>
+ 
+                <div class="form-group">
+                    <label class="field-label" for="recoveryEmail">Correo electrónico</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" class="form-control" id="recoveryEmail"
+                               placeholder="tucorreo@ejemplo.com" autocomplete="email">
+                    </div>
+                    <p class="field-hint">Revisa también tu carpeta de spam tras el envío.</p>
+                </div>
+ 
+                <button class="btn-primary" id="submitBtn" onclick="handleSubmit()">
+                    <div class="btn-spinner" id="btnSpinner"></div>
+                    <i class="fas fa-paper-plane" id="btnIcon"></i>
+                    <span id="btnText">Enviar enlace de recuperación</span>
+                </button>
+ 
+                <div class="divider"></div>
+ 
+                <a href="login.html" class="back-link">
+                    <i class="fas fa-arrow-left" style="font-size:12px;"></i>
+                    Volver al inicio de sesión
+                </a>
+            </div>
+ 
+            <!-- SUCCESS -->
+            <div class="success-state" id="successState">
+                <div class="success-icon-wrap">
+                    <i class="fas fa-check"></i>
+                </div>
+                <p class="success-title">¡Correo enviado!</p>
+                <p class="success-body">Hemos enviado el enlace de recuperación a:</p>
+                <div class="email-tag" id="confirmedEmail">—</div>
+                <p class="success-body">Haz clic en el enlace del correo para crear una nueva contraseña. Si no lo encuentras, revisa la carpeta de <strong>spam</strong>.</p>
+                <p class="success-note"><i class="fas fa-clock" style="margin-right:4px;"></i>El enlace expirará en <strong>15 minutos</strong>.</p>
+ 
+                <div class="divider"></div>
+ 
+                <p class="resend-wrap">
+                    ¿No recibiste el correo?
+                    <a class="resend-link" onclick="resetForm()">Intentar de nuevo</a>
+                </p>
+ 
+                <div style="margin-top:14px;">
+                    <a href="login.html" class="back-link">
+                        <i class="fas fa-arrow-left" style="font-size:12px;"></i>
+                        Volver al inicio de sesión
+                    </a>
+                </div>
+            </div>
+ 
+        </div>
+    </div>
+ 
+    <script>
+        function handleSubmit() {
+            const emailEl = document.getElementById('recoveryEmail');
+            const email   = emailEl.value.trim();
+            const valid   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+ 
+            if (!valid) {
+                emailEl.classList.add('error');
+                emailEl.focus();
+                setTimeout(() => emailEl.classList.remove('error'), 2500);
+                return;
+            }
+ 
+            const btn     = document.getElementById('submitBtn');
+            const spinner = document.getElementById('btnSpinner');
+            const icon    = document.getElementById('btnIcon');
+            const text    = document.getElementById('btnText');
+ 
+            btn.disabled           = true;
+            spinner.style.display  = 'block';
+            icon.style.display     = 'none';
+            text.textContent       = 'Enviando…';
+            document.getElementById('stepBarFill').style.width = '66%';
+ 
+            // ── Replace this timeout with your real API call ──
+            // Example: fetch('/api/recuperar-contrasena', { method:'POST', body: JSON.stringify({email}) })
+            setTimeout(() => {
+                document.getElementById('stepBarFill').style.width = '100%';
+                setTimeout(() => {
+                    document.getElementById('confirmedEmail').textContent = email;
+                    document.getElementById('formState').style.display    = 'none';
+                    document.getElementById('successState').style.display = 'block';
+                }, 300);
+            }, 1800);
+        }
+ 
+        function resetForm() {
+            document.getElementById('successState').style.display  = 'none';
+            document.getElementById('formState').style.display     = 'block';
+            document.getElementById('recoveryEmail').value         = '';
+            document.getElementById('stepBarFill').style.width     = '33%';
+ 
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = false;
+            document.getElementById('btnSpinner').style.display = 'none';
+            document.getElementById('btnIcon').style.display    = '';
+            document.getElementById('btnText').textContent      = 'Enviar enlace de recuperación';
+        }
+ 
+        document.getElementById('recoveryEmail').addEventListener('keydown', e => {
+            if (e.key === 'Enter') handleSubmit();
+        });
+    </script>
+ 
+</body>
+</html>
