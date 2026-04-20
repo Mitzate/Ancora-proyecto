@@ -1,4 +1,4 @@
-<script>
+/*<script>
 async function handleSubmit() {
     const emailEl = document.getElementById('recoveryEmail');
     const email = emailEl.value.trim();
@@ -77,3 +77,4 @@ document.getElementById('recoveryEmail').addEventListener('keydown', e => {
     if (e.key === 'Enter') handleSubmit();
 });
 </script>
+*/
