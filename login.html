@@ -140,16 +140,16 @@
 
 <!-- LOGIN -->
 <div id="login" class="auth-content active">
-<form>
+<form id="loginForm">
 
 <div class="input-wrapper">
 <i class="fas fa-envelope"></i>
-<input type="email" class="form-control" placeholder="Correo electrónico">
+<input type="email" id="loginEmail" class="form-control" placeholder="Correo electrónico" required>
 </div>
 
 <div class="input-wrapper">
 <i class="fas fa-lock"></i>
-<input type="password" class="form-control" placeholder="Contraseña">
+<input type="password" id="loginPassword" class="form-control" placeholder="Contraseña" required>
 </div>
 
 <div class="form-row-meta">
@@ -167,41 +167,41 @@
 
 <!-- REGISTER (CON TODOS TUS CAMPOS ORIGINALES) -->
 <div id="register" class="auth-content">
-<form>
+<form id="registerForm">
 
 <div class="input-wrapper">
 <i class="fas fa-user"></i>
-<input type="text" class="form-control" placeholder="Nombre(s)">
+<input type="text" id="registerName" class="form-control" placeholder="Nombre(s)" required>
 </div>
 
 <div class="input-wrapper">
 <i class="fas fa-user-tag"></i>
-<input type="text" class="form-control" placeholder="Apellido paterno">
+<input type="text" id="registerApellidoPaterno" class="form-control" placeholder="Apellido paterno" required>
 </div>
 
 <div class="input-wrapper">
 <i class="fas fa-user-tag"></i>
-<input type="text" class="form-control" placeholder="Apellido materno">
+<input type="text" id="registerApellidoMaterno" class="form-control" placeholder="Apellido materno" required>
 </div>
 
 <div class="input-wrapper">
 <i class="fas fa-envelope"></i>
-<input type="email" class="form-control" placeholder="Correo electrónico">
+<input type="email" id="registerEmail" class="form-control" placeholder="Correo electrónico" required>
 </div>
 
 <div class="input-wrapper">
 <i class="fas fa-lock"></i>
-<input type="password" class="form-control" placeholder="Contraseña">
+<input type="password" id="registerPassword" class="form-control" placeholder="Contraseña" required>
 </div>
 
 <div class="input-wrapper">
 <i class="fas fa-lock"></i>
-<input type="password" class="form-control" placeholder="Confirmar contraseña">
+<input type="password" id="registerConfirmPassword" class="form-control" placeholder="Confirmar contraseña" required>
 </div>
 
 <div style="margin-bottom:10px;">
 <label>
-<input type="checkbox"> Acepto términos y condiciones
+<input type="checkbox" id="acceptTerms" required> Acepto términos y condiciones
 </label>
 </div>
 
@@ -235,6 +235,8 @@ document.querySelectorAll('[data-tab]').forEach(el => {
     });
 });
 </script>
+
+<script src="login.js"></script>
 
 </body>
 </html>
