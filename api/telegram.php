@@ -5,7 +5,7 @@
  */
 
 // ⭐ CONFIGURA TU TOKEN DE TELEGRAM AQUÍ
-define('TELEGRAM_BOT_TOKEN', '8477297927:AAGSoVVqjz5DUWj31eek6LzyprKphSydjPg'); // Reemplaza con tu token del BotFather
+define('TELEGRAM_BOT_TOKEN', '8477297927:AAGSoVVqjz5DUWj31eek6LzyprKphSydjPg'); 
 
 /**
  * Enviar mensaje de alerta por Telegram
