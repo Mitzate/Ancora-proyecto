@@ -567,3 +567,208 @@
     width:100%;
     box-shadow:0 20px 40px rgba(0,0,0,0.08);
 }
+
+/* Hero & Carousel */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+/* ─── Variables ──────────────────────────────────────────── */
+:root {
+  --teal:     #0c8078;
+  --teal-mid: #0a6b64;
+  --teal-lt:  rgba(12,128,120,0.12);
+  --cream:    #f5f0ea;       /* fondo cálido, no blanco puro */
+  --warm-off: #faf7f2;
+  --dark:     #111;
+}
+
+/* ─── RESET hero anterior ────────────────────────────────── */
+.hero-modern {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: none;
+}
+
+/* ─── Fondo: crema cálido + destellos verdes sutiles ─────── */
+.hero-modern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 15% 20%,  rgba(12,128,120,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 50% at 85% 80%,  rgba(12,128,120,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 90% 80% at 50% 50%,  #f5f0ea 0%, #ede8e1 100%);
+  z-index: 0;
+  filter: none; /* quitamos el blur anterior */
+  transform: none;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  top: 0;
+  left: 0;
+}
+
+/* eliminamos el ::after del hero que agregaba otro blob */
+.hero-modern::after {
+  display: none;
+}
+
+/* ─── Contenido hero ─────────────────────────────────────── */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+/* ─── Tipografía principal: ANCORA ──────────────────────── */
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: clamp(5rem, 14vw, 13rem);  /* enorme, editorial */
+  letter-spacing: -2px;
+  color: var(--dark);
+  margin-bottom: 16px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* ─── Subtítulo más grande ───────────────────────────────── */
+.hero-subtitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1rem, 2.2vw, 1.55rem);   /* era 1.2rem */
+  color: #555;
+  letter-spacing: 3px;
+  margin-bottom: 50px;
+  text-transform: uppercase;
+}
+
+/* ─── Flecha scroll ──────────────────────────────────────── */
+.scroll-down {
+  display: inline-block;
+  width: 38px;
+  height: 64px;
+  border: 2px solid var(--teal);
+  border-radius: 30px;
+  position: relative;
+}
+.scroll-down span {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: var(--teal);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  animation: scrollMove 2s infinite;
+}
+@keyframes scrollMove {
+  0%   { opacity: 1; top: 10px; }
+  100% { opacity: 0; top: 38px; }
+}
+
+/* ─── CARRUSEL ───────────────────────────────────────────── */
+#carruselAncora {
+  margin-top: -40px;   /* menos overlap */
+  position: relative;
+  z-index: 3;
+  padding: 0 0 40px;
+}
+
+/* Contenedor con forma de arco/puerta: fondo crema cálido */
+.carousel-arch-wrapper {
+  position: relative;
+  max-width: 760px;          /* más estrecho que antes */
+  margin: 0 auto;
+  background: var(--warm-off);
+  /* Arco superior — clip-path simula la puerta semicircular */
+  border-radius: 360px 360px 32px 32px / 220px 220px 32px 32px;
+  padding: 40px 32px 32px;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+  overflow: hidden;
+}
+
+
+.carousel-arch-wrapper::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 12px;
+  background: var(--teal);
+  border-radius: 0 0 20px 20px;
+  opacity: 0.7;
+}
+
+/* Imágenes dentro del carrusel: más pequeñas y proporcionadas */
+.header-carousel img {
+  max-height: 340px;          /* reducido desde 450px */
+  object-fit: cover;
+  width: 100%;
+  border-radius: 300px 300px 16px 16px / 180px 180px 16px 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+}
+
+/* Dots del carrusel */
+.header-carousel .owl-dots {
+  position: static;
+  text-align: center;
+  margin-top: 14px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  transform: none;
+}
+.header-carousel .owl-dot {
+  display: inline-block;
+  margin: 0 5px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid var(--teal);
+  background: transparent;
+  transition: .4s;
+}
+.header-carousel .owl-dot.active {
+  height: 15px;
+  width: 30px;
+  border-radius: 8px;
+  background: var(--teal);
+}
+
+body {
+  background-color: var(--cream);
+}
+
+/* Secciones con fondo blanco puro → crema */
+.container-fluid.py-5:not(.bg-light):not(.bg-primary):not(.bg-dark) {
+  background: var(--warm-off);
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: clamp(3.5rem, 18vw, 6rem);
+    letter-spacing: 0;
+  }
+  .hero-subtitle {
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+  }
+  .carousel-arch-wrapper {
+    border-radius: 200px 200px 20px 20px / 120px 120px 20px 20px;
+    padding: 24px 16px 20px;
+  }
+  .header-carousel img {
+    max-height: 240px;
+    border-radius: 180px 180px 10px 10px / 100px 100px 10px 10px;
+  }
+}
