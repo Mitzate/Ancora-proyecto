@@ -11,12 +11,12 @@
     <!-- Icono -->
     <link href="img/favicon.ico" rel="icon">
 
-    <!-- Fuentes de Google -->
+    <!-- Fuentes de Google — Playfair Display para el hero + Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Space+Grotesk&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Hojas de estilo de iconos -->
+    <!-- Iconos -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -24,25 +24,24 @@
     <link href="lib/animate/animate.min.css" rel="stylesheet">
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
 
-    <!-- Estilos personalizados de Bootstrap -->
+    <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Hoja de estilos de la plantilla -->
+    <!-- ★ UN SOLO CSS — reemplaza el style.css anterior con este ★ -->
     <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
-    <!-- Inicio del cargador -->
+
+    <!-- Spinner -->
     <div id="spinner"
         class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
             <span class="sr-only">Cargando...</span>
         </div>
     </div>
-    <!-- Fin del cargador -->
 
-
-    <!-- Inicio Navbar -->
+    <!-- ══ NAVBAR ══════════════════════════════════════════════ -->
     <div class="container-fluid sticky-top">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light border-bottom border-2 border-white">
@@ -75,192 +74,176 @@
             </nav>
         </div>
     </div>
-    <!-- Fin Navbar -->
 
-<!-- ══ HERO ══════════════════════════════════════════════ -->
-<div class="container-fluid hero-modern">
-  <div class="container hero-content">
-    <div class="text-center">
- 
-      <!-- ANCORA — enorme, tipografía editorial -->
-      <h1 class="hero-title">ANCORA</h1>
- 
-      <!-- Subtítulo — más grande, mayúsculas con tracking -->
-      <p class="hero-subtitle">
-        Entre la caída, la presencia y la distancia
-      </p>
- 
-      <!-- Flecha scroll -->
-      <a href="#carruselAncora" class="scroll-down">
-        <span></span>
-      </a>
- 
-    </div>
-  </div>
-</div>
- 
- 
-<!-- ══ CARRUSEL ══════════════════════════════════════════ -->
-<div id="carruselAncora" class="container py-5">
- 
-  <!-- Wrapper con forma de puerta/arco semicircular -->
-  <div class="carousel-arch-wrapper">
- 
-    <div class="owl-carousel header-carousel">
-      <!-- Imagen del prototipo Ancora (Presencia · Caída · Distancia) -->
-      <!-- Reemplaza src con tu imagen real -->
-      <img class="img-fluid" src="prototipo.jpg"      alt="Prototipo Ancora">
-      <img class="img-fluid" src="im.png"             alt="Ancora sensor">
-      <img class="img-fluid" src="ime.jpg"            alt="Ancora sistema">
-    </div>
- 
-  </div>
- 
-</div>
-<!-- ══ FIN CARRUSEL ═══════════════════════════════════════ -->
+    <!-- ══ HERO ════════════════════════════════════════════════ -->
+    <div class="container-fluid hero-modern">
+        <div class="container hero-content">
+            <div class="text-center">
 
-<!-- Inicio Acerca de -->
-<div class="container-fluid py-5">
-    <div class="container">
-        <div class="row g-5">
-            <div class="col-lg-6">
-                <div class="row">
-                    <div class="col-6 wow fadeIn" data-wow-delay="0.1s">
-                        <img class="img-fluid" src="c.pjg.png" alt="">
-                    </div>
-                    <div class="col-6 wow fadeIn" data-wow-delay="0.3s">
-                        <img class="img-fluid h-75" src="r.pjg.png" alt="">
-                        <div class="h-25 d-flex align-items-center text-center bg-primary px-4">
-                            <h4 class="text-white lh-base mb-0">Proyecto Ancora</h4>
+                <!-- Título principal enorme -->
+                <h1 class="hero-title">ANCORA</h1>
+
+                <!-- Subtítulo con tracking editorial -->
+                <p class="hero-subtitle">
+                    Entre la caída, la presencia y la distancia
+                </p>
+
+                <!-- Flecha scroll animada -->
+                <a href="#carruselAncora" class="scroll-down">
+                    <span></span>
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CARRUSEL ════════════════════════════════════════════ -->
+    <div id="carruselAncora" class="container py-5">
+
+        <!-- Arco / puerta semicircular -->
+        <div class="carousel-arch-wrapper">
+            <div class="owl-carousel header-carousel">
+                <!-- ★ Reemplaza los src con tus imágenes reales ★ -->
+                <img class="img-fluid" src="prototipo.jpg" alt="Prototipo Ancora — Caída, Presencia, Movimiento, Sueño">
+                <img class="img-fluid" src="im.png"        alt="Ancora sensor">
+                <img class="img-fluid" src="ime.jpg"       alt="Ancora sistema">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ══ ACERCA DE ═══════════════════════════════════════════ -->
+    <div class="container-fluid py-5">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-6">
+                    <div class="row">
+                        <div class="col-6 wow fadeIn" data-wow-delay="0.1s">
+                            <img class="img-fluid" src="c.pjg.png" alt="">
+                        </div>
+                        <div class="col-6 wow fadeIn" data-wow-delay="0.3s">
+                            <img class="img-fluid h-75" src="r.pjg.png" alt="">
+                            <div class="h-25 d-flex align-items-center text-center bg-primary px-4">
+                                <h4 class="text-white lh-base mb-0">Proyecto Ancora</h4>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
-                <h1 class="mb-5"><span class="text-uppercase text-primary bg-light px-2">Descripcion</span> del proyecto</h1>
-                <p class="mb-4">Este proyecto consiste en el desarrollo de un sistema basado en un sensor inteligente capaz de detectar movimiento, medir distancias y reconocer caídas. Su objetivo es mejorar la seguridad y el monitoreo en entornos domésticos o industriales, integrándose con microcontroladores como el ESP32 para enviar alertas en tiempo real. El sistema puede aplicarse en la prevención de accidentes, asistencia a personas mayores y automatización de espacios.</p>
-                <p class="mb-5">Ancora</p>
-                <div class="row g-3">
-                    <div class="col-sm-6">
-                        <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Ancora</h6>
-                        <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Personal profesional</h6>
-                    </div>
-                    <div class="col-sm-6">
-                        <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Soporte 24/7</h6>
-                        <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Precios justos</h6>
-                    </div>
-                </div>
-                <div class="d-flex align-items-center mt-5">
-                    <a class="btn btn-primary px-4 me-2" href="#!">Leer más</a>
-                    <a class="btn btn-outline-primary btn-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-outline-primary btn-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-outline-primary btn-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
-                    <a class="btn btn-outline-primary btn-square border-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Fin Acerca de -->
-<!-- Inicio Características -->
-<div class="container-fluid py-5">
-    <div class="container">
-        <div class="text-center wow fadeIn" data-wow-delay="0.1s">
-            <h1 class="mb-5">Por qué la gente <span class="text-uppercase text-primary bg-light px-2">nos elige</span></h1>
-        </div>
-        <div class="row g-5 align-items-center text-center">
-            <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.1s">
-                <i class="fa fa-calendar-alt fa-5x text-primary mb-4"></i>
-                <h4>Pasión por resolver problemas reales</h4>
-                <p class="mb-0">Nuestro sensor nace de una necesidad: cuidar el descanso y la seguridad.</p>
-            </div>
-            <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.3s">
-                <i class="fa fa-tasks fa-5x text-primary mb-4"></i>
-                <h4>Formación multidisciplinaria</h4>
-                <p class="mb-0">Combinamos electrónica, diseño, programación y análisis de datos.</p>
-            </div>
-            <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.5s">
-                <i class="fa fa-pencil-ruler fa-5x text-primary mb-4"></i>
-                <h4>Aprendizaje constante</h4>
-                <p class="mb-0">Cada reto es una oportunidad para mejorar y crecer como equipo.</p>
-            </div>
-            <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.1s">
-                <i class="fa fa-user fa-5x text-primary mb-4"></i>
-                <h4>Compromiso con el usuario</h4>
-                <p class="mb-0">Pensamos en personas reales, con necesidades reales.</p>
-            </div>
-            <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.3s">
-                <i class="fa fa-hand-holding-usd fa-5x text-primary mb-4"></i>
-                <h4>Creatividad aplicada</h4>
-                <p class="mb-0">No solo soñamos: prototipamos, probamos y ajustamos.</p>
-            </div>
-            <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.5s">
-                <i class="fa fa-check fa-5x text-primary mb-4"></i>
-                <h4>Visión de futuro</h4>
-                <p class="mb-0">Queremos que ARCORA sea parte de soluciones</p>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Fin Características -->
-
-<!-- Inicio Proyectos -->
-<div class="container-fluid mt-5">
-    <div class="container mt-5">
-        <div class="row g-0">
-            <div class="col-lg-5 wow fadeIn" data-wow-delay="0.1s">
-                <div class="d-flex flex-column justify-content-center bg-primary h-100 p-5">
-                    <h1 class="text-white mb-5">Nuestros  
-                        <span class="text-uppercase text-primary bg-light px-2">Proyectos</span>
-                    </h1>
-                    <h4 class="text-white mb-0">
-                        <span class="display-1">2</span> proyectos recientes
-                    </h4>
-                </div>
-            </div>
-            <div class="col-lg-7">
-                <div class="row g-0">
-                    <!-- Proyecto 1 -->
-                    <div class="col-md-6 col-lg-6 wow fadeIn" data-wow-delay="0.2s">
-                        <div class="project-item position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="vocesarco.jpg" alt="">
-                            <a class="project-overlay text-decoration-none" href="#!">
-                                <h4 class="text-white">Voces Arcoiris</h4>
-                                <small class="text-white">Proyecto de ayuda emocional</small>
-                            </a>
+                <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+                    <h1 class="mb-5"><span class="text-uppercase text-primary bg-light px-2">Descripción</span> del proyecto</h1>
+                    <p class="mb-4">Este proyecto consiste en el desarrollo de un sistema basado en un sensor inteligente capaz de detectar movimiento, medir distancias y reconocer caídas. Su objetivo es mejorar la seguridad y el monitoreo en entornos domésticos o industriales, integrándose con microcontroladores como el ESP32 para enviar alertas en tiempo real. El sistema puede aplicarse en la prevención de accidentes, asistencia a personas mayores y automatización de espacios.</p>
+                    <p class="mb-5">Ancora</p>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Ancora</h6>
+                            <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Personal profesional</h6>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Soporte 24/7</h6>
+                            <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Precios justos</h6>
                         </div>
                     </div>
-                    <!-- Proyecto 2 -->
-                    <div class="col-md-6 col-lg-6 wow fadeIn" data-wow-delay="0.3s">
-                        <div class="project-item position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="aceite.jpg" alt="">
-                            <a class="project-overlay text-decoration-none" href="#!">
-                                <h4 class="text-white">Aceite 2.0</h4>
-                                <small class="text-white">Innovación en aceite usado</small>
-                            </a>
+                    <div class="d-flex align-items-center mt-5">
+                        <a class="btn btn-primary px-4 me-2" href="#!">Leer más</a>
+                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                        <a class="btn btn-outline-primary btn-square border-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CARACTERÍSTICAS ═════════════════════════════════════ -->
+    <div class="container-fluid py-5">
+        <div class="container">
+            <div class="text-center wow fadeIn" data-wow-delay="0.1s">
+                <h1 class="mb-5">Por qué la gente <span class="text-uppercase text-primary bg-light px-2">nos elige</span></h1>
+            </div>
+            <div class="row g-5 align-items-center text-center">
+                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.1s">
+                    <i class="fa fa-calendar-alt fa-5x text-primary mb-4"></i>
+                    <h4>Pasión por resolver problemas reales</h4>
+                    <p class="mb-0">Nuestro sensor nace de una necesidad: cuidar el descanso y la seguridad.</p>
+                </div>
+                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.3s">
+                    <i class="fa fa-tasks fa-5x text-primary mb-4"></i>
+                    <h4>Formación multidisciplinaria</h4>
+                    <p class="mb-0">Combinamos electrónica, diseño, programación y análisis de datos.</p>
+                </div>
+                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.5s">
+                    <i class="fa fa-pencil-ruler fa-5x text-primary mb-4"></i>
+                    <h4>Aprendizaje constante</h4>
+                    <p class="mb-0">Cada reto es una oportunidad para mejorar y crecer como equipo.</p>
+                </div>
+                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.1s">
+                    <i class="fa fa-user fa-5x text-primary mb-4"></i>
+                    <h4>Compromiso con el usuario</h4>
+                    <p class="mb-0">Pensamos en personas reales, con necesidades reales.</p>
+                </div>
+                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.3s">
+                    <i class="fa fa-hand-holding-usd fa-5x text-primary mb-4"></i>
+                    <h4>Creatividad aplicada</h4>
+                    <p class="mb-0">No solo soñamos: prototipamos, probamos y ajustamos.</p>
+                </div>
+                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.5s">
+                    <i class="fa fa-check fa-5x text-primary mb-4"></i>
+                    <h4>Visión de futuro</h4>
+                    <p class="mb-0">Queremos que ANCORA sea parte de soluciones del mañana.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ PROYECTOS ═══════════════════════════════════════════ -->
+    <div class="container-fluid mt-5">
+        <div class="container mt-5">
+            <div class="row g-0">
+                <div class="col-lg-5 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="d-flex flex-column justify-content-center bg-primary h-100 p-5">
+                        <h1 class="text-white mb-5">Nuestros
+                            <span class="text-uppercase text-primary bg-light px-2">Proyectos</span>
+                        </h1>
+                        <h4 class="text-white mb-0">
+                            <span class="display-1">2</span> proyectos recientes
+                        </h4>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="row g-0">
+                        <div class="col-md-6 col-lg-6 wow fadeIn" data-wow-delay="0.2s">
+                            <div class="project-item position-relative overflow-hidden">
+                                <img class="img-fluid w-100" src="vocesarco.jpg" alt="">
+                                <a class="project-overlay text-decoration-none" href="#!">
+                                    <h4 class="text-white">Voces Arcoiris</h4>
+                                    <small class="text-white">Proyecto de ayuda emocional</small>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-6 wow fadeIn" data-wow-delay="0.3s">
+                            <div class="project-item position-relative overflow-hidden">
+                                <img class="img-fluid w-100" src="aceite.jpg" alt="">
+                                <a class="project-overlay text-decoration-none" href="#!">
+                                    <h4 class="text-white">Aceite 2.0</h4>
+                                    <small class="text-white">Innovación en aceite usado</small>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Fin Proyectos -->
-
-<!-- Inicio Servicios -->
-  <!-- Services -->
+    <!-- ══ SERVICIOS ═══════════════════════════════════════════ -->
     <div class="container-fluid py-5">
         <div class="container py-5">
             <div class="row g-5 align-items-center">
                 <div class="col-lg-5 wow fadeIn" data-wow-delay="0.1s">
-                    <h1 class="mb-5">Nuestros <span
-                            class="text-uppercase text-primary bg-light px-2">Servicios Creativos</span></h1>
-
+                    <h1 class="mb-5">Nuestros <span class="text-uppercase text-primary bg-light px-2">Servicios Creativos</span></h1>
                     <p>Ofrecemos servicios para el cuidado y monitoreo en tiempo real de personas, mediante detección de caídas, presencia y distancia.</p>
-
                     <p class="mb-5">Nuestro equipo combina experiencia, innovación y cuidado por las personas.</p>
-
                     <div class="d-flex align-items-center bg-light">
                         <div class="btn-square flex-shrink-0 bg-primary" style="width: 100px; height: 100px;">
                             <i class="fa fa-phone fa-2x text-white"></i>
@@ -271,11 +254,8 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Service Boxes -->
                 <div class="col-lg-7">
                     <div class="row g-0">
-
                         <div class="col-md-6 wow fadeIn" data-wow-delay="0.2s">
                             <div class="service-item h-100 d-flex flex-column justify-content-center bg-primary">
                                 <a href="#!" class="service-img position-relative mb-4">
@@ -285,7 +265,6 @@
                                 <p class="mb-0">Transformamos el cuidado con tecnología inteligente y segura.</p>
                             </div>
                         </div>
-
                         <div class="col-md-6 wow fadeIn" data-wow-delay="0.4s">
                             <div class="service-item h-100 d-flex flex-column justify-content-center bg-light">
                                 <a href="#!" class="service-img position-relative mb-4">
@@ -295,7 +274,6 @@
                                 <p class="mb-0">Nos encargamos de tu seguridad y bienestar.</p>
                             </div>
                         </div>
-
                         <div class="col-md-6 wow fadeIn" data-wow-delay="0.6s">
                             <div class="service-item h-100 d-flex flex-column justify-content-center bg-light">
                                 <a href="#!" class="service-img position-relative mb-4">
@@ -305,155 +283,111 @@
                                 <p class="mb-0">Mejoramos la seguridad con monitoreo moderno y funcional.</p>
                             </div>
                         </div>
-
                         <div class="col-md-6 wow fadeIn" data-wow-delay="0.8s">
                             <div class="service-item h-100 d-flex flex-column justify-content-center bg-primary">
                                 <a href="#!" class="service-img position-relative mb-4">
                                     <img class="img-fluid w-100" src="img/DS.jpg" alt="">
-                                    <h3>Sistemas de Monitoreo </h3>
+                                    <h3>Sistemas de Monitoreo</h3>
                                 </a>
-                                <p class="mb-0">Desarrollo de sistemas de monitoreo para mejorar la seguridad, el bienestar y la experiencia de cuidado de las personas..</p>
+                                <p class="mb-0">Desarrollo de sistemas de monitoreo para mejorar la seguridad, el bienestar y la experiencia de cuidado de las personas.</p>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
-<!-- Fin Servicios -->
-<!-- Inicio Equipo -->
-<div class="container-fluid bg-light py-5">
-    <div class="container py-5">
-        <h1 class="mb-5">Nuestros <span class="text-uppercase text-primary bg-light px-2">Diseñadores</span> profesionales</h1>
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
-                <div class="team-item position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="luz.pjg.jpg" alt="">
-                    <div class="team-overlay">
-                        <small class="mb-2">Ingeniera</small>
-                        <h4 class="lh-base text-light">Luz Burgoin</h4>
-                        <div class="d-flex justify-content-center">
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-linkedin-in"></i>
-                            </a>
+
+    <!-- ══ EQUIPO ═══════════════════════════════════════════════ -->
+    <div class="container-fluid bg-light py-5">
+        <div class="container py-5">
+            <h1 class="mb-5">Nuestros <span class="text-uppercase text-primary bg-light px-2">Diseñadores</span> profesionales</h1>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="team-item position-relative overflow-hidden">
+                        <img class="img-fluid w-100" src="luz.pjg.jpg" alt="">
+                        <div class="team-overlay">
+                            <small class="mb-2">Ingeniera</small>
+                            <h4 class="lh-base text-light">Luz Burgoin</h4>
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
-                <div class="team-item position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="ate.pjg.jpg" alt="">
-                    <div class="team-overlay">
-                        <small class="mb-2">Ingeniera</small>
-                        <h4 class="lh-base text-light">Atenea Salgado</h4>
-                        <div class="d-flex justify-content-center">
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-linkedin-in"></i>
-                            </a>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="team-item position-relative overflow-hidden">
+                        <img class="img-fluid w-100" src="ate.pjg.jpg" alt="">
+                        <div class="team-overlay">
+                            <small class="mb-2">Ingeniera</small>
+                            <h4 class="lh-base text-light">Atenea Salgado</h4>
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
-                <div class="team-item position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="kendra.pjg.jpg" alt="">
-                    <div class="team-overlay">
-                        <small class="mb-2">Ingeniera</small>
-                        <h4 class="lh-base text-light">Kendra Ramirez</h4>
-                        <div class="d-flex justify-content-center">
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-linkedin-in"></i>
-                            </a>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
+                    <div class="team-item position-relative overflow-hidden">
+                        <img class="img-fluid w-100" src="kendra.pjg.jpg" alt="">
+                        <div class="team-overlay">
+                            <small class="mb-2">Ingeniera</small>
+                            <h4 class="lh-base text-light">Kendra Ramirez</h4>
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
-                <div class="team-item position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="cristal.pjg.jpg" alt="">
-                    <div class="team-overlay">
-                        <small class="mb-2">Ingeniera</small>
-                        <h4 class="lh-base text-light">Cristal Lopez</h4>
-                        <div class="d-flex justify-content-center">
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-linkedin-in"></i>
-                            </a>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
+                    <div class="team-item position-relative overflow-hidden">
+                        <img class="img-fluid w-100" src="cristal.pjg.jpg" alt="">
+                        <div class="team-overlay">
+                            <small class="mb-2">Ingeniera</small>
+                            <h4 class="lh-base text-light">Cristal Lopez</h4>
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
-                <div class="team-item position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="irving.jpg" alt="">
-                    <div class="team-overlay">
-                        <small class="mb-2">Ingeniero</small>
-                        <h4 class="lh-base text-light">Irving Solis</h4>
-                        <div class="d-flex justify-content-center">
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!">
-                                <i class="fab fa-linkedin-in"></i>
-                            </a>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
+                    <div class="team-item position-relative overflow-hidden">
+                        <img class="img-fluid w-100" src="irving.jpg" alt="">
+                        <div class="team-overlay">
+                            <small class="mb-2">Ingeniero</small>
+                            <h4 class="lh-base text-light">Irving Solis</h4>
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Fin Equipo -->
-<!-- Inicio Testimonios -->
- <div class="container-xxl py-5">
+
+    <!-- ══ TESTIMONIOS ═════════════════════════════════════════ -->
+    <div class="container-xxl py-5">
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-md-12 col-lg-9">
                     <div class="owl-carousel testimonial-carousel wow fadeIn" data-wow-delay="0.2s">
-
                         <div class="testimonial-item">
                             <div class="row g-5 align-items-center">
                                 <div class="col-md-6">
@@ -470,7 +404,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="testimonial-item">
                             <div class="row g-5 align-items-center">
                                 <div class="col-md-6">
@@ -487,7 +420,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="testimonial-item">
                             <div class="row g-5 align-items-center">
                                 <div class="col-md-6">
@@ -504,15 +436,13 @@
                                 </div>
                             </div>
                         </div>
-
-                    </div> <!-- carousel -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-<!-- Fin Testimonios -->
 
-<!-- Newsletter Start -->
+    <!-- ══ NEWSLETTER ══════════════════════════════════════════ -->
     <div class="container-fluid bg-primary newsletter p-0">
         <div class="container p-0">
             <div class="row g-0 align-items-center">
@@ -521,8 +451,7 @@
                 </div>
                 <div class="col-md-7 py-5 newsletter-text wow fadeIn" data-wow-delay="0.5s">
                     <div class="p-5">
-                        <h1 class="mb-5">Suscríbete al boletín <span
-                                class="text-uppercase text-primary bg-white px-2">informativo</span></h1>
+                        <h1 class="mb-5">Suscríbete al boletín <span class="text-uppercase text-primary bg-white px-2">informativo</span></h1>
                         <div class="position-relative w-100 mb-2">
                             <input class="form-control border-0 w-100 ps-4 pe-5" type="text"
                                 placeholder="Ingresa tu email" style="height: 60px;">
@@ -536,28 +465,23 @@
             </div>
         </div>
     </div>
-    <!-- Newsletter End -->
 
-
-    <!-- Footer Start -->
+    <!-- ══ FOOTER ══════════════════════════════════════════════ -->
     <div class="container-fluid bg-dark text-white-50 footer pt-5">
         <div class="container py-5">
             <div class="row g-5">
-
                 <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
                     <a href="index.html" class="d-inline-block mb-3">
                         <h1 class="text-white">Áncora</h1>
                     </a>
                     <p class="mb-0">Sistema inteligente de monitoreo diseñado para mejorar la seguridad y el bienestar mediante tecnología moderna, precisa y accesible.</p>
                 </div>
-
                 <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
                     <h5 class="text-white mb-4">Contacto</h5>
                     <p><i class="fa fa-map-marker-alt me-3"></i>San José del Cabo</p>
                     <p><i class="fa fa-phone-alt me-3"></i>+52 612 345 6789</p>
                     <p><i class="fa fa-envelope me-3"></i>ancora.info@gmail.com</p>
                 </div>
-
                 <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
                     <h5 class="text-white mb-4">Enlaces</h5>
                     <a class="btn btn-link" href="acercade.html">Acerca de</a>
@@ -566,7 +490,6 @@
                     <a class="btn btn-link" href="#!">Términos y condiciones</a>
                     <a class="btn btn-link" href="#!">Empleo</a>
                 </div>
-
                 <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
                     <h5 class="text-white mb-4">Nuestros servicios</h5>
                     <a class="btn btn-link" href="#!">Monitoreo de sueño</a>
@@ -575,46 +498,38 @@
                     <a class="btn btn-link" href="#!">Sensores inteligentes</a>
                     <a class="btn btn-link" href="#!">Integración IoT</a>
                 </div>
-
             </div>
         </div>
-    <div class="container wow fadeIn" data-wow-delay="0.1s">
-        <div class="copyright">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="border-bottom" href="#!">Nombre de tu sitio</a>, Todos los derechos reservados.
-                    Diseñado por <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>. Distribuido por
-                    <a class="border-bottom" href="https://themewagon.com" target="_blank">ThemeWagon</a>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <div class="footer-menu">
-                        <a href="#!">Inicio</a>
-                        <a href="#!">Cookies</a>
-                        <a href="#!">Ayuda</a>
-                        <a href="#!">Preguntas frecuentes</a>
+        <div class="container wow fadeIn" data-wow-delay="0.1s">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#!">Ancora</a>, Todos los derechos reservados.
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-menu">
+                            <a href="#!">Inicio</a>
+                            <a href="#!">Cookies</a>
+                            <a href="#!">Ayuda</a>
+                            <a href="#!">Preguntas frecuentes</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Fin Footer -->
 
+    <!-- Volver arriba -->
+    <a href="#!" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
-<!-- Volver arriba -->
-<a href="#!" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    <!-- JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
 
-
-<!-- Librerías JavaScript -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="lib/wow/wow.min.js"></script>
-<script src="lib/easing/easing.min.js"></script>
-<script src="lib/waypoints/waypoints.min.js"></script>
-<script src="lib/owlcarousel/owl.carousel.min.js"></script>
-
-<!-- JavaScript de la plantilla -->
-<script src="js/main.js"></script>
 </body>
-
 </html>
