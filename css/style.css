@@ -60,16 +60,17 @@
 }
 
 .navbar {
-    padding: 15px 0;
+    padding: 22px 0;
     font-family: "Space Grotesk", sans-serif;
     font-size: 18px;
+    letter-spacing: 1px;
 }
 
 .navbar .navbar-nav .nav-link {
-    margin-left: 30px;
-    padding: 0;
-    outline: none;
-    color: var(--bs-dark);
+    margin-left: 32px;
+    color: #111;
+    font-weight: 500;
+    transition: .3s;
 }
 
 .navbar .navbar-nav .nav-link:hover,
@@ -382,7 +383,6 @@
     }
 }
 
-
 /*** Newsletter ***/
 .newsletter {
     background: url(../img/hero-bg.jpg) bottom right no-repeat;
@@ -461,4 +461,109 @@
     margin-right: 0;
     padding-right: 0;
     border-right: none;
+}
+
+/* HERO MODERNO */
+.hero-modern{
+    min-height: 100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: linear-gradient(
+        135deg,
+        #edf3f2 0%,
+        #dce7e6 50%,
+        #edf3f2 100%
+    );
+    position:relative;
+    overflow:hidden;
+}
+
+.hero-modern::before{
+    content:"";
+    position:absolute;
+    width:600px;
+    height:600px;
+    border-radius:50%;
+    background:rgba(12,128,120,0.08);
+    top:-150px;
+    left:-150px;
+    filter: blur(40px);
+    transform: translateY(0);
+    transition: transform 0.2s linear;
+}
+
+.hero-modern::after{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    border-radius:50%;
+    background:rgba(12,128,120,0.06);
+    bottom:-120px;
+    right:-120px;
+    filter: blur(40px);
+}
+
+.hero-title{
+    font-family: "Space Grotesk", sans-serif;
+    font-size: clamp(4rem, 10vw, 9rem);
+    font-weight: 700;
+    letter-spacing: 6px;
+    color:#111;
+    margin-bottom:20px;
+}
+
+.hero-subtitle{
+    font-size:1.2rem;
+    color:#555;
+    letter-spacing:2px;
+    margin-bottom:60px;
+}
+
+/* Flecha scroll */
+.scroll-down{
+    display:inline-block;
+    width:40px;
+    height:70px;
+    border:2px solid #0c8078;
+    border-radius:30px;
+    position:relative;
+}
+
+.scroll-down span{
+    position:absolute;
+    top:12px;
+    left:50%;
+    width:6px;
+    height:6px;
+    background:#0c8078;
+    border-radius:50%;
+    transform:translateX(-50%);
+    animation: scrollMove 2s infinite;
+}
+
+@keyframes scrollMove{
+    0%{
+        opacity:1;
+        top:12px;
+    }
+    100%{
+        opacity:0;
+        top:40px;
+    }
+}
+
+/* Carrusel debajo */
+#carruselAncora{
+    margin-top:-80px;
+    position:relative;
+    z-index:3;
+}
+
+.header-carousel img{
+    max-height:450px;
+    object-fit:cover;
+    width:100%;
+    box-shadow:0 20px 40px rgba(0,0,0,0.08);
 }

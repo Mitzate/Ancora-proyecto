@@ -1,7 +1,6 @@
 (function ($) {
     "use strict";
 
-    // Spinner
     var spinner = function () {
         setTimeout(function () {
             if ($('#spinner').length > 0) {
@@ -10,23 +9,24 @@
         }, 1);
     };
     spinner();
-    
-    
-    // Initiate the wowjs
+
+    /*  Animations*/
     new WOW().init();
-
-
-    // Sticky Navbar
+   
+    /* o Navbar Sticky */
     $(window).scroll(function () {
         if ($(this).scrollTop() > 300) {
-            $('.sticky-top').addClass('bg-white shadow-sm').css('top', '0px');
+            $('.sticky-top')
+                .addClass('bg-white shadow-sm')
+                .css('top', '0px');
         } else {
-            $('.sticky-top').removeClass('bg-white shadow-sm').css('top', '-150px');
+            $('.sticky-top')
+                .removeClass('bg-white shadow-sm')
+                .css('top', '-150px');
         }
     });
-    
-    
-    // Back to top button
+
+    /* Back To Top */
     $(window).scroll(function () {
         if ($(this).scrollTop() > 100) {
             $('.back-to-top').fadeIn('slow');
@@ -34,13 +34,34 @@
             $('.back-to-top').fadeOut('slow');
         }
     });
+
     $('.back-to-top').click(function () {
-        $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
+        $('html, body').animate({
+            scrollTop: 0
+        }, 1500, 'easeInOutExpo');
         return false;
+    });  
+
+    /* Hero Scroll */
+    $(window).scroll(function () {
+        let scrollTop = $(this).scrollTop();
+
+        $('.hero-modern').css({
+            transform: 'translateY(' + (scrollTop * 0.05) + 'px)'
+        });
+    });
+
+    /* Scroll suave flecha */
+    $('.scroll-down').click(function (e) {
+        e.preventDefault();
+
+        $('html, body').animate({
+            scrollTop: $('#carruselAncora').offset().top
+        }, 1200, 'easeInOutExpo');
     });
 
 
-    // Header carousel
+    /*  Inicio Header Carousel*/
     $(".header-carousel").owlCarousel({
         autoplay: true,
         smartSpeed: 1000,
@@ -48,9 +69,8 @@
         dots: true,
         items: 1
     });
+ 
 
-
-    // Testimonials carousel
     $(".testimonial-carousel").owlCarousel({
         items: 1,
         autoplay: true,
@@ -61,6 +81,5 @@
         loop: true,
         nav: false
     });
-    
-})(jQuery);
 
+})(jQuery);
