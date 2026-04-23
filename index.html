@@ -97,77 +97,75 @@
         </div>
     </div>
 
- <!-- ══ SECCIÓN PRINCIPAL 360° ════════════════════════════════ -->
+ <!-- ══════════════════════════════════════════════════════════
+     ANCORA — Sección 360° ACTUALIZADA
+     Reemplaza la sección anterior completa
+     ══════════════════════════════════════════════════════════ -->
+
 <section id="seccion360" class="ancora-feature-section">
- 
-  <!-- Fondo decorativo con blobs verdes -->
+
+  <!-- Fondo decorativo lado izquierdo -->
   <div class="feature-bg">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-    <div class="grid-lines"></div>
+    <div class="bg-gradient-left"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="bg-circle-outline"></div>
   </div>
- 
-  <div class="container position-relative" style="z-index:2;">
-    <div class="row align-items-center g-5">
- 
+
+  <div class="container-fluid px-0 position-relative" style="z-index:2;">
+    <div class="row g-0 align-items-stretch">
+
       <!-- ── COLUMNA IZQUIERDA: Descripción ── -->
-      <div class="col-lg-5 feature-left">
- 
-        <span class="feature-tag">Sistema inteligente</span>
- 
-        <h2 class="feature-heading">
-          Descripción<br>
-          <span class="feature-heading-accent">del proyecto</span>
-        </h2>
- 
-        <p class="feature-body">
-          Este proyecto consiste en el desarrollo de un sistema basado
-          en un sensor inteligente capaz de detectar movimiento, medir
-          distancias y reconocer caídas.
-        </p>
-        <p class="feature-body">
-          Su objetivo es mejorar la seguridad y el monitoreo en entornos
-          domésticos o industriales, integrándose con microcontroladores
-          como el ESP32 para enviar alertas en tiempo real.
-        </p>
- 
-        <!-- Chips de capacidades -->
-        <div class="feature-chips">
-          <span class="chip chip-teal">Detección de caídas</span>
-          <span class="chip chip-sage">Presencia</span>
-          <span class="chip chip-forest">Distancia</span>
-          <span class="chip chip-teal">Movimiento</span>
-          <span class="chip chip-sage">Sueño</span>
-          <span class="chip chip-forest">ESP32</span>
+      <div class="col-lg-5 feature-left-col">
+        <div class="feature-left-inner">
+
+          <h2 class="feature-heading">
+            Descripción<br>
+            <em class="feature-heading-accent">del proyecto</em>
+          </h2>
+
+          <p class="feature-body">
+            Este proyecto consiste en el desarrollo de un sistema basado
+            en un sensor inteligente capaz de detectar movimiento, medir
+            distancias y reconocer caídas.
+          </p>
+          <p class="feature-body">
+            Su objetivo es mejorar la seguridad y el monitoreo en entornos
+            domésticos o industriales, integrándose con microcontroladores
+            como el ESP32 para enviar alertas en tiempo real.
+          </p>
+
+          <!-- Chips -->
+          <div class="feature-chips">
+            <span class="chip chip-teal">Detección de caídas</span>
+            <span class="chip chip-sage">Presencia</span>
+            <span class="chip chip-forest">Distancia</span>
+            <span class="chip chip-teal">Movimiento</span>
+            <span class="chip chip-sage">Sueño</span>
+            <span class="chip chip-forest">ESP32</span>
+          </div>
+
+          <div class="feature-divider"></div>
+
+          <a class="btn-ancora" href="acercade.html">
+            Conocer más
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+
         </div>
- 
-        <!-- Separador decorativo -->
-        <div class="feature-divider"></div>
- 
-        <a class="btn-ancora" href="acercade.html">
-          Conocer más
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
- 
       </div>
- 
-      <!-- ── COLUMNA DERECHA: Animación 360° ── -->
-      <div class="col-lg-7 feature-right">
- 
-        <!-- Escenario del prototipo -->
+
+      <!-- ── COLUMNA DERECHA: 360° ── -->
+      <div class="col-lg-7 feature-right-col">
         <div class="proto-stage" id="protoStage">
- 
-          <!-- Glow de fondo -->
+
           <div class="proto-glow"></div>
- 
-          <!-- Anillos decorativos -->
           <div class="proto-ring proto-ring-1"></div>
           <div class="proto-ring proto-ring-2"></div>
- 
-          <!-- Imagen del prototipo — cambia aquí -->
+
           <img
             id="protoImg"
             src="img/prototipo360/1.png"
@@ -175,28 +173,23 @@
             class="proto-img"
             draggable="false"
           >
- 
-          <!-- Indicador de interacción -->
+
           <div class="proto-hint" id="protoHint">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M12 5v14M5 12l7-7 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
             Scroll para rotar
           </div>
- 
-          <!-- Contador de frame -->
+
           <div class="proto-counter" id="protoCounter">01 / 09</div>
- 
+
         </div>
- 
       </div>
- 
+
     </div>
   </div>
- 
-</section>
-<!-- ══ FIN SECCIÓN 360° ═══════════════════════════════════════ -->
 
+</section>
     <!-- ══ CARACTERÍSTICAS ═════════════════════════════════════ -->
     <div class="container-fluid py-5">
         <div class="container">
