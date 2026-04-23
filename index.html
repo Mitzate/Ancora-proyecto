@@ -1,473 +1,499 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="utf-8">
     <title>ANCORA - Pagina principal</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="palabras-clave">
-    <meta content="" name="descripción">
-
-    <!-- Icono -->
     <link href="img/favicon.ico" rel="icon">
 
-    <!-- Fuentes de Google — Playfair Display para el hero + Space Grotesk -->
+    <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 
     <!-- Iconos -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Librerías de estilos -->
+    <!-- Librerías -->
     <link href="lib/animate/animate.min.css" rel="stylesheet">
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-
-    <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- ★ UN SOLO CSS — reemplaza el style.css anterior con este ★ -->
     <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
 
-    <!-- Spinner -->
-    <div id="spinner"
-        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Cargando...</span>
-        </div>
+<!-- Spinner -->
+<div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+    <div class="spinner-grow text-primary" style="width:3rem;height:3rem;" role="status">
+        <span class="sr-only">Cargando...</span>
     </div>
+</div>
 
-    <!-- ══ NAVBAR ══════════════════════════════════════════════ -->
-    <div class="container-fluid sticky-top">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-light border-bottom border-2 border-white">
-                <a href="index.html" class="navbar-brand">
-                    <h1>Ancora</h1>
-                </a>
-                <button type="button" class="navbar-toggler ms-auto me-0" data-bs-toggle="collapse"
-                    data-bs-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto">
-                        <a href="index.html" class="nav-item nav-link active">Inicio</a>
-                        <a href="acercade.html" class="nav-item nav-link">Acerca de</a>
-                        <a href="servicio.html" class="nav-item nav-link">Servicios</a>
-                        <a href="proyecto.html" class="nav-item nav-link">Proyectos</a>
-                        <div class="nav-item dropdown">
-                            <a href="#!" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Páginas</a>
-                            <div class="dropdown-menu bg-light mt-2">
-                                <a href="caracteristica.html" class="dropdown-item">Características</a>
-                                <a href="equipo.html" class="dropdown-item">Nuestro equipo</a>
-                                <a href="testimonios.html" class="dropdown-item">Testimonios</a>
-                                <a href="404.html" class="dropdown-item">Página 404</a>
-                            </div>
+<!-- ══ NAVBAR ══════════════════════════════════════════════ -->
+<div class="container-fluid sticky-top">
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light border-bottom border-2 border-white">
+            <a href="index.html" class="navbar-brand"><h1>Ancora</h1></a>
+            <button type="button" class="navbar-toggler ms-auto me-0" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto">
+                    <a href="index.html" class="nav-item nav-link active">Inicio</a>
+                    <a href="acercade.html" class="nav-item nav-link">Acerca de</a>
+                    <a href="servicio.html" class="nav-item nav-link">Servicios</a>
+                    <a href="proyecto.html" class="nav-item nav-link">Proyectos</a>
+                    <div class="nav-item dropdown">
+                        <a href="#!" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Páginas</a>
+                        <div class="dropdown-menu bg-light mt-2">
+                            <a href="caracteristica.html" class="dropdown-item">Características</a>
+                            <a href="equipo.html" class="dropdown-item">Nuestro equipo</a>
+                            <a href="testimonios.html" class="dropdown-item">Testimonios</a>
+                            <a href="404.html" class="dropdown-item">Página 404</a>
                         </div>
-                        <a href="contacto.html" class="nav-item nav-link">Contacto</a>
-                        <a href="login.html" class="nav-item nav-link">Login</a>
                     </div>
+                    <a href="contacto.html" class="nav-item nav-link">Contacto</a>
+                    <a href="login.html" class="nav-item nav-link">Login</a>
                 </div>
-            </nav>
-        </div>
-    </div>
-
-    <!-- ══ HERO ════════════════════════════════════════════════ -->
-    <div class="container-fluid hero-modern">
-        <div class="container hero-content">
-            <div class="text-center">
-
-                <!-- Título principal enorme -->
-                <h1 class="hero-title">ANCORA</h1>
-
-                <!-- Subtítulo con tracking editorial -->
-                <p class="hero-subtitle">
-                    Entre la caída, la presencia y la distancia
-                </p>
-
-                <!-- Flecha scroll animada -->
-                <a href="#carruselAncora" class="scroll-down">
-                    <span></span>
-                </a>
-
             </div>
+        </nav>
+    </div>
+</div>
+
+<!-- ══ HERO ════════════════════════════════════════════════ -->
+<section class="hero-modern">
+    <div class="container hero-content">
+        <div class="text-center">
+            <h1 class="hero-title">ANCORA</h1>
+            <p class="hero-subtitle">Entre la caída, la presencia y la distancia</p>
+            <a href="#seccion360" class="scroll-down"><span></span></a>
         </div>
     </div>
+</section>
 
- <!-- ══════════════════════════════════════════════════════════
-     ANCORA — Sección 360° ACTUALIZADA
-     Reemplaza la sección anterior completa
-     ══════════════════════════════════════════════════════════ -->
-
+<!-- ══ SECCIÓN 360° — Descripción + Prototipo ══════════════ -->
 <section id="seccion360" class="ancora-feature-section">
 
-  <!-- Fondo decorativo lado izquierdo -->
-  <div class="feature-bg">
-    <div class="bg-gradient-left"></div>
-    <div class="bg-orb bg-orb-1"></div>
-    <div class="bg-orb bg-orb-2"></div>
-    <div class="bg-orb bg-orb-3"></div>
-    <div class="bg-circle-outline"></div>
-  </div>
-
-  <div class="container-fluid px-0 position-relative" style="z-index:2;">
-    <div class="row g-0 align-items-stretch">
-
-      <!-- ── COLUMNA IZQUIERDA: Descripción ── -->
-      <div class="col-lg-5 feature-left-col">
-        <div class="feature-left-inner">
-
-          <h2 class="feature-heading">
-            Descripción<br>
-            <em class="feature-heading-accent">del proyecto</em>
-          </h2>
-
-          <p class="feature-body">
-            Este proyecto consiste en el desarrollo de un sistema basado
-            en un sensor inteligente capaz de detectar movimiento, medir
-            distancias y reconocer caídas.
-          </p>
-          <p class="feature-body">
-            Su objetivo es mejorar la seguridad y el monitoreo en entornos
-            domésticos o industriales, integrándose con microcontroladores
-            como el ESP32 para enviar alertas en tiempo real.
-          </p>
-
-          <!-- Chips -->
-          <div class="feature-chips">
-            <span class="chip chip-teal">Detección de caídas</span>
-            <span class="chip chip-sage">Presencia</span>
-            <span class="chip chip-forest">Distancia</span>
-            <span class="chip chip-teal">Movimiento</span>
-            <span class="chip chip-sage">Sueño</span>
-            <span class="chip chip-forest">ESP32</span>
-          </div>
-
-          <div class="feature-divider"></div>
-
-          <a class="btn-ancora" href="acercade.html">
-            Conocer más
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-
-        </div>
-      </div>
-
-      <!-- ── COLUMNA DERECHA: 360° ── -->
-      <div class="col-lg-7 feature-right-col">
-        <div class="proto-stage" id="protoStage">
-
-          <div class="proto-glow"></div>
-          <div class="proto-ring proto-ring-1"></div>
-          <div class="proto-ring proto-ring-2"></div>
-
-          <img
-            id="protoImg"
-            src="img/prototipo360/1.png"
-            alt="Prototipo Ancora 360°"
-            class="proto-img"
-            draggable="false"
-          >
-
-          <div class="proto-hint" id="protoHint">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 5v14M5 12l7-7 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-            Scroll para rotar
-          </div>
-
-          <div class="proto-counter" id="protoCounter">01 / 09</div>
-
-        </div>
-      </div>
-
+    <!-- Fondo decorativo -->
+    <div class="feature-bg">
+        <div class="bg-gradient-left"></div>
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+        <div class="bg-circle-outline"></div>
     </div>
-  </div>
+
+    <div class="container-fluid px-0 position-relative" style="z-index:2;">
+        <div class="row g-0 align-items-stretch">
+
+            <!-- Columna izquierda -->
+            <div class="col-lg-5 feature-left-col">
+                <div class="feature-left-inner">
+
+                    <h2 class="feature-heading">
+                        Descripción<br>
+                        <em class="feature-heading-accent">del proyecto</em>
+                    </h2>
+
+                    <p class="feature-body">
+                        Este proyecto consiste en el desarrollo de un sistema basado
+                        en un sensor inteligente capaz de detectar movimiento, medir
+                        distancias y reconocer caídas.
+                    </p>
+                    <p class="feature-body">
+                        Su objetivo es mejorar la seguridad y el monitoreo en entornos
+                        domésticos o industriales, integrándose con microcontroladores
+                        como el ESP32 para enviar alertas en tiempo real.
+                    </p>
+
+                    <div class="feature-chips">
+                        <span class="chip chip-teal">Detección de caídas</span>
+                        <span class="chip chip-sage">Presencia</span>
+                        <span class="chip chip-forest">Distancia</span>
+                        <span class="chip chip-teal">Movimiento</span>
+                        <span class="chip chip-sage">Sueño</span>
+                        <span class="chip chip-forest">ESP32</span>
+                    </div>
+
+                    <div class="feature-divider"></div>
+
+                    <a class="btn-ancora" href="acercade.html">
+                        Conocer más
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- Columna derecha — 360° automático -->
+            <div class="col-lg-7 feature-right-col">
+                <div class="proto-stage" id="protoStage">
+                    <div class="proto-glow"></div>
+                    <div class="proto-ring proto-ring-1"></div>
+                    <div class="proto-ring proto-ring-2"></div>
+                    <img id="protoImg" src="img/prototipo360/1.png" alt="Prototipo Ancora 360°" class="proto-img" draggable="false">
+                    <div class="proto-counter" id="protoCounter">01 / 09</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Curva orgánica inferior -->
+    <div class="section-curve">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,0 C360,80 1080,80 1440,0 L1440,80 L0,80 Z" fill="#f7f5f2"/>
+        </svg>
+    </div>
 
 </section>
-    <!-- ══ CARACTERÍSTICAS ═════════════════════════════════════ -->
-    <div class="container-fluid py-5">
-        <div class="container">
-            <div class="text-center wow fadeIn" data-wow-delay="0.1s">
-                <h1 class="mb-5">Por qué la gente <span class="text-uppercase text-primary bg-light px-2">nos elige</span></h1>
-            </div>
-            <div class="row g-5 align-items-center text-center">
-                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.1s">
-                    <i class="fa fa-calendar-alt fa-5x text-primary mb-4"></i>
-                    <h4>Pasión por resolver problemas reales</h4>
-                    <p class="mb-0">Nuestro sensor nace de una necesidad: cuidar el descanso y la seguridad.</p>
-                </div>
-                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.3s">
-                    <i class="fa fa-tasks fa-5x text-primary mb-4"></i>
-                    <h4>Formación multidisciplinaria</h4>
-                    <p class="mb-0">Combinamos electrónica, diseño, programación y análisis de datos.</p>
-                </div>
-                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.5s">
-                    <i class="fa fa-pencil-ruler fa-5x text-primary mb-4"></i>
-                    <h4>Aprendizaje constante</h4>
-                    <p class="mb-0">Cada reto es una oportunidad para mejorar y crecer como equipo.</p>
-                </div>
-                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.1s">
-                    <i class="fa fa-user fa-5x text-primary mb-4"></i>
-                    <h4>Compromiso con el usuario</h4>
-                    <p class="mb-0">Pensamos en personas reales, con necesidades reales.</p>
-                </div>
-                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.3s">
-                    <i class="fa fa-hand-holding-usd fa-5x text-primary mb-4"></i>
-                    <h4>Creatividad aplicada</h4>
-                    <p class="mb-0">No solo soñamos: prototipamos, probamos y ajustamos.</p>
-                </div>
-                <div class="col-md-6 col-lg-4 wow fadeIn" data-wow-delay="0.5s">
-                    <i class="fa fa-check fa-5x text-primary mb-4"></i>
-                    <h4>Visión de futuro</h4>
-                    <p class="mb-0">Queremos que ANCORA sea parte de soluciones del mañana.</p>
-                </div>
-            </div>
-        </div>
+
+<!-- ══ WHY CHOOSE US ══════════════════════════════════════ -->
+<section class="why-section">
+
+    <!-- Blob animado detrás del título -->
+    <div class="why-blob-wrap" aria-hidden="true">
+        <svg class="why-blob" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <path id="blobPath">
+                <animate attributeName="d"
+                    dur="12s"
+                    repeatCount="indefinite"
+                    values="
+                        M250,80 C350,60 430,150 420,250 C410,350 330,430 230,420 C130,410 60,330 70,230 C80,130 150,100 250,80Z;
+                        M260,70 C370,80 440,160 430,270 C420,370 340,440 240,430 C140,420 50,340 60,240 C70,140 160,60 260,70Z;
+                        M240,90 C340,50 440,140 450,240 C460,360 370,450 260,440 C150,430 50,350 60,240 C70,130 150,130 240,90Z;
+                        M250,80 C350,60 430,150 420,250 C410,350 330,430 230,420 C130,410 60,330 70,230 C80,130 150,100 250,80Z"
+                />
+            </path>
+        </svg>
     </div>
 
-    <!-- ══ PROYECTOS ═══════════════════════════════════════════ -->
-    <div class="container-fluid mt-5">
-        <div class="container mt-5">
-            <div class="row g-0">
-                <div class="col-lg-5 wow fadeIn" data-wow-delay="0.1s">
-                    <div class="d-flex flex-column justify-content-center bg-primary h-100 p-5">
-                        <h1 class="text-white mb-5">Nuestros
-                            <span class="text-uppercase text-primary bg-light px-2">Proyectos</span>
-                        </h1>
-                        <h4 class="text-white mb-0">
-                            <span class="display-1">2</span> proyectos recientes
-                        </h4>
+    <div class="container why-container">
+
+        <div class="why-header text-center">
+            <p class="why-eyebrow">Nuestra propuesta</p>
+            <h2 class="why-title">
+                Por qué la gente <em class="why-accent">nos elige</em>
+            </h2>
+            <p class="why-sub">Innovación, compromiso y tecnología al servicio de las personas.</p>
+        </div>
+
+        <div class="row g-4 why-grid">
+
+            <div class="col-md-4 wow fadeIn" data-wow-delay="0.1s">
+                <div class="why-card">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M13 20l5 5 9-10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </div>
-                </div>
-                <div class="col-lg-7">
-                    <div class="row g-0">
-                        <div class="col-md-6 col-lg-6 wow fadeIn" data-wow-delay="0.2s">
-                            <div class="project-item position-relative overflow-hidden">
-                                <img class="img-fluid w-100" src="vocesarco.jpg" alt="">
-                                <a class="project-overlay text-decoration-none" href="#!">
-                                    <h4 class="text-white">Voces Arcoiris</h4>
-                                    <small class="text-white">Proyecto de ayuda emocional</small>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-6 wow fadeIn" data-wow-delay="0.3s">
-                            <div class="project-item position-relative overflow-hidden">
-                                <img class="img-fluid w-100" src="aceite.jpg" alt="">
-                                <a class="project-overlay text-decoration-none" href="#!">
-                                    <h4 class="text-white">Aceite 2.0</h4>
-                                    <small class="text-white">Innovación en aceite usado</small>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    <h4 class="why-card-title">Pasión por resolver problemas reales</h4>
+                    <p class="why-card-body">Nuestro sensor nace de una necesidad: cuidar el descanso y la seguridad.</p>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- ══ SERVICIOS ═══════════════════════════════════════════ -->
-    <div class="container-fluid py-5">
-        <div class="container py-5">
-            <div class="row g-5 align-items-center">
-                <div class="col-lg-5 wow fadeIn" data-wow-delay="0.1s">
-                    <h1 class="mb-5">Nuestros <span class="text-uppercase text-primary bg-light px-2">Servicios Creativos</span></h1>
-                    <p>Ofrecemos servicios para el cuidado y monitoreo en tiempo real de personas, mediante detección de caídas, presencia y distancia.</p>
-                    <p class="mb-5">Nuestro equipo combina experiencia, innovación y cuidado por las personas.</p>
-                    <div class="d-flex align-items-center bg-light">
-                        <div class="btn-square flex-shrink-0 bg-primary" style="width: 100px; height: 100px;">
-                            <i class="fa fa-phone fa-2x text-white"></i>
-                        </div>
-                        <div class="px-3">
-                            <h3>624 582 67890</h3>
-                            <span>Llámanos 24/7 para una consulta gratuita</span>
-                        </div>
+            <div class="col-md-4 wow fadeIn" data-wow-delay="0.2s">
+                <div class="why-card">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="8" y="8" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                            <rect x="22" y="8" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                            <rect x="8" y="22" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                            <rect x="22" y="22" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
                     </div>
-                </div>
-                <div class="col-lg-7">
-                    <div class="row g-0">
-                        <div class="col-md-6 wow fadeIn" data-wow-delay="0.2s">
-                            <div class="service-item h-100 d-flex flex-column justify-content-center bg-primary">
-                                <a href="#!" class="service-img position-relative mb-4">
-                                    <img class="img-fluid w-100" src="img/OIP.jpg" alt="">
-                                    <h3>Cuidado Inteligente</h3>
-                                </a>
-                                <p class="mb-0">Transformamos el cuidado con tecnología inteligente y segura.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6 wow fadeIn" data-wow-delay="0.4s">
-                            <div class="service-item h-100 d-flex flex-column justify-content-center bg-light">
-                                <a href="#!" class="service-img position-relative mb-4">
-                                    <img class="img-fluid w-100" src="img/BI.jpg" alt="">
-                                    <h3>Protección y Bienestar</h3>
-                                </a>
-                                <p class="mb-0">Nos encargamos de tu seguridad y bienestar.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6 wow fadeIn" data-wow-delay="0.6s">
-                            <div class="service-item h-100 d-flex flex-column justify-content-center bg-light">
-                                <a href="#!" class="service-img position-relative mb-4">
-                                    <img class="img-fluid w-100" src="img/GS.jpg" alt="">
-                                    <h3>Monitoreo Inteligente</h3>
-                                </a>
-                                <p class="mb-0">Mejoramos la seguridad con monitoreo moderno y funcional.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6 wow fadeIn" data-wow-delay="0.8s">
-                            <div class="service-item h-100 d-flex flex-column justify-content-center bg-primary">
-                                <a href="#!" class="service-img position-relative mb-4">
-                                    <img class="img-fluid w-100" src="img/DS.jpg" alt="">
-                                    <h3>Sistemas de Monitoreo</h3>
-                                </a>
-                                <p class="mb-0">Desarrollo de sistemas de monitoreo para mejorar la seguridad, el bienestar y la experiencia de cuidado de las personas.</p>
-                            </div>
-                        </div>
-                    </div>
+                    <h4 class="why-card-title">Formación multidisciplinaria</h4>
+                    <p class="why-card-body">Combinamos electrónica, diseño, programación y análisis de datos.</p>
                 </div>
             </div>
+
+            <div class="col-md-4 wow fadeIn" data-wow-delay="0.3s">
+                <div class="why-card">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 8 L20 14 M20 26 L20 32 M8 20 L14 20 M26 20 L32 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle cx="20" cy="20" r="6" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <h4 class="why-card-title">Aprendizaje constante</h4>
+                    <p class="why-card-body">Cada reto es una oportunidad para mejorar y crecer como equipo.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 wow fadeIn" data-wow-delay="0.4s">
+                <div class="why-card">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="20" cy="14" r="6" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M8 32 C8 26 14 22 20 22 C26 22 32 26 32 32" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h4 class="why-card-title">Compromiso con el usuario</h4>
+                    <p class="why-card-body">Pensamos en personas reales, con necesidades reales.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 wow fadeIn" data-wow-delay="0.5s">
+                <div class="why-card">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 8 C20 8 28 16 28 22 C28 26.4 24.4 30 20 30 C15.6 30 12 26.4 12 22 C12 16 20 8 20 8Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                            <path d="M16 22 C17 24 19 25 20 25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <h4 class="why-card-title">Creatividad aplicada</h4>
+                    <p class="why-card-body">No solo soñamos: prototipamos, probamos y ajustamos.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 wow fadeIn" data-wow-delay="0.6s">
+                <div class="why-card">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 10 L22 16 L28 16 L23 20 L25 26 L20 22 L15 26 L17 20 L12 16 L18 16 Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                            <circle cx="20" cy="20" r="14" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3"/>
+                        </svg>
+                    </div>
+                    <h4 class="why-card-title">Visión de futuro</h4>
+                    <p class="why-card-body">Queremos que ANCORA sea parte de soluciones del mañana.</p>
+                </div>
+            </div>
+
         </div>
     </div>
+</section>
 
-    <!-- ══ EQUIPO ═══════════════════════════════════════════════ -->
-    <div class="container-fluid bg-light py-5">
-        <div class="container py-5">
-            <h1 class="mb-5">Nuestros <span class="text-uppercase text-primary bg-light px-2">Diseñadores</span> profesionales</h1>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
-                    <div class="team-item position-relative overflow-hidden">
-                        <img class="img-fluid w-100" src="luz.pjg.jpg" alt="">
-                        <div class="team-overlay">
-                            <small class="mb-2">Ingeniera</small>
-                            <h4 class="lh-base text-light">Luz Burgoin</h4>
-                            <div class="d-flex justify-content-center">
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
+<!-- ══ PROYECTOS ═══════════════════════════════════════════ -->
+<div class="container-fluid mt-5">
+    <div class="container mt-5">
+        <div class="row g-0">
+            <div class="col-lg-5 wow fadeIn" data-wow-delay="0.1s">
+                <div class="d-flex flex-column justify-content-center bg-primary h-100 p-5">
+                    <h1 class="text-white mb-5">Nuestros <span class="text-uppercase text-primary bg-light px-2">Proyectos</span></h1>
+                    <h4 class="text-white mb-0"><span class="display-1">2</span> proyectos recientes</h4>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-0">
+                    <div class="col-md-6 wow fadeIn" data-wow-delay="0.2s">
+                        <div class="project-item position-relative overflow-hidden">
+                            <img class="img-fluid w-100" src="vocesarco.jpg" alt="">
+                            <a class="project-overlay text-decoration-none" href="#!">
+                                <h4 class="text-white">Voces Arcoiris</h4>
+                                <small class="text-white">Proyecto de ayuda emocional</small>
+                            </a>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
-                    <div class="team-item position-relative overflow-hidden">
-                        <img class="img-fluid w-100" src="ate.pjg.jpg" alt="">
-                        <div class="team-overlay">
-                            <small class="mb-2">Ingeniera</small>
-                            <h4 class="lh-base text-light">Atenea Salgado</h4>
-                            <div class="d-flex justify-content-center">
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
-                    <div class="team-item position-relative overflow-hidden">
-                        <img class="img-fluid w-100" src="kendra.pjg.jpg" alt="">
-                        <div class="team-overlay">
-                            <small class="mb-2">Ingeniera</small>
-                            <h4 class="lh-base text-light">Kendra Ramirez</h4>
-                            <div class="d-flex justify-content-center">
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
-                    <div class="team-item position-relative overflow-hidden">
-                        <img class="img-fluid w-100" src="cristal.pjg.jpg" alt="">
-                        <div class="team-overlay">
-                            <small class="mb-2">Ingeniera</small>
-                            <h4 class="lh-base text-light">Cristal Lopez</h4>
-                            <div class="d-flex justify-content-center">
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
-                    <div class="team-item position-relative overflow-hidden">
-                        <img class="img-fluid w-100" src="irving.jpg" alt="">
-                        <div class="team-overlay">
-                            <small class="mb-2">Ingeniero</small>
-                            <h4 class="lh-base text-light">Irving Solis</h4>
-                            <div class="d-flex justify-content-center">
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
-                                <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
+                    <div class="col-md-6 wow fadeIn" data-wow-delay="0.3s">
+                        <div class="project-item position-relative overflow-hidden">
+                            <img class="img-fluid w-100" src="aceite.jpg" alt="">
+                            <a class="project-overlay text-decoration-none" href="#!">
+                                <h4 class="text-white">Aceite 2.0</h4>
+                                <small class="text-white">Innovación en aceite usado</small>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- ══ TESTIMONIOS ═════════════════════════════════════════ -->
-    <div class="container-xxl py-5">
-        <div class="container py-5">
-            <div class="row justify-content-center">
-                <div class="col-md-12 col-lg-9">
-                    <div class="owl-carousel testimonial-carousel wow fadeIn" data-wow-delay="0.2s">
-                        <div class="testimonial-item">
-                            <div class="row g-5 align-items-center">
-                                <div class="col-md-6">
-                                    <div class="testimonial-img">
-                                        <img class="img-fluid" src="img/testimonial-1.jpg" alt="">
-                                    </div>
+<!-- ══ SERVICIOS ═══════════════════════════════════════════ -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-5 wow fadeIn" data-wow-delay="0.1s">
+                <h1 class="mb-5">Nuestros <span class="text-uppercase text-primary bg-light px-2">Servicios Creativos</span></h1>
+                <p>Ofrecemos servicios para el cuidado y monitoreo en tiempo real de personas, mediante detección de caídas, presencia y distancia.</p>
+                <p class="mb-5">Nuestro equipo combina experiencia, innovación y cuidado por las personas.</p>
+                <div class="d-flex align-items-center bg-light">
+                    <div class="btn-square flex-shrink-0 bg-primary" style="width:100px;height:100px;">
+                        <i class="fa fa-phone fa-2x text-white"></i>
+                    </div>
+                    <div class="px-3">
+                        <h3>624 582 67890</h3>
+                        <span>Llámanos 24/7 para una consulta gratuita</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-0">
+                    <div class="col-md-6 wow fadeIn" data-wow-delay="0.2s">
+                        <div class="service-item h-100 d-flex flex-column justify-content-center bg-primary">
+                            <a href="#!" class="service-img position-relative mb-4">
+                                <img class="img-fluid w-100" src="img/OIP.jpg" alt="">
+                                <h3>Cuidado Inteligente</h3>
+                            </a>
+                            <p class="mb-0">Transformamos el cuidado con tecnología inteligente y segura.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 wow fadeIn" data-wow-delay="0.4s">
+                        <div class="service-item h-100 d-flex flex-column justify-content-center bg-light">
+                            <a href="#!" class="service-img position-relative mb-4">
+                                <img class="img-fluid w-100" src="img/BI.jpg" alt="">
+                                <h3>Protección y Bienestar</h3>
+                            </a>
+                            <p class="mb-0">Nos encargamos de tu seguridad y bienestar.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 wow fadeIn" data-wow-delay="0.6s">
+                        <div class="service-item h-100 d-flex flex-column justify-content-center bg-light">
+                            <a href="#!" class="service-img position-relative mb-4">
+                                <img class="img-fluid w-100" src="img/GS.jpg" alt="">
+                                <h3>Monitoreo Inteligente</h3>
+                            </a>
+                            <p class="mb-0">Mejoramos la seguridad con monitoreo moderno y funcional.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 wow fadeIn" data-wow-delay="0.8s">
+                        <div class="service-item h-100 d-flex flex-column justify-content-center bg-primary">
+                            <a href="#!" class="service-img position-relative mb-4">
+                                <img class="img-fluid w-100" src="img/DS.jpg" alt="">
+                                <h3>Sistemas de Monitoreo</h3>
+                            </a>
+                            <p class="mb-0">Desarrollo de sistemas de monitoreo para mejorar la seguridad y bienestar.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ EQUIPO ═══════════════════════════════════════════════ -->
+<div class="container-fluid bg-light py-5">
+    <div class="container py-5">
+        <h1 class="mb-5">Nuestros <span class="text-uppercase text-primary bg-light px-2">Diseñadores</span> profesionales</h1>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
+                <div class="team-item position-relative overflow-hidden">
+                    <img class="img-fluid w-100" src="luz.pjg.jpg" alt="">
+                    <div class="team-overlay">
+                        <small class="mb-2">Ingeniera</small>
+                        <h4 class="lh-base text-light">Luz Burgoin</h4>
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
+                <div class="team-item position-relative overflow-hidden">
+                    <img class="img-fluid w-100" src="ate.pjg.jpg" alt="">
+                    <div class="team-overlay">
+                        <small class="mb-2">Ingeniera</small>
+                        <h4 class="lh-base text-light">Atenea Salgado</h4>
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
+                <div class="team-item position-relative overflow-hidden">
+                    <img class="img-fluid w-100" src="kendra.pjg.jpg" alt="">
+                    <div class="team-overlay">
+                        <small class="mb-2">Ingeniera</small>
+                        <h4 class="lh-base text-light">Kendra Ramirez</h4>
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
+                <div class="team-item position-relative overflow-hidden">
+                    <img class="img-fluid w-100" src="cristal.pjg.jpg" alt="">
+                    <div class="team-overlay">
+                        <small class="mb-2">Ingeniera</small>
+                        <h4 class="lh-base text-light">Cristal Lopez</h4>
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
+                <div class="team-item position-relative overflow-hidden">
+                    <img class="img-fluid w-100" src="irving.jpg" alt="">
+                    <div class="team-overlay">
+                        <small class="mb-2">Ingeniero</small>
+                        <h4 class="lh-base text-light">Irving Solis</h4>
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-outline-primary btn-sm-square border-2 me-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ TESTIMONIOS ═════════════════════════════════════════ -->
+<div class="container-xxl py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-lg-9">
+                <div class="owl-carousel testimonial-carousel wow fadeIn" data-wow-delay="0.2s">
+                    <div class="testimonial-item">
+                        <div class="row g-5 align-items-center">
+                            <div class="col-md-6">
+                                <div class="testimonial-img"><img class="img-fluid" src="img/testimonial-1.jpg" alt=""></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="testimonial-text pb-5 pb-md-0">
+                                    <h3>Sistema confiable</h3>
+                                    <p>Áncora ha mejorado la seguridad en casa. El monitoreo es preciso y siempre activo.</p>
+                                    <h5 class="mb-0">Mario López</h5>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="testimonial-text pb-5 pb-md-0">
-                                        <h3>Sistema confiable</h3>
-                                        <p>Áncora ha mejorado la seguridad en casa. El monitoreo es preciso y siempre activo.</p>
-                                        <h5 class="mb-0">Mario López</h5>
-                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-item">
+                        <div class="row g-5 align-items-center">
+                            <div class="col-md-6">
+                                <div class="testimonial-img"><img class="img-fluid" src="img/testimonial-2.jpg" alt=""></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="testimonial-text pb-5 pb-md-0">
+                                    <h3>Satisfacción total</h3>
+                                    <p>Ahora me siento tranquila sabiendo que mis familiares están monitoreados 24/7.</p>
+                                    <h5 class="mb-0">Alexa Fajardo</h5>
                                 </div>
                             </div>
                         </div>
-                        <div class="testimonial-item">
-                            <div class="row g-5 align-items-center">
-                                <div class="col-md-6">
-                                    <div class="testimonial-img">
-                                        <img class="img-fluid" src="img/testimonial-2.jpg" alt="">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="testimonial-text pb-5 pb-md-0">
-                                        <h3>Satisfacción total</h3>
-                                        <p>Ahora me siento tranquila sabiendo que mis familiares están monitoreados 24/7.</p>
-                                        <h5 class="mb-0">Alexa Fajardo</h5>
-                                    </div>
-                                </div>
+                    </div>
+                    <div class="testimonial-item">
+                        <div class="row g-5 align-items-center">
+                            <div class="col-md-6">
+                                <div class="testimonial-img"><img class="img-fluid" src="img/testimonial-3.jpg" alt=""></div>
                             </div>
-                        </div>
-                        <div class="testimonial-item">
-                            <div class="row g-5 align-items-center">
-                                <div class="col-md-6">
-                                    <div class="testimonial-img">
-                                        <img class="img-fluid" src="img/testimonial-3.jpg" alt="">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="testimonial-text pb-5 pb-md-0">
-                                        <h3>Accesible y útil</h3>
-                                        <p>Un sistema económico y muy funcional. Las alertas de presencia y caídas funcionan perfecto.</p>
-                                        <h5 class="mb-0">Bryan Gordon</h5>
-                                    </div>
+                            <div class="col-md-6">
+                                <div class="testimonial-text pb-5 pb-md-0">
+                                    <h3>Accesible y útil</h3>
+                                    <p>Un sistema económico y muy funcional. Las alertas de presencia y caídas funcionan perfecto.</p>
+                                    <h5 class="mb-0">Bryan Gordon</h5>
                                 </div>
                             </div>
                         </div>
@@ -476,96 +502,92 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- ══ NEWSLETTER ══════════════════════════════════════════ -->
-    <div class="container-fluid bg-primary newsletter p-0">
-        <div class="container p-0">
-            <div class="row g-0 align-items-center">
-                <div class="col-md-5 ps-lg-0 text-start wow fadeIn" data-wow-delay="0.2s">
-                    <img class="img-fluid w-100" src="c.pjg.png" alt="">
+<!-- ══ NEWSLETTER ══════════════════════════════════════════ -->
+<div class="container-fluid bg-primary newsletter p-0">
+    <div class="container p-0">
+        <div class="row g-0 align-items-center">
+            <div class="col-md-5 ps-lg-0 text-start wow fadeIn" data-wow-delay="0.2s">
+                <img class="img-fluid w-100" src="c.pjg.png" alt="">
+            </div>
+            <div class="col-md-7 py-5 newsletter-text wow fadeIn" data-wow-delay="0.5s">
+                <div class="p-5">
+                    <h1 class="mb-5">Suscríbete al boletín <span class="text-uppercase text-primary bg-white px-2">informativo</span></h1>
+                    <div class="position-relative w-100 mb-2">
+                        <input class="form-control border-0 w-100 ps-4 pe-5" type="text" placeholder="Ingresa tu email" style="height:60px;">
+                        <button type="button" class="btn shadow-none position-absolute top-0 end-0 mt-2 me-2">
+                            <i class="fa fa-paper-plane text-primary fs-4"></i>
+                        </button>
+                    </div>
+                    <p class="mb-0">Recibe noticias, mejoras y actualizaciones del sistema Áncora.</p>
                 </div>
-                <div class="col-md-7 py-5 newsletter-text wow fadeIn" data-wow-delay="0.5s">
-                    <div class="p-5">
-                        <h1 class="mb-5">Suscríbete al boletín <span class="text-uppercase text-primary bg-white px-2">informativo</span></h1>
-                        <div class="position-relative w-100 mb-2">
-                            <input class="form-control border-0 w-100 ps-4 pe-5" type="text"
-                                placeholder="Ingresa tu email" style="height: 60px;">
-                            <button type="button" class="btn shadow-none position-absolute top-0 end-0 mt-2 me-2">
-                                <i class="fa fa-paper-plane text-primary fs-4"></i>
-                            </button>
-                        </div>
-                        <p class="mb-0">Recibe noticias, mejoras y actualizaciones del sistema Áncora.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ FOOTER ══════════════════════════════════════════════ -->
+<div class="container-fluid bg-dark text-white-50 footer pt-5">
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
+                <a href="index.html" class="d-inline-block mb-3"><h1 class="text-white">Áncora</h1></a>
+                <p class="mb-0">Sistema inteligente de monitoreo diseñado para mejorar la seguridad y el bienestar mediante tecnología moderna, precisa y accesible.</p>
+            </div>
+            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
+                <h5 class="text-white mb-4">Contacto</h5>
+                <p><i class="fa fa-map-marker-alt me-3"></i>San José del Cabo</p>
+                <p><i class="fa fa-phone-alt me-3"></i>+52 612 345 6789</p>
+                <p><i class="fa fa-envelope me-3"></i>ancora.info@gmail.com</p>
+            </div>
+            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
+                <h5 class="text-white mb-4">Enlaces</h5>
+                <a class="btn btn-link" href="acercade.html">Acerca de</a>
+                <a class="btn btn-link" href="contacto.html">Contáctanos</a>
+                <a class="btn btn-link" href="#!">Política de privacidad</a>
+                <a class="btn btn-link" href="#!">Términos y condiciones</a>
+                <a class="btn btn-link" href="#!">Empleo</a>
+            </div>
+            <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
+                <h5 class="text-white mb-4">Nuestros servicios</h5>
+                <a class="btn btn-link" href="#!">Monitoreo de sueño</a>
+                <a class="btn btn-link" href="#!">Detección de presencia</a>
+                <a class="btn btn-link" href="#!">Alertas de caída</a>
+                <a class="btn btn-link" href="#!">Sensores inteligentes</a>
+                <a class="btn btn-link" href="#!">Integración IoT</a>
+            </div>
+        </div>
+    </div>
+    <div class="container wow fadeIn" data-wow-delay="0.1s">
+        <div class="copyright">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    &copy; <a class="border-bottom" href="#!">Ancora</a>, Todos los derechos reservados.
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <div class="footer-menu">
+                        <a href="#!">Inicio</a>
+                        <a href="#!">Cookies</a>
+                        <a href="#!">Ayuda</a>
+                        <a href="#!">Preguntas frecuentes</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- ══ FOOTER ══════════════════════════════════════════════ -->
-    <div class="container-fluid bg-dark text-white-50 footer pt-5">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
-                    <a href="index.html" class="d-inline-block mb-3">
-                        <h1 class="text-white">Áncora</h1>
-                    </a>
-                    <p class="mb-0">Sistema inteligente de monitoreo diseñado para mejorar la seguridad y el bienestar mediante tecnología moderna, precisa y accesible.</p>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
-                    <h5 class="text-white mb-4">Contacto</h5>
-                    <p><i class="fa fa-map-marker-alt me-3"></i>San José del Cabo</p>
-                    <p><i class="fa fa-phone-alt me-3"></i>+52 612 345 6789</p>
-                    <p><i class="fa fa-envelope me-3"></i>ancora.info@gmail.com</p>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
-                    <h5 class="text-white mb-4">Enlaces</h5>
-                    <a class="btn btn-link" href="acercade.html">Acerca de</a>
-                    <a class="btn btn-link" href="contacto.html">Contáctanos</a>
-                    <a class="btn btn-link" href="#!">Política de privacidad</a>
-                    <a class="btn btn-link" href="#!">Términos y condiciones</a>
-                    <a class="btn btn-link" href="#!">Empleo</a>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
-                    <h5 class="text-white mb-4">Nuestros servicios</h5>
-                    <a class="btn btn-link" href="#!">Monitoreo de sueño</a>
-                    <a class="btn btn-link" href="#!">Detección de presencia</a>
-                    <a class="btn btn-link" href="#!">Alertas de caída</a>
-                    <a class="btn btn-link" href="#!">Sensores inteligentes</a>
-                    <a class="btn btn-link" href="#!">Integración IoT</a>
-                </div>
-            </div>
-        </div>
-        <div class="container wow fadeIn" data-wow-delay="0.1s">
-            <div class="copyright">
-                <div class="row">
-                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#!">Ancora</a>, Todos los derechos reservados.
-                    </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <div class="footer-menu">
-                            <a href="#!">Inicio</a>
-                            <a href="#!">Cookies</a>
-                            <a href="#!">Ayuda</a>
-                            <a href="#!">Preguntas frecuentes</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<a href="#!" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
-    <!-- Volver arriba -->
-    <a href="#!" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-
-    <!-- JavaScript -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/wow/wow.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/section360.js"></script> 
-
+<!-- Scripts -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="lib/wow/wow.min.js"></script>
+<script src="lib/easing/easing.min.js"></script>
+<script src="lib/waypoints/waypoints.min.js"></script>
+<script src="lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/section360.js"></script>
 </body>
 </html>
