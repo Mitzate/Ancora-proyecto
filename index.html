@@ -97,63 +97,105 @@
         </div>
     </div>
 
-    <!-- ══ CARRUSEL ════════════════════════════════════════════ -->
-    <div id="carruselAncora" class="container py-5">
-
-        <!-- Arco / puerta semicircular -->
-        <div class="carousel-arch-wrapper">
-            <div class="owl-carousel header-carousel">
-                <!-- ★ Reemplaza los src con tus imágenes reales ★ -->
-                <img class="img-fluid" src="prototipo.jpg" alt="Prototipo Ancora — Caída, Presencia, Movimiento, Sueño">
-                <img class="img-fluid" src="im.png"        alt="Ancora sensor">
-                <img class="img-fluid" src="ime.jpg"       alt="Ancora sistema">
-            </div>
+ <!-- ══ SECCIÓN PRINCIPAL 360° ════════════════════════════════ -->
+<section id="seccion360" class="ancora-feature-section">
+ 
+  <!-- Fondo decorativo con blobs verdes -->
+  <div class="feature-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="grid-lines"></div>
+  </div>
+ 
+  <div class="container position-relative" style="z-index:2;">
+    <div class="row align-items-center g-5">
+ 
+      <!-- ── COLUMNA IZQUIERDA: Descripción ── -->
+      <div class="col-lg-5 feature-left">
+ 
+        <span class="feature-tag">Sistema inteligente</span>
+ 
+        <h2 class="feature-heading">
+          Descripción<br>
+          <span class="feature-heading-accent">del proyecto</span>
+        </h2>
+ 
+        <p class="feature-body">
+          Este proyecto consiste en el desarrollo de un sistema basado
+          en un sensor inteligente capaz de detectar movimiento, medir
+          distancias y reconocer caídas.
+        </p>
+        <p class="feature-body">
+          Su objetivo es mejorar la seguridad y el monitoreo en entornos
+          domésticos o industriales, integrándose con microcontroladores
+          como el ESP32 para enviar alertas en tiempo real.
+        </p>
+ 
+        <!-- Chips de capacidades -->
+        <div class="feature-chips">
+          <span class="chip chip-teal">Detección de caídas</span>
+          <span class="chip chip-sage">Presencia</span>
+          <span class="chip chip-forest">Distancia</span>
+          <span class="chip chip-teal">Movimiento</span>
+          <span class="chip chip-sage">Sueño</span>
+          <span class="chip chip-forest">ESP32</span>
         </div>
-
-    </div>
-
-    <!-- ══ ACERCA DE ═══════════════════════════════════════════ -->
-    <div class="container-fluid py-5">
-        <div class="container">
-            <div class="row g-5">
-                <div class="col-lg-6">
-                    <div class="row">
-                        <div class="col-6 wow fadeIn" data-wow-delay="0.1s">
-                            <img class="img-fluid" src="c.pjg.png" alt="">
-                        </div>
-                        <div class="col-6 wow fadeIn" data-wow-delay="0.3s">
-                            <img class="img-fluid h-75" src="r.pjg.png" alt="">
-                            <div class="h-25 d-flex align-items-center text-center bg-primary px-4">
-                                <h4 class="text-white lh-base mb-0">Proyecto Ancora</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
-                    <h1 class="mb-5"><span class="text-uppercase text-primary bg-light px-2">Descripción</span> del proyecto</h1>
-                    <p class="mb-4">Este proyecto consiste en el desarrollo de un sistema basado en un sensor inteligente capaz de detectar movimiento, medir distancias y reconocer caídas. Su objetivo es mejorar la seguridad y el monitoreo en entornos domésticos o industriales, integrándose con microcontroladores como el ESP32 para enviar alertas en tiempo real. El sistema puede aplicarse en la prevención de accidentes, asistencia a personas mayores y automatización de espacios.</p>
-                    <p class="mb-5">Ancora</p>
-                    <div class="row g-3">
-                        <div class="col-sm-6">
-                            <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Ancora</h6>
-                            <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Personal profesional</h6>
-                        </div>
-                        <div class="col-sm-6">
-                            <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Soporte 24/7</h6>
-                            <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Precios justos</h6>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center mt-5">
-                        <a class="btn btn-primary px-4 me-2" href="#!">Leer más</a>
-                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#!"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#!"><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-primary btn-square border-2 me-2" href="#!"><i class="fab fa-instagram"></i></a>
-                        <a class="btn btn-outline-primary btn-square border-2" href="#!"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-            </div>
+ 
+        <!-- Separador decorativo -->
+        <div class="feature-divider"></div>
+ 
+        <a class="btn-ancora" href="acercade.html">
+          Conocer más
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+ 
+      </div>
+ 
+      <!-- ── COLUMNA DERECHA: Animación 360° ── -->
+      <div class="col-lg-7 feature-right">
+ 
+        <!-- Escenario del prototipo -->
+        <div class="proto-stage" id="protoStage">
+ 
+          <!-- Glow de fondo -->
+          <div class="proto-glow"></div>
+ 
+          <!-- Anillos decorativos -->
+          <div class="proto-ring proto-ring-1"></div>
+          <div class="proto-ring proto-ring-2"></div>
+ 
+          <!-- Imagen del prototipo — cambia aquí -->
+          <img
+            id="protoImg"
+            src="img/prototipo360/1.png"
+            alt="Prototipo Ancora 360°"
+            class="proto-img"
+            draggable="false"
+          >
+ 
+          <!-- Indicador de interacción -->
+          <div class="proto-hint" id="protoHint">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 5v14M5 12l7-7 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Scroll para rotar
+          </div>
+ 
+          <!-- Contador de frame -->
+          <div class="proto-counter" id="protoCounter">01 / 09</div>
+ 
         </div>
+ 
+      </div>
+ 
     </div>
+  </div>
+ 
+</section>
+<!-- ══ FIN SECCIÓN 360° ═══════════════════════════════════════ -->
 
     <!-- ══ CARACTERÍSTICAS ═════════════════════════════════════ -->
     <div class="container-fluid py-5">
@@ -530,6 +572,7 @@
     <script src="lib/waypoints/waypoints.min.js"></script>
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/section360.js"></script> 
 
 </body>
 </html>

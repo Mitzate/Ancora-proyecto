@@ -56,20 +56,9 @@
         e.preventDefault();
 
         $('html, body').animate({
-            scrollTop: $('#carruselAncora').offset().top
+            scrollTop: $('#seccion360').offset().top
         }, 1200, 'easeInOutExpo');
     });
-
-
-    /*  Inicio Header Carousel*/
-    $(".header-carousel").owlCarousel({
-        autoplay: true,
-        smartSpeed: 1000,
-        loop: true,
-        dots: true,
-        items: 1
-    });
- 
 
     $(".testimonial-carousel").owlCarousel({
         items: 1,
