@@ -1066,3 +1066,331 @@ body {
     font-weight: 300;
     color: #7a8a88;
 }
+
+/* ════════════════════════════════════════════════
+   PATCH 2 — Agregar al final de style.css
+   ════════════════════════════════════════════════ */
+
+/* ── 1. Ocultar el óvalo scroll-down del hero ── */
+.scroll-down { display: none !important; }
+
+/* ── 2. "del proyecto" — tipografía delgada ─── */
+.feature-heading-accent {
+    font-weight: 300 !important;   /* igual que "nos elige" */
+    font-style: italic !important;
+    color: var(--teal) !important;
+    display: block !important;
+    font-size: 88% !important;
+    letter-spacing: 0.5px !important;
+}
+.feature-heading-bold {
+    font-weight: 900 !important;
+    font-style: normal !important;
+    display: block !important;
+}
+
+/* ── 3. Ocultar counter prototipo ───────────── */
+#protoCounter { display: none !important; }
+
+/* ════════════════════════════════════════════════
+   THE TEAM — rediseño completo de tarjetas
+   ════════════════════════════════════════════════ */
+.team-section {
+    position: relative;
+    overflow: hidden;
+    background: #0d1f1e;
+    padding: 100px 0 120px;
+}
+
+/* Fondo animado */
+.team-bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+
+.team-orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: 0;
+    animation: teamOrbAppear 2.5s forwards;
+}
+@keyframes teamOrbAppear { to { opacity: 1; } }
+
+.team-orb-1 {
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, rgba(12,128,120,0.20) 0%, transparent 65%);
+    top: -130px; left: -110px;
+    animation: teamOrbAppear 2s forwards, teamFloat1 18s 2s ease-in-out infinite;
+}
+.team-orb-2 {
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(18,163,150,0.13) 0%, transparent 65%);
+    bottom: -90px; right: -60px;
+    animation: teamOrbAppear 2.5s forwards, teamFloat2 22s 2.5s ease-in-out infinite;
+}
+.team-orb-3 {
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(77,184,173,0.09) 0%, transparent 65%);
+    top: 42%; left: 48%;
+    animation: teamOrbAppear 3s forwards, teamFloat3 15s 3s ease-in-out infinite;
+}
+.team-orb-4 {
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(10,92,84,0.16) 0%, transparent 65%);
+    top: 12%; right: 18%;
+    animation: teamOrbAppear 2s forwards, teamFloat1 20s 2s ease-in-out infinite reverse;
+}
+
+@keyframes teamFloat1 {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33%       { transform: translate(28px,-18px) scale(1.04); }
+    66%       { transform: translate(-12px,14px) scale(0.97); }
+}
+@keyframes teamFloat2 {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50%       { transform: translate(-22px,-28px) scale(1.05); }
+}
+@keyframes teamFloat3 {
+    0%, 100% { transform: translate(-50%,0) scale(1); }
+    50%       { transform: translate(-50%,-16px) scale(1.03); }
+}
+
+/* Partículas */
+.team-particles { position: absolute; inset: 0; }
+.team-particles span {
+    position: absolute; width: 2px; height: 2px;
+    border-radius: 50%; background: rgba(77,184,173,0.38);
+    animation: particleDrift linear infinite;
+}
+.team-particles span:nth-child(1) { top:18%; left:14%; animation-duration:22s; animation-delay:0s;  width:3px; height:3px; }
+.team-particles span:nth-child(2) { top:62%; left:76%; animation-duration:18s; animation-delay:4s; }
+.team-particles span:nth-child(3) { top:80%; left:32%; animation-duration:26s; animation-delay:8s;  background:rgba(12,128,120,0.32); }
+.team-particles span:nth-child(4) { top:36%; left:87%; animation-duration:20s; animation-delay:2s; }
+.team-particles span:nth-child(5) { top:10%; left:56%; animation-duration:28s; animation-delay:6s;  width:3px; height:3px; }
+.team-particles span:nth-child(6) { top:70%; left:50%; animation-duration:16s; animation-delay:10s; }
+
+@keyframes particleDrift {
+    0%   { transform: translateY(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(-65px); opacity: 0; }
+}
+
+/* Encabezado The Team */
+.team-header { margin-bottom: 60px; position: relative; z-index: 2; }
+
+.team-eyebrow {
+    font-family: var(--font-body);
+    font-size: 0.68rem; font-weight: 400;
+    letter-spacing: 5px; text-transform: uppercase;
+    color: var(--g-sage); margin-bottom: 14px; display: block;
+}
+
+.team-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+    color: #ffffff; line-height: 1.1; margin: 0;
+}
+.team-accent {
+    font-style: italic; font-weight: 300;
+    color: var(--g-sage);
+}
+
+/* ── Wrapper con flechas laterales ─────────── */
+.team-slider-wrap {
+    position: relative;
+    padding: 0 70px;
+    z-index: 2;
+}
+
+/* Flechas circulares laterales */
+.team-arrow {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    border: 1px solid rgba(77,184,173,0.35);
+    background: linear-gradient(135deg, rgba(12,128,120,0.35) 0%, rgba(77,184,173,0.18) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #a8e6e0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 10; outline: none;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+.team-arrow:hover {
+    background: linear-gradient(135deg, rgba(12,128,120,0.60) 0%, rgba(77,184,173,0.35) 100%);
+    border-color: rgba(77,184,173,0.65);
+    box-shadow: 0 0 18px rgba(77,184,173,0.20);
+    color: #fff;
+}
+.team-arrow-prev { left: 0; }
+.team-arrow-next { right: 0; }
+
+/* Ocultar las flechas nativas de Owl en team */
+.team-carousel .owl-nav { display: none !important; }
+.team-carousel .owl-dots { display: none !important; }
+
+/* ── Tarjetas del equipo — blur overlay ─────── */
+.team-slide { padding: 0 10px; }
+
+.team-card {
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 3 / 4;      /* portrait, más pequeñas */
+    max-height: 340px;
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+}
+.team-card:hover {
+    transform: translateY(-7px) scale(1.01);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.35), 0 0 30px rgba(12,128,120,0.12);
+}
+
+.team-card img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center top;
+    transition: transform 0.55s ease;
+}
+.team-card:hover img { transform: scale(1.06); }
+
+/* Blur overlay — nombre y rol sobre la foto */
+.team-card-blur-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 16px 16px 18px;
+    background: rgba(8, 24, 22, 0.52);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.team-card-blur-overlay h4 {
+    font-family: var(--font-display);
+    font-weight: 700; font-size: 0.95rem;
+    color: #ffffff; margin: 0 0 3px;
+    line-height: 1.2;
+}
+.team-card-blur-overlay small {
+    font-family: var(--font-body);
+    font-size: 0.65rem; font-weight: 300;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--g-sage); display: block; margin-bottom: 10px;
+}
+
+.team-social { display: flex; gap: 8px; }
+.team-social a {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.55); font-size: 0.65rem;
+    text-decoration: none; transition: all 0.3s;
+}
+.team-social a:hover { border-color: var(--g-sage); color: var(--g-sage); }
+
+/* ════════════════════════════════════════════════
+   PROYECTOS — tarjetas tipo cartitas con animación
+   ════════════════════════════════════════════════ */
+.projects-editorial { background: var(--bg-soft); padding: 90px 0 110px; }
+
+.projects-header { margin-bottom: 64px; }
+
+.projects-eyebrow {
+    font-family: var(--font-body); font-size: 0.68rem;
+    font-weight: 400; letter-spacing: 5px; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 12px; display: block;
+}
+.projects-title {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: clamp(2rem,3.8vw,3rem); color: #0d1f1e;
+    line-height: 1.1; margin-bottom: 10px;
+}
+.projects-accent { font-style: italic; font-weight: 300; color: var(--teal); }
+.projects-count {
+    font-family: var(--font-body); font-size: 0.85rem;
+    font-weight: 300; color: #9aadab;
+}
+.projects-count span {
+    font-family: var(--font-display); font-size: 1.4rem;
+    font-weight: 700; color: var(--teal); margin-right: 4px;
+}
+
+/* Grid tipo cartitas */
+.projects-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+}
+@media (max-width: 768px) { .projects-gallery { grid-template-columns: 1fr; } }
+
+/* Animación de entrada */
+@keyframes cardSlideUp {
+    from { opacity: 0; transform: translateY(50px) rotate(-1.5deg); }
+    to   { opacity: 1; transform: translateY(0) rotate(0); }
+}
+
+.project-editorial {
+    border-radius: 18px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(12,128,120,0.09);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    animation: cardSlideUp 0.7s cubic-bezier(.22,1,.36,1) both;
+    transition: transform 0.35s cubic-bezier(.22,1,.36,1),
+                box-shadow 0.35s ease;
+    will-change: transform;
+}
+.project-editorial:nth-child(2) { animation-delay: 0.15s; }
+
+.project-editorial:hover {
+    transform: translateY(-8px) rotate(0.5deg);
+    box-shadow: 0 20px 50px rgba(12,128,120,0.12);
+}
+
+/* Imagen del proyecto */
+.project-editorial-img {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+}
+.project-editorial-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.55s ease;
+}
+.project-editorial:hover .project-editorial-img img { transform: scale(1.06); }
+
+/* Overlay degradado sobre la imagen */
+.project-editorial-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 45%, rgba(8,24,22,0.60));
+    display: flex; align-items: flex-end; padding: 18px;
+}
+.project-tag {
+    font-family: var(--font-body); font-size: 0.65rem;
+    font-weight: 400; letter-spacing: 2.5px; text-transform: uppercase;
+    color: #fff;
+    background: rgba(12,128,120,0.75);
+    padding: 5px 12px; border-radius: 100px;
+    backdrop-filter: blur(4px);
+}
+
+/* Info debajo de la imagen */
+.project-editorial-info { padding: 24px 26px 26px; }
+.project-editorial-info h3 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 1.25rem; color: #0d1f1e; margin-bottom: 7px;
+}
+.project-editorial-info p {
+    font-family: var(--font-body); font-size: 0.88rem;
+    font-weight: 300; color: #6b7b79; line-height: 1.7; margin-bottom: 16px;
+}
+.project-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-body); font-size: 0.78rem;
+    font-weight: 500; letter-spacing: 0.5px;
+    color: var(--teal); text-decoration: none;
+    transition: gap 0.3s ease;
+}
+.project-link:hover { gap: 13px; color: var(--teal); }
