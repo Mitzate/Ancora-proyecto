@@ -1,4 +1,4 @@
-(function () {
+(function ($) {
     "use strict";
 
     /* ── Spinner ── */
@@ -10,7 +10,7 @@
         }
     });
 
-    /* ── WOW Animations ── */
+    /* ── WOW ── */
     if (typeof WOW !== "undefined") new WOW().init();
 
     /* ── Navbar scroll ── */
@@ -34,32 +34,34 @@
     }
 
     /* ════════════════════════════════════════════
-       ANCLAS — scroll suave a cada sección
-       Calcula offset con altura del navbar
+       ANCLAS — scroll suave correcto
+       Funciona con CUALQUIER link href="#algo"
     ════════════════════════════════════════════ */
     document.querySelectorAll('a[href^="#"]').forEach(function (a) {
         a.addEventListener("click", function (e) {
             var href = this.getAttribute("href");
-            if (!href || href === "#" || href === "#!") return;
+
+            /* Ignora vacíos y el login */
+            if (!href || href === "#" || href === "#!" || this.id === "openLogin") return;
 
             var target = document.querySelector(href);
             if (!target) return;
 
             e.preventDefault();
 
-            // Cierra menú mobile si está abierto
+            /* Cierra menú mobile */
             if (navLinks) navLinks.classList.remove("open");
             if (toggle)   toggle.classList.remove("open");
 
             var navH = nav ? nav.offsetHeight : 80;
-            var y    = target.getBoundingClientRect().top + window.scrollY - navH - 8;
+            var y    = target.getBoundingClientRect().top + window.scrollY - navH - 10;
             window.scrollTo({ top: y, behavior: "smooth" });
         });
     });
 
-    /* ── Active link highlight al hacer scroll ── */
+    /* ── Active link en scroll ── */
     var sections = document.querySelectorAll("section[id]");
-    var navAs    = document.querySelectorAll(".ac-nav-links a[data-nav]");
+    var navAs    = document.querySelectorAll(".ac-nav-links a:not(.ac-nav-cta)");
 
     window.addEventListener("scroll", function () {
         var scrollY = window.scrollY + 120;
@@ -67,20 +69,18 @@
             if (scrollY >= sec.offsetTop && scrollY < sec.offsetTop + sec.offsetHeight) {
                 navAs.forEach(function (a) {
                     a.classList.remove("active");
-                    if (a.getAttribute("href") === "#" + sec.id) a.classList.add("active");
+                    if (a.getAttribute("href") === "#" + sec.id) {
+                        a.classList.add("active");
+                    }
                 });
             }
         });
     }, { passive: true });
 
     /* ════════════════════════════════════════════
-       LOGIN — redirige a login.html
-       (el modal ya no se usa — login.js maneja
-       loginForm, loginEmail, etc. en login.html)
+       LOGIN — redirige directo a login.html
     ════════════════════════════════════════════ */
     var openLogin = document.getElementById("openLogin");
-    var modal     = document.getElementById("loginModal");
-
     if (openLogin) {
         openLogin.addEventListener("click", function (e) {
             e.preventDefault();
@@ -88,22 +88,15 @@
         });
     }
 
-    /* Escape cierra el modal por si acaso queda abierto */
-    document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && modal) {
-            modal.classList.remove("open");
-            document.body.style.overflow = "";
-        }
-    });
-
     /* ════════════════════════════════════════════
-       TEAM CAROUSEL — flechas funcionando
+       TEAM CAROUSEL — flechas corregidas
+       Se usa jQuery directo porque el IIFE
+       ya recibe $ como parámetro
     ════════════════════════════════════════════ */
-    $(document).ready(function () {
-        var $c = $(".ac-team-carousel");
-        if (!$c.length) return;
+    var $carousel = $(".ac-team-carousel");
 
-        $c.owlCarousel({
+    if ($carousel.length) {
+        $carousel.owlCarousel({
             loop: true,
             margin: 20,
             nav: false,
@@ -117,28 +110,31 @@
             }
         });
 
-        var prev = document.getElementById("teamPrev");
-        var next = document.getElementById("teamNext");
+        var teamPrev = document.getElementById("teamPrev");
+        var teamNext = document.getElementById("teamNext");
 
-        if (prev) prev.addEventListener("click", function () { $c.trigger("prev.owl.carousel"); });
-        if (next) next.addEventListener("click", function () { $c.trigger("next.owl.carousel"); });
-    });
+        if (teamPrev) {
+            teamPrev.addEventListener("click", function () {
+                $carousel.trigger("prev.owl.carousel");
+            });
+        }
+        if (teamNext) {
+            teamNext.addEventListener("click", function () {
+                $carousel.trigger("next.owl.carousel");
+            });
+        }
+    }
 
-    /* ── Testimonial carousel (si existe) ── */
-    if (typeof $ !== "undefined" && $(".testimonial-carousel").length) {
+    /* ── Testimonial carousel ── */
+    if ($(".testimonial-carousel").length) {
         $(".testimonial-carousel").owlCarousel({
-            items: 1,
-            autoplay: true,
-            smartSpeed: 1000,
-            animateIn: "fadeIn",
-            animateOut: "fadeOut",
-            dots: true,
-            loop: true,
-            nav: false
+            items: 1, autoplay: true, smartSpeed: 1000,
+            animateIn: "fadeIn", animateOut: "fadeOut",
+            dots: true, loop: true, nav: false
         });
     }
 
-    /* ── Video section Apple reveal ── */
+    /* ── Video reveal al hacer scroll ── */
     var videoSection = document.getElementById("videoSection");
     if (videoSection && "IntersectionObserver" in window) {
         new IntersectionObserver(function (entries) {
