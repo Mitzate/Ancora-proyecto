@@ -32,7 +32,6 @@
             navLinks.classList.toggle("open");
             navToggle.classList.toggle("open");
         });
-        // Cierra menú al hacer clic en un enlace
         navLinks.querySelectorAll("a").forEach(function (a) {
             a.addEventListener("click", function () {
                 navLinks.classList.remove("open");
@@ -41,12 +40,10 @@
         });
     }
 
-    /* ══ SMOOTH SCROLL PARA ANCLAS INTERNAS ══════════════ */
-    // Excluye #! y el botón Login (que abre modal)
+    /* ══ SMOOTH SCROLL ════════════════════════════════════ */
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener("click", function (e) {
             var href = this.getAttribute("href");
-            // Ignorar placeholders y el botón login (lo maneja el modal)
             if (href === "#!" || href === "#") return;
             var target = document.querySelector(href);
             if (target) {
@@ -70,7 +67,7 @@
         }, { passive: true });
     }
 
-    /* ══ VIDEO — REVEAL + PARALLAX SUAVE ════════════════ */
+    /* ══ VIDEO — REVEAL + PARALLAX ═══════════════════════ */
     var videoSection = document.getElementById("videoSection");
     var centerText   = document.getElementById("videoCenterText");
     var vfItems      = document.querySelectorAll(".ac-vf-item");
@@ -80,12 +77,10 @@
         var rect     = videoSection.getBoundingClientRect();
         var progress = Math.max(0, Math.min(1, -rect.top / Math.max(rect.height - window.innerHeight, 1)));
 
-        // Parallax del texto central (si existe en esta versión)
         if (centerText) {
             centerText.style.transform = "translate(-50%, calc(-50% + " + (progress * -60) + "px))";
         }
 
-        // Reveal de features
         vfItems.forEach(function (item, i) {
             if (progress > 0.12 + i * 0.08) item.classList.add("visible");
         });
@@ -167,24 +162,21 @@
         });
     }
 
-    /* ══ TEAM CAROUSEL — inicializar UNA SOLA VEZ con jQuery ═
-       Usamos DOMContentLoaded implícito de jQuery para
-       garantizar que Owl Carousel esté disponible.           */
+    /* ══ TEAM CAROUSEL ════════════════════════════════════ */
     $(function () {
         var $carousel = $("#teamCarousel");
         if ($carousel.length === 0) return;
 
-        // Destruir instancia previa si existe (evita doble init)
         if ($carousel.hasClass("owl-loaded")) {
             $carousel.trigger("destroy.owl.carousel");
             $carousel.removeClass("owl-carousel owl-loaded");
         }
 
         $carousel.addClass("owl-carousel").owlCarousel({
-            loop:  true,
-            margin: 20,
-            nav:   false,
-            dots:  false,
+            loop:     true,
+            margin:   20,
+            nav:      false,
+            dots:     false,
             autoplay: false,
             responsive: {
                 0:    { items: 1 },
@@ -194,7 +186,6 @@
             }
         });
 
-        /* ── FIX: flechas con IDs explícitos ── */
         $("#teamPrev").on("click", function () {
             $carousel.trigger("prev.owl.carousel");
         });
