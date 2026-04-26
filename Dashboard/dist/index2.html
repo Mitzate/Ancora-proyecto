@@ -1906,7 +1906,83 @@
       });
     </script>
 
+<!-- Firebase SDK y configuración -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+  import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyDKbWyUESIEPMB5UVFA29qHuszq6cMzzlg",
+    authDomain: "ancora-monitoreo-caidas.firebaseapp.com",
+    projectId: "ancora-monitoreo-caidas",
+    storageBucket: "ancora-monitoreo-caidas.firebasestorage.app",
+    messagingSenderId: "1050271758266",
+    appId: "1:1050271758266:web:c9e692ec90fc8fc6dc8f83"
+  };
+
+  // Inicializar Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Referencias a rutas que usará tu ESP32 (debes crearlas en Firebase)
+  const presenciaRef = ref(db, '/estado/presencia');
+  const ultimaCaidaRef = ref(db, '/alertas/ultima_caida');
+  const modoMonitoreoRef = ref(db, '/config/modo');
+
+  // --- Escuchar presencia en tiempo real ---
+  onValue(presenciaRef, (snapshot) => {
+    const data = snapshot.val();
+    const presenciaElement = document.getElementById('firebase-presencia');
+    if (presenciaElement) {
+      presenciaElement.innerText = (data === 1) ? '✅ Persona presente' : '❌ Vacío';
+      // Opcional: cambiar color de fondo del card
+      presenciaElement.className = (data === 1) ? 'badge bg-success' : 'badge bg-secondary';
+    }
+    console.log('Presencia desde Firebase:', data);
+  });
+
+  // --- Escuchar último evento de caída ---
+  onValue(ultimaCaidaRef, (snapshot) => {
+    const caida = snapshot.val();
+    if (caida && caida.timestamp) {
+      // Mostrar alerta flotante o actualizar un card
+      const alertaCard = document.getElementById('firebase-alerta');
+      if (alertaCard) {
+        alertaCard.innerHTML = `
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>🚨 ¡CAÍDA DETECTADA!</strong> a las ${new Date(caida.timestamp).toLocaleTimeString()}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        `;
+      }
+    }
+  });
+
+  // --- Opcional: recibir modo de monitoreo desde Firebase (si se cambia desde otra interfaz)
+  onValue(modoMonitoreoRef, (snapshot) => {
+    const modo = snapshot.val();
+    if (modo) {
+      localStorage.setItem('monitoring_mode', modo);
+      // Refrescar la vista de tablas según el nuevo modo
+      if (window.updateTableVisibility) window.updateTableVisibility(modo);
+    }
+  });
+
+  // --- Opcional: enviar comando de pausa/reanudación a Firebase (para que el ESP32 lo escuche)
+  // Esto complementa tu botón actual, permitiendo que el ESP32 reciba el comando también por Firebase.
+  const pauseResumeBtn = document.getElementById('pauseResumeBtn');
+  if (pauseResumeBtn) {
+    pauseResumeBtn.addEventListener('click', async () => {
+      // (tu lógica actual de pausa/resume)
+      // Además, actualiza el nodo en Firebase
+      const nuevaPausa = !isMonitoringPaused; // variable global que tienes
+      await set(ref(db, '/comandos/pausa'), nuevaPausa);
+    });
+  }
+
+  // Mostrar en consola que Firebase está listo
+  console.log('✅ Firebase conectado en dashboard');
+</script>
 
   </body>
   <!--end::Body-->
