@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
 
-/* ════════════════════════════════════════════════
-   VARIABLES
-   ════════════════════════════════════════════════ */
+/* VARIABLES */
 :root {
     --teal:       #0c8078;
     --teal-light: #12a396;
@@ -26,9 +24,7 @@
     --transition: 0.4s cubic-bezier(0.22,1,0.36,1);
 }
 
-/* ════════════════════════════════════════════════
-   BASE
-   ════════════════════════════════════════════════ */
+/* BASE */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
@@ -43,15 +39,11 @@ body {
 
 img { display: block; max-width: 100%; }
 
-/* ════════════════════════════════════════════════
-   SPINNER
-   ════════════════════════════════════════════════ */
+/*  SPINNER*/
 #spinner { transition: opacity .6s ease-out, visibility 0s linear .6s; }
 #spinner.show { opacity: 1; visibility: visible; }
 
-/* ════════════════════════════════════════════════
-   NAVBAR
-   ════════════════════════════════════════════════ */
+/* NAVBAR */
 .ac-nav {
     position: fixed;
     top: 0; left: 0; right: 0;
