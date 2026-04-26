@@ -50,8 +50,8 @@ document.addEventListener("DOMContentLoaded", function () {
         link.addEventListener("click", function (e) {
             var href = link.getAttribute("href");
 
-            /* Login → ir a login.html normalmente */
-            if (!href || href === "login.html") return;
+            /* Login → permitir navegación normal */
+            if (href === "login.html") return;
 
             /* Solo actuar con anclas internas */
             if (!href.startsWith("#")) return;
