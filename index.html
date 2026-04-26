@@ -314,7 +314,7 @@
             <a href="#acercade">Acerca de</a>
             <a href="#servicios">Servicios</a>
             <a href="#contacto">Contacto</a>
-            <a href="login.html" class="ac-nav-cta">Login</a>
+            <a href="login.html" class="ac-nav-cta" onclick="window.location.href='login.html'">Login</a>
         </div>
 
         <button class="ac-nav-toggle" id="navToggle" aria-label="Menú">
@@ -654,5 +654,18 @@
 <script src="js/section360.js"></script>
 <script src="js/main.js?v=3"></script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.ac-nav-links a[href^="#"]').forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                var id = this.getAttribute('href').slice(1);
+                var target = document.getElementById(id);
+                if (!target) return;
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    });
+    </script>
 </body>
 </html>
