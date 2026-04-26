@@ -50,11 +50,14 @@ document.addEventListener("DOMContentLoaded", function () {
         link.addEventListener("click", function (e) {
             var href = link.getAttribute("href");
 
-            /* Login → permitir navegación normal */
-            if (href === "login.html") return;
+            /* Login → permitir navegación normal sin ejecutar nada */
+            if (href === "login.html") {
+                // Permitir navegación normal
+                return;
+            }
 
-            /* Solo actuar con anclas internas */
-            if (!href.startsWith("#")) return;
+            /* Solo actuar con anclas internas (#algo) */
+            if (!href || !href.startsWith("#")) return;
 
             /* Prevenir #! y otros placeholders */
             if (href === "#" || href === "#!") {
