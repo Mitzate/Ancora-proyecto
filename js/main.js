@@ -37,27 +37,30 @@
        ANCLAS — scroll suave correcto
        Funciona con CUALQUIER link href="#algo"
     ════════════════════════════════════════════ */
-     document.querySelectorAll('.ac-nav-links a[href^="#"]').forEach(function (a) {
-    a.addEventListener("click", function (e) {
-        const href = this.getAttribute("href");
+     document.querySelectorAll('.ac-nav-links a').forEach(function (a) {
+       a.addEventListener("click", function (e) {
+           const href = this.getAttribute("href");
 
-        if (!href || href === "#" || href === "#!") return;
+            // si es login.html NO tocarlo
+            if (href === "login.html") {
+            return;
+            }
 
-        const target = document.querySelector(href);
-        if (!target) return;
+            // solo hacer scroll si empieza con #
+            if (href && href.startsWith("#")) {
+            const target = document.querySelector(href);
+            if (!target) return;
 
-        e.preventDefault();
+            e.preventDefault();
 
-        if (navLinks) navLinks.classList.remove("open");
-        if (toggle) toggle.classList.remove("open");
+            const navH = nav ? nav.offsetHeight : 90;
+            const y = target.getBoundingClientRect().top + window.scrollY - navH - 20;
 
-        const navH = nav ? nav.offsetHeight : 90;
-        const y = target.getBoundingClientRect().top + window.scrollY - navH - 20;
-
-        window.scrollTo({
-            top: y,
-            behavior: "smooth"
-        });
+            window.scrollTo({
+                top: y,
+                behavior: "smooth"
+            });
+        }s
     });
 });
 
