@@ -37,24 +37,26 @@
        ANCLAS — scroll suave correcto
        Funciona con CUALQUIER link href="#algo"
     ════════════════════════════════════════════ */
-    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+     document.querySelectorAll('a[href^="#"]').forEach(function (a) {
         a.addEventListener("click", function (e) {
             const href = this.getAttribute("href");
 
-            // Ignorar el botón Login y enlaces vacíos
-            if (!href || href === "#" || href === "#!" || this.id === "openLogin") return;
+            // Ignorar enlaces que van a otras páginas (como login.html)
+            if (href === "login.html" || !href || href === "#" || href === "#!") {
+               return; // Deja que el navegador haga la acción normal
+            }
 
             const target = document.querySelector(href);
             if (!target) return;
 
             e.preventDefault();
 
-           // Cerrar menú móvil si está abierto
-           if (navLinks) navLinks.classList.remove("open");
-           if (toggle)   toggle.classList.remove("open");
+            // Cerrar menú móvil si está abierto
+            if (navLinks) navLinks.classList.remove("open");
+            if (toggle)   toggle.classList.remove("open");
 
-          const navH = nav ? nav.offsetHeight : 90;
-          const y = target.getBoundingClientRect().top + window.scrollY - navH - 20;
+           const navH = nav ? nav.offsetHeight : 90;
+           const y = target.getBoundingClientRect().top + window.scrollY - navH - 20;
 
           window.scrollTo({
             top: y,
@@ -84,7 +86,7 @@
     /* ════════════════════════════════════════════
        LOGIN — redirige directo a login.html
     ════════════════════════════════════════════ */
-    const openLogin = document.getElementById("openLogin");
+    /*const openLogin = document.getElementById("openLogin");
 
     if (openLogin) {
         console.log("✅ Botón Login encontrado correctamente");
@@ -96,7 +98,7 @@
          });
      } else {
          console.error("❌ No se encontró el botón Login. Revisa que tenga id='openLogin'");
-     }
+     }*/
 
     /* ════════════════════════════════════════════
        TEAM CAROUSEL — flechas corregidas
