@@ -1,74 +1,151 @@
-(function ($) {
+(function () {
     "use strict";
 
-    var spinner = function () {
-        setTimeout(function () {
-            if ($('#spinner').length > 0) {
-                $('#spinner').removeClass('show');
-            }
-        }, 1);
-    };
-    spinner();
-
-    /*  Animations*/
-    new WOW().init();
-   
-    /* o Navbar Sticky */
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 300) {
-            $('.sticky-top')
-                .addClass('bg-white shadow-sm')
-                .css('top', '0px');
-        } else {
-            $('.sticky-top')
-                .removeClass('bg-white shadow-sm')
-                .css('top', '-150px');
+    /* ==========================================
+       SPINNER
+    ========================================== */
+    window.addEventListener("load", function () {
+        const spinner = document.getElementById("spinner");
+        if (spinner) {
+            spinner.classList.remove("show");
+            spinner.style.opacity = "0";
+            setTimeout(() => {
+                spinner.style.display = "none";
+            }, 600);
         }
     });
 
-    /* Back To Top */
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 100) {
-            $('.back-to-top').fadeIn('slow');
-        } else {
-            $('.back-to-top').fadeOut('slow');
+    /* ==========================================
+       WOW
+    ========================================== */
+    if (typeof WOW !== "undefined") {
+        new WOW().init();
+    }
+
+    /* ==========================================
+       NAVBAR
+    ========================================== */
+    const nav = document.getElementById("acNav");
+    const backTop = document.getElementById("backTop");
+
+    window.addEventListener("scroll", function () {
+        if (nav) {
+            nav.classList.toggle("ac-nav-scrolled", window.scrollY > 60);
+        }
+
+        if (backTop) {
+            backTop.classList.toggle("show", window.scrollY > 300);
         }
     });
 
-    $('.back-to-top').click(function () {
-        $('html, body').animate({
-            scrollTop: 0
-        }, 1500, 'easeInOutExpo');
-        return false;
-    });  
+    /* ==========================================
+       MOBILE MENU
+    ========================================== */
+    const navToggle = document.getElementById("navToggle");
+    const navLinks = document.getElementById("navLinks");
 
-    /* Hero Scroll */
-    $(window).scroll(function () {
-        let scrollTop = $(this).scrollTop();
-
-        $('.hero-modern').css({
-            transform: 'translateY(' + (scrollTop * 0.05) + 'px)'
+    if (navToggle && navLinks) {
+        navToggle.addEventListener("click", function () {
+            navLinks.classList.toggle("open");
+            navToggle.classList.toggle("open");
         });
-    });
+    }
 
-    /* Scroll suave flecha */
-    $('.scroll-down').click(function (e) {
-        e.preventDefault();
+    /* ==========================================
+       HERO AUTO SCROLL
+    ========================================== */
+    const hero = document.getElementById("heroSection");
+    const nextSection = document.getElementById("seccion360");
 
-        $('html, body').animate({
-            scrollTop: $('#seccion360').offset().top
-        }, 1200, 'easeInOutExpo');
-    });
+    let heroScrolled = false;
 
-    $(".testimonial-carousel").owlCarousel({
-        items: 1,
-        autoplay: true,
-        smartSpeed: 1000,
-        animateIn: 'fadeIn',
-        animateOut: 'fadeOut',
-        dots: true,
-        loop: true,
-        nav: false
-    });
+    if (hero && nextSection) {
+        window.addEventListener("wheel", function (e) {
+            if (heroScrolled) return;
+            if (window.scrollY > 100) return;
+            if (e.deltaY <= 0) return;
 
-})(jQuery);
+            heroScrolled = true;
+
+            window.scrollTo({
+                top: nextSection.offsetTop,
+                behavior: "smooth"
+            });
+
+            setTimeout(() => {
+                heroScrolled = false;
+            }, 1500);
+
+        }, { passive: true });
+    }
+
+    /* ==========================================
+       VIDEO SCROLL EFFECT
+    ========================================== */
+    const videoSection = document.getElementById("videoSection");
+    const centerText = document.getElementById("videoCenterText");
+    const items = document.querySelectorAll(".ac-vf-item");
+
+    function animateVideoSection() {
+        if (!videoSection || !centerText) return;
+
+        const rect = videoSection.getBoundingClientRect();
+        const progress = Math.min(
+            Math.max((-rect.top) / (rect.height - window.innerHeight), 0),
+            1
+        );
+
+        centerText.style.transform =
+            `translate(-50%, calc(-50% + ${progress * -60}px))`;
+
+        items.forEach((item, i) => {
+            if (progress > 0.12 + i * 0.08) {
+                item.classList.add("visible");
+            }
+        });
+    }
+
+    window.addEventListener("scroll", animateVideoSection);
+    animateVideoSection();
+
+    /* ==========================================
+       TEAM CAROUSEL
+    ========================================== */
+    if ($(".ac-team-carousel").length) {
+        $(".ac-team-carousel").owlCarousel({
+            loop: true,
+            margin: 20,
+            nav: false,
+            dots: false,
+            autoplay: false,
+            responsive: {
+                0: { items: 1 },
+                576: { items: 2 },
+                768: { items: 3 },
+                1200: { items: 4 }
+            }
+        });
+
+        $(".ac-team-arrow-prev").on("click", function () {
+            $(".ac-team-carousel").trigger("prev.owl.carousel");
+        });
+
+        $(".ac-team-arrow-next").on("click", function () {
+            $(".ac-team-carousel").trigger("next.owl.carousel");
+        });
+    }
+
+    /* ==========================================
+       BACK TO TOP
+    ========================================== */
+    if (backTop) {
+        backTop.addEventListener("click", function (e) {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+    }
+
+})();
