@@ -1,7 +1,3 @@
-/* ════════════════════════════════════════════════
-   ANCORA — main.js
-   ════════════════════════════════════════════════ */
-
 document.addEventListener("DOMContentLoaded", function () {
 
     /* ── Spinner ── */
@@ -9,7 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
         var sp = document.getElementById("spinner");
         if (sp) {
             sp.style.opacity = "0";
-            setTimeout(function () { sp.style.display = "none"; }, 700);
+            setTimeout(function () {
+                sp.style.display = "none";
+            }, 700);
         }
     });
 
@@ -18,19 +16,27 @@ document.addEventListener("DOMContentLoaded", function () {
         new WOW().init();
     }
 
-    /* ── Navbar: añadir clase al hacer scroll ── */
-    var acNav   = document.getElementById("acNav");
+    /* ── Navbar ── */
+    var acNav = document.getElementById("acNav");
     var backTop = document.getElementById("backTop");
+    var navToggle = document.getElementById("navToggle");
+    var navLinks = document.getElementById("navLinks");
+
+    function getNavHeight() {
+        return acNav ? acNav.offsetHeight : 80;
+    }
 
     window.addEventListener("scroll", function () {
-        if (acNav)   acNav.classList.toggle("ac-nav-scrolled", window.scrollY > 60);
-        if (backTop) backTop.classList.toggle("show", window.scrollY > 300);
+        if (acNav) {
+            acNav.classList.toggle("ac-nav-scrolled", window.scrollY > 60);
+        }
+
+        if (backTop) {
+            backTop.classList.toggle("show", window.scrollY > 300);
+        }
     }, { passive: true });
 
-    /* ── Mobile menu toggle ── */
-    var navToggle = document.getElementById("navToggle");
-    var navLinks  = document.getElementById("navLinks");
-
+    /* ── Mobile menu ── */
     if (navToggle && navLinks) {
         navToggle.addEventListener("click", function () {
             navLinks.classList.toggle("open");
@@ -38,75 +44,60 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* ════════════════════════════════════════════
-       NAVBAR — scroll suave a secciones
-       Los IDs del HTML son:
-         #inicio   #acercade   #servicios   #contacto
-    ════════════════════════════════════════════ */
-     document.querySelectorAll(".ac-nav-links a").forEach(function (link) {
-         link.addEventListener("click", function (e) {
-         var href = link.getAttribute("href");
-
-<<<<<<< HEAD
-    document.querySelectorAll(".ac-nav-links a, .ac-nav-links button").forEach(function (link) {
+    /* ── Navbar links ── */
+    document.querySelectorAll(".ac-nav-links a").forEach(function (link) {
         link.addEventListener("click", function (e) {
             var href = link.getAttribute("href");
 
-            /* Login → permitir navegación normal sin ejecutar nada */
-            if (href === "login.html" || link.id === "btn-login") {
-                // Permitir navegación normal
+            /* Login → dejar navegación normal */
+            if (!href || href.includes("login.html")) {
                 return;
             }
 
-            /* Solo actuar con anclas internas (#algo) */
-            if (!href || !href.startsWith("#")) return;
+            /* Solo manejar anclas internas */
+            if (!href.startsWith("#")) {
+                return;
+            }
 
-            /* Prevenir #! y otros placeholders */
             if (href === "#" || href === "#!") {
                 e.preventDefault();
                 return;
             }
 
-            var target = document.getElementById(href.slice(1)); /* quita el # */
-            if (!target) return;
-=======
-         if (!href) return;
-         if (href.includes("login.html")) return;
+            var target = document.getElementById(href.slice(1));
+            if (!target) {
+                return;
+            }
 
-         if (!href.startsWith("#")) return;
->>>>>>> 02ff62d (aaa)
-
-         if (href === "#" || href === "#!") {
             e.preventDefault();
-            return;
-         }
 
-         var target = document.getElementById(href.slice(1));
-         if (!target) return;
+            if (navLinks) navLinks.classList.remove("open");
+            if (navToggle) navToggle.classList.remove("open");
 
-         e.preventDefault();
+            var offsetTop = target.getBoundingClientRect().top + window.scrollY - getNavHeight() - 16;
 
-         if (navLinks) navLinks.classList.remove("open");
-         if (navToggle) navToggle.classList.remove("open");
-
-         var offsetTop = target.getBoundingClientRect().top + window.scrollY - navHeight - 16;
-         window.scrollTo({
-            top: offsetTop,
-            behavior: "smooth"
+            window.scrollTo({
+                top: offsetTop,
+                behavior: "smooth"
+            });
         });
     });
-});
-    /* ── Active link al hacer scroll ── */
+
+    /* ── Active link ── */
     var allSections = document.querySelectorAll("section[id]");
     var allNavLinks = document.querySelectorAll(".ac-nav-links a:not(.ac-nav-cta)");
 
     window.addEventListener("scroll", function () {
-        var scrollPos = window.scrollY + navHeight + 40;
+        var scrollPos = window.scrollY + getNavHeight() + 40;
+
         allSections.forEach(function (section) {
-            if (scrollPos >= section.offsetTop &&
-                scrollPos < section.offsetTop + section.offsetHeight) {
+            if (
+                scrollPos >= section.offsetTop &&
+                scrollPos < section.offsetTop + section.offsetHeight
+            ) {
                 allNavLinks.forEach(function (a) {
                     a.classList.remove("active");
+
                     if (a.getAttribute("href") === "#" + section.id) {
                         a.classList.add("active");
                     }
@@ -115,8 +106,9 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }, { passive: true });
 
-    /* ── Video: añadir clase in-view cuando entra en pantalla ── */
+    /* ── Video animation ── */
     var videoSection = document.getElementById("videoSection");
+
     if (videoSection && "IntersectionObserver" in window) {
         new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
@@ -131,59 +123,53 @@ document.addEventListener("DOMContentLoaded", function () {
     if (backTop) {
         backTop.addEventListener("click", function (e) {
             e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
         });
     }
 
-    /* ════════════════════════════════════════════
-       TEAM CAROUSEL — Owl Carousel con jQuery
-    ════════════════════════════════════════════ */
+    /* ── Owl Carousel ── */
     if (typeof jQuery !== "undefined") {
         jQuery(function ($) {
-
             var $carousel = $(".ac-team-carousel");
 
             if ($carousel.length) {
                 $carousel.owlCarousel({
-                    loop:     true,
-                    margin:   20,
-                    nav:      false,
-                    dots:     false,
+                    loop: true,
+                    margin: 20,
+                    nav: false,
+                    dots: false,
                     autoplay: false,
                     responsive: {
-                        0:    { items: 1 },
-                        576:  { items: 2 },
-                        768:  { items: 3 },
+                        0: { items: 1 },
+                        576: { items: 2 },
+                        768: { items: 3 },
                         1200: { items: 4 }
                     }
                 });
 
-                var teamPrev = document.getElementById("teamPrev");
-                var teamNext = document.getElementById("teamNext");
+                $("#teamPrev").on("click", function () {
+                    $carousel.trigger("prev.owl.carousel");
+                });
 
-                if (teamPrev) {
-                    teamPrev.addEventListener("click", function () {
-                        $carousel.trigger("prev.owl.carousel");
-                    });
-                }
-                if (teamNext) {
-                    teamNext.addEventListener("click", function () {
-                        $carousel.trigger("next.owl.carousel");
-                    });
-                }
+                $("#teamNext").on("click", function () {
+                    $carousel.trigger("next.owl.carousel");
+                });
             }
 
-            /* ── Testimonials carousel (si existe) ── */
             if ($(".testimonial-carousel").length) {
                 $(".testimonial-carousel").owlCarousel({
-                    items:      1,
-                    autoplay:   true,
+                    items: 1,
+                    autoplay: true,
                     smartSpeed: 1000,
-                    animateIn:  "fadeIn",
+                    animateIn: "fadeIn",
                     animateOut: "fadeOut",
-                    dots:       true,
-                    loop:       true,
-                    nav:        false
+                    dots: true,
+                    loop: true,
+                    nav: false
                 });
             }
         });
