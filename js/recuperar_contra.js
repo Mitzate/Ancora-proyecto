@@ -11,7 +11,7 @@ async function handleSubmit() {
         emailEl.focus();
         setTimeout(() => emailEl.classList.remove('error'), 2500);
         return;
-    }
+   
 
     // Elementos UI
     const btn = document.getElementById('submitBtn');
