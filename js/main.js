@@ -46,12 +46,12 @@ document.addEventListener("DOMContentLoaded", function () {
     ════════════════════════════════════════════ */
     var navHeight = acNav ? acNav.offsetHeight : 80;
 
-    document.querySelectorAll(".ac-nav-links a").forEach(function (link) {
+    document.querySelectorAll(".ac-nav-links a, .ac-nav-links button").forEach(function (link) {
         link.addEventListener("click", function (e) {
             var href = link.getAttribute("href");
 
             /* Login → permitir navegación normal sin ejecutar nada */
-            if (href === "login.html") {
+            if (href === "login.html" || link.id === "btn-login") {
                 // Permitir navegación normal
                 return;
             }
