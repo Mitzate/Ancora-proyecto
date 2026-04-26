@@ -39,25 +39,29 @@
     ════════════════════════════════════════════ */
     document.querySelectorAll('a[href^="#"]').forEach(function (a) {
         a.addEventListener("click", function (e) {
-            var href = this.getAttribute("href");
+            const href = this.getAttribute("href");
 
-            /* Ignora vacíos y el login */
+            // Ignorar el botón Login y enlaces vacíos
             if (!href || href === "#" || href === "#!" || this.id === "openLogin") return;
 
-            var target = document.querySelector(href);
+            const target = document.querySelector(href);
             if (!target) return;
 
             e.preventDefault();
 
-            /* Cierra menú mobile */
-            if (navLinks) navLinks.classList.remove("open");
-            if (toggle)   toggle.classList.remove("open");
+           // Cerrar menú móvil si está abierto
+           if (navLinks) navLinks.classList.remove("open");
+           if (toggle)   toggle.classList.remove("open");
 
-            var navH = nav ? nav.offsetHeight : 80;
-            var y    = target.getBoundingClientRect().top + window.scrollY - navH - 10;
-            window.scrollTo({ top: y, behavior: "smooth" });
+          const navH = nav ? nav.offsetHeight : 90;
+          const y = target.getBoundingClientRect().top + window.scrollY - navH - 20;
+
+          window.scrollTo({
+            top: y,
+            behavior: "smooth"
         });
     });
+});
 
     /* ── Active link en scroll ── */
     var sections = document.querySelectorAll("section[id]");
@@ -83,15 +87,15 @@
     const openLogin = document.getElementById("openLogin");
 
     if (openLogin) {
-        console.log("✅ Botón Login encontrado en el DOM"); // Para debug
-
+        console.log("✅ Botón Login encontrado correctamente");
+    
         openLogin.addEventListener("click", function (e) {
             e.preventDefault();
-            console.log("🔄 Redirigiendo a login.html..."); // Para debug
+            console.log("🔄 Redirigiendo a login.html...");
             window.location.href = "login.html";
          });
      } else {
-         console.error("❌ No se encontró el botón con id='openLogin' en el DOM");
+         console.error("❌ No se encontró el botón Login. Revisa que tenga id='openLogin'");
      }
 
     /* ════════════════════════════════════════════
