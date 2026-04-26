@@ -1,6 +1,5 @@
 /* ════════════════════════════════════════════════
    ANCORA — main.js
-   Sin IIFE, sin wrappers. Código directo y simple.
    ════════════════════════════════════════════════ */
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -44,8 +43,11 @@ document.addEventListener("DOMContentLoaded", function () {
        Los IDs del HTML son:
          #inicio   #acercade   #servicios   #contacto
     ════════════════════════════════════════════ */
-    var navHeight = acNav ? acNav.offsetHeight : 80;
+     document.querySelectorAll(".ac-nav-links a").forEach(function (link) {
+         link.addEventListener("click", function (e) {
+         var href = link.getAttribute("href");
 
+<<<<<<< HEAD
     document.querySelectorAll(".ac-nav-links a, .ac-nav-links button").forEach(function (link) {
         link.addEventListener("click", function (e) {
             var href = link.getAttribute("href");
@@ -67,18 +69,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
             var target = document.getElementById(href.slice(1)); /* quita el # */
             if (!target) return;
+=======
+         if (!href) return;
+         if (href.includes("login.html")) return;
 
+         if (!href.startsWith("#")) return;
+>>>>>>> 02ff62d (aaa)
+
+         if (href === "#" || href === "#!") {
             e.preventDefault();
+            return;
+         }
 
-            /* Cerrar menú móvil si está abierto */
-            if (navLinks) navLinks.classList.remove("open");
-            if (navToggle) navToggle.classList.remove("open");
+         var target = document.getElementById(href.slice(1));
+         if (!target) return;
 
-            var offsetTop = target.getBoundingClientRect().top + window.scrollY - navHeight - 16;
-            window.scrollTo({ top: offsetTop, behavior: "smooth" });
+         e.preventDefault();
+
+         if (navLinks) navLinks.classList.remove("open");
+         if (navToggle) navToggle.classList.remove("open");
+
+         var offsetTop = target.getBoundingClientRect().top + window.scrollY - navHeight - 16;
+         window.scrollTo({
+            top: offsetTop,
+            behavior: "smooth"
         });
     });
-
+});
     /* ── Active link al hacer scroll ── */
     var allSections = document.querySelectorAll("section[id]");
     var allNavLinks = document.querySelectorAll(".ac-nav-links a:not(.ac-nav-cta)");
