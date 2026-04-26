@@ -1,33 +1,42 @@
-// Espera a que el DOM esté listo
+// login.js — conecta loginForm y registerForm con la API
 document.addEventListener('DOMContentLoaded', function () {
-    // URL base para todas las peticiones (usar absoluta para evitar problemas de ruta)
-    const API_URL = `${window.location.origin}/api/coneccion.php`;
+
+    const API_URL       = `${window.location.origin}/api/coneccion.php`;
     const DASHBOARD_URL = `${window.location.origin}/Dashboard/dist/index2.html`;
-    
-    // Registro de usuario
+
+    /* ══ REGISTRO ══════════════════════════════════════════ */
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
         registerForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const nombre = document.getElementById('registerName').value.trim();
+            const nombre           = document.getElementById('registerName').value.trim();
             const apellido_paterno = document.getElementById('registerApellidoPaterno').value.trim();
             const apellido_materno = document.getElementById('registerApellidoMaterno').value.trim();
-            const email = document.getElementById('registerEmail').value.trim();
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
-            const acceptTerms = document.getElementById('acceptTerms').checked;
+            const email            = document.getElementById('registerEmail').value.trim();
+            const password         = document.getElementById('registerPassword').value;
+            const confirmPassword  = document.getElementById('registerConfirmPassword').value;
+            const acceptTerms      = document.getElementById('acceptTerms').checked;
 
-            // Validaciones...
             if (!nombre || !apellido_paterno || !apellido_materno || !email || !password || !confirmPassword) {
-                alert('Todos los campos son obligatorios.');
+                showMessage('register', 'Todos los campos son obligatorios.', 'error');
                 return;
             }
-            // ... resto de validaciones
+            if (password.length < 8) {
+                showMessage('register', 'La contraseña debe tener mínimo 8 caracteres.', 'error');
+                return;
+            }
+            if (password !== confirmPassword) {
+                showMessage('register', 'Las contraseñas no coinciden.', 'error');
+                return;
+            }
+            if (!acceptTerms) {
+                showMessage('register', 'Debes aceptar los términos y condiciones.', 'error');
+                return;
+            }
 
             try {
-                console.log('Enviando registro a:', API_URL);
-                const response = await fetch(API_URL, {  // CAMBIADO
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -39,61 +48,54 @@ document.addEventListener('DOMContentLoaded', function () {
                         contrasena: password
                     })
                 });
-                
-                console.log('Status registro:', response.status);
+
                 const text = await response.text();
-                console.log('Respuesta registro:', text);
-                
                 let data = null;
-                try { 
-                    data = text ? JSON.parse(text) : null; 
-                } catch (e) { 
-                    console.error('Error parsing JSON:', e);
-                    alert('Error del servidor: respuesta inválida');
+                try { data = text ? JSON.parse(text) : null; } catch (err) {
+                    showMessage('register', 'Error del servidor: respuesta inválida.', 'error');
                     return;
                 }
-                
+
                 if (response.status === 409) {
-                    alert((data && data.error) ? data.error : 'Este correo ya esta en uso.');
+                    showMessage('register', (data && data.error) ? data.error : 'Este correo ya está en uso.', 'error');
                     return;
                 }
                 if (response.ok && data && data.success) {
-                    alert('Registro exitoso. Ahora puedes iniciar sesión.');
-                    // Cambia a la pestaña de login
-                    document.querySelector('.auth-tab[data-tab="login"]').click();
+                    showMessage('register', 'Registro exitoso. Ahora puedes iniciar sesión.', 'success');
                     registerForm.reset();
+                    // Cambia a la pestaña de login tras 1.5s
+                    setTimeout(() => {
+                        document.querySelector('.auth-tab[data-tab="login"]').click();
+                    }, 1500);
                 } else {
-                    alert((data && data.error) ? data.error : 'Error al registrar usuario.');
+                    showMessage('register', (data && data.error) ? data.error : 'Error al registrar usuario.', 'error');
                 }
             } catch (err) {
-                console.error('Error de red:', err);
-                alert('Error de red: ' + err.message);
+                showMessage('register', 'Error de red: ' + err.message, 'error');
             }
         });
     }
 
-    // Inicio de sesión
+    /* ══ LOGIN ══════════════════════════════════════════════ */
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const email = document.getElementById('loginEmail').value.trim();
+            const email    = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
 
-            // Validaciones...
             if (!email || !password) {
-                alert('Todos los campos son obligatorios.');
+                showMessage('login', 'Todos los campos son obligatorios.', 'error');
                 return;
             }
-            if (!/^[\w\.-]+@[\w\.-]+\.\w{2,}$/.test(email)) {
-                alert('Correo electrónico no válido.');
+            if (!/^[\w\.\-]+@[\w\.\-]+\.\w{2,}$/.test(email)) {
+                showMessage('login', 'Correo electrónico no válido.', 'error');
                 return;
             }
 
             try {
-                console.log('Enviando login a:', API_URL);
-                const response = await fetch(API_URL, {  // CAMBIADO
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -102,36 +104,22 @@ document.addEventListener('DOMContentLoaded', function () {
                         contrasena: password
                     })
                 });
-                
-                console.log('Status login:', response.status);
+
                 const text = await response.text();
-                console.log('Respuesta login completa:', text);
-                
                 let data = null;
-                try { 
-                    data = text ? JSON.parse(text) : null; 
-                } catch (e) { 
-                    console.error('Error parsing JSON:', e);
-                    alert('Error del servidor: respuesta inválida');
+                try { data = text ? JSON.parse(text) : null; } catch (err) {
+                    showMessage('login', 'Error del servidor: respuesta inválida.', 'error');
                     return;
                 }
-                
-                if (response.ok && data && data.success) {
-                    console.log('Login exitoso, usuario:', data);
-                    
-                    // Guarda el nombre en localStorage
-                    if (data.nombre) {
-                        localStorage.setItem('nombre_usuario', data.nombre);
-                        console.log('Nombre guardado:', data.nombre);
-                    }
-                    // Guarda el id del usuario
-                    if (data.id_usuario) {
-                        localStorage.setItem('id_usuario', data.id_usuario);
-                        console.log('ID usuario guardado:', data.id_usuario);
 
-                        // Buscar y guardar el dispositivo del usuario
+                if (response.ok && data && data.success) {
+                    if (data.nombre)     localStorage.setItem('nombre_usuario', data.nombre);
+                    if (data.id_usuario) localStorage.setItem('id_usuario', data.id_usuario);
+
+                    // Buscar dispositivo del usuario
+                    if (data.id_usuario) {
                         try {
-                            const deviceRes = await fetch(API_URL, {
+                            const deviceRes  = await fetch(API_URL, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ check_device: true, id_usuario: data.id_usuario })
@@ -143,48 +131,49 @@ document.addEventListener('DOMContentLoaded', function () {
                                 const modo = tipo.includes('sueno') || tipo.includes('sueño') ? 'sueno' : 'caidas';
                                 localStorage.setItem('id_dispositivo', idDispositivo);
                                 localStorage.setItem('monitoring_mode', modo);
-                                console.log('Dispositivo guardado:', { idDispositivo, modo });
                             }
                         } catch (err) {
-                            console.warn('No se pudo obtener el dispositivo del usuario:', err);
+                            console.warn('No se pudo obtener el dispositivo:', err);
                         }
                     }
-                    
-                    // Redirige al dashboard (ligero delay para asegurar guardado)
-                    setTimeout(() => {
-                        window.location.href = DASHBOARD_URL;
-                    }, 300);
+
+                    showMessage('login', '¡Bienvenido! Redirigiendo...', 'success');
+                    setTimeout(() => { window.location.href = DASHBOARD_URL; }, 800);
+
                 } else {
-                    const errorMsg = (data && data.error) ? data.error : 'Correo o contraseña incorrectos.';
-                    console.error('Error login:', errorMsg);
-                    alert(errorMsg);
+                    showMessage('login', (data && data.error) ? data.error : 'Correo o contraseña incorrectos.', 'error');
                 }
             } catch (err) {
-                console.error('Fetch error:', err);
-                alert('Error de red: ' + err.message);
+                showMessage('login', 'Error de red: ' + err.message, 'error');
             }
         });
     }
 
-    // ... resto del código para cambiar pestañas
+    /* ══ HELPER: muestra mensaje inline en vez de alert() ══ */
+    function showMessage(section, text, type) {
+        const containerId = 'msg-' + section;
+        let el = document.getElementById(containerId);
+        if (!el) {
+            el = document.createElement('div');
+            el.id = containerId;
+            el.style.cssText = `
+                padding: 10px 14px;
+                border-radius: 4px;
+                font-size: 13px;
+                margin-bottom: 14px;
+                font-family: 'Space Grotesk', sans-serif;
+            `;
+            // Inserta al inicio del formulario correspondiente
+            const form = document.getElementById(section === 'login' ? 'loginForm' : 'registerForm');
+            if (form) form.insertBefore(el, form.firstChild);
+        }
+        el.textContent = text;
+        el.style.background = type === 'error' ? '#fdecea' : '#e6f4ea';
+        el.style.color      = type === 'error' ? '#b3261e' : '#1e6b3a';
+        el.style.border     = type === 'error' ? '1px solid #f5c6c3' : '1px solid #b7dfbf';
+        // Desaparece solo después de 4 segundos
+        clearTimeout(el._timer);
+        el._timer = setTimeout(() => { el.textContent = ''; el.style.background = 'transparent'; el.style.border = 'none'; }, 4000);
+    }
+
 });
-    // Cambiar entre pestañas login/registro
-    document.querySelectorAll('.auth-tab').forEach(tab => {
-        tab.addEventListener('click', function () {
-            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            const tabName = this.getAttribute('data-tab');
-            document.querySelectorAll('.auth-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
-        });
-    });
-    // Cambiar entre login/registro desde los enlaces de abajo
-    document.querySelectorAll('.auth-switch a').forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            const tabName = this.getAttribute('data-tab');
-            if (tabName) {
-                document.querySelector(`.auth-tab[data-tab="${tabName}"]`).click();
-            }
-        });
-    });
