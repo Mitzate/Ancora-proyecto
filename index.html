@@ -100,8 +100,9 @@
 <!-- ══ 3. SECCIÓN VIDEO ══════════════════════════════════ -->
 <section class="ac-video-section" id="videoSection">
     <div class="ac-video-wrap">
+        <!-- CORRECCIÓN: ruta del video actualizada. Renombra el archivo a animacion_web.mp4 (sin espacios) -->
         <video class="ac-video" autoplay muted loop playsinline>
-            <source src="img/animacion_web.mp4" type="video/mp4">
+            <source src="img/prototipo360/animacion_web.mp4" type="video/mp4">
         </video>
         <div class="ac-video-overlay"></div>
     </div>
@@ -215,12 +216,12 @@
         <div class="ac-team-slider-wrap wow fadeIn" data-wow-delay="0.2s">
             <button class="ac-team-arrow ac-team-arrow-prev" aria-label="Anterior"><i class="bi bi-arrow-left"></i></button>
             <div class="owl-carousel ac-team-carousel">
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="luz.pjg.jpg" alt="Luz Burgoin"><div class="ac-team-blur"><h4>Luz Burgoin</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="ate.pjg.jpg" alt="Atenea Salgado"><div class="ac-team-blur"><h4>Atenea Salgado</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="kendra.pjg.jpg" alt="Kendra Ramirez"><div class="ac-team-blur"><h4>Kendra Ramirez</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="cristal.pjg.jpg" alt="Cristal Lopez"><div class="ac-team-blur"><h4>Cristal Lopez</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
+                <div class="ac-team-slide"><div class="ac-team-card"><img src="luz.jpg" alt="Luz Burgoin"><div class="ac-team-blur"><h4>Luz Burgoin</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
+                <div class="ac-team-slide"><div class="ac-team-card"><img src="ate.jpg" alt="Atenea Salgado"><div class="ac-team-blur"><h4>Atenea Salgado</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
+                <div class="ac-team-slide"><div class="ac-team-card"><img src="kendra.jpg" alt="Kendra Ramirez"><div class="ac-team-blur"><h4>Kendra Ramirez</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
+                <div class="ac-team-slide"><div class="ac-team-card"><img src="cristal.jpg" alt="Cristal Lopez"><div class="ac-team-blur"><h4>Cristal Lopez</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
                 <div class="ac-team-slide"><div class="ac-team-card"><img src="irving.jpg" alt="Irving Solis"><div class="ac-team-blur"><h4>Irving Solis</h4><small>Ingeniero</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="Hiro.pjg.jpg" alt="Hiro"><div class="ac-team-blur"><h4>Hiro</h4><small>Ingeniero</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
+                <div class="ac-team-slide"><div class="ac-team-card"><img src="Hiro.jpg" alt="Hiro"><div class="ac-team-blur"><h4>Hiro</h4><small>Ingeniero</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
             </div>
             <button class="ac-team-arrow ac-team-arrow-next" aria-label="Siguiente"><i class="bi bi-arrow-right"></i></button>
         </div>
@@ -361,94 +362,13 @@
 
 <a href="#!" class="ac-back-top" id="backTop"><i class="bi bi-arrow-up"></i></a>
 
-<!-- Scripts -->
+<!-- ══ SCRIPTS (cargados una sola vez, en orden correcto) ══ -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="lib/wow/wow.min.js"></script>
 <script src="lib/easing/easing.min.js"></script>
 <script src="lib/waypoints/waypoints.min.js"></script>
 <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-<script src="js/main.js"></script>
-<script src="js/section360.js"></script>
-<script>
-new WOW().init();
-
-$(window).on('load', function(){ $('#spinner').fadeOut(700); });
-
-/* Navbar scroll */
-$(window).on('scroll', function(){
-    document.getElementById('acNav').classList.toggle('ac-nav-scrolled', window.scrollY > 60);
-    document.getElementById('backTop').classList.toggle('show', window.scrollY > 300);
-});
-
-/* Mobile nav */
-document.getElementById('navToggle').addEventListener('click', function(){
-    document.getElementById('navLinks').classList.toggle('open');
-    this.classList.toggle('open');
-});
-
-/* Hero wheel → scroll suave a descripción */
-(function(){
-    var dest = document.getElementById('seccion360');
-    var busy = false;
-    if(!dest) return;
-    function ease(t){ return t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2; }
-    function go(targetY){
-        var s=window.pageYOffset, d=targetY-s, t0=null;
-        function step(ts){
-            if(!t0) t0=ts;
-            var p=Math.min((ts-t0)/1100,1);
-            window.scrollTo(0,s+d*ease(p));
-            if(p<1) requestAnimationFrame(step);
-            else setTimeout(function(){ busy=false; },1200);
-        }
-        requestAnimationFrame(step);
-    }
-    window.addEventListener('wheel',function(e){
-        if(busy||window.scrollY>window.innerHeight*0.5) return;
-        if((e.deltaY||e.detail||(-e.wheelDelta))<=0) return;
-        busy=true; e.preventDefault();
-        go(dest.getBoundingClientRect().top+window.pageYOffset);
-    },{passive:false});
-}());
-
-/* Video parallax + feature reveal */
-(function(){
-    var section = document.getElementById('videoSection');
-    var center  = document.getElementById('videoCenterText');
-    var items   = document.querySelectorAll('.ac-vf-item');
-    if(!section||!center) return;
-    window.addEventListener('scroll',function(){
-        var r = section.getBoundingClientRect();
-        var v = Math.max(0,Math.min(1,-r.top/(r.height-window.innerHeight)));
-        center.style.transform='translate(-50%,calc(-50% + '+(v*-55)+'px))';
-        items.forEach(function(item,i){
-            if(v >= 0.12+i*0.09) item.classList.add('visible');
-        });
-    },{passive:true});
-}());
-
-/* Team carousel */
-$(document).ready(function(){
-    $('.ac-team-carousel').owlCarousel({
-        loop:true, margin:20, nav:false, dots:false, autoplay:false,
-        responsive:{0:{items:1},576:{items:2},768:{items:3},1200:{items:4}}
-    });
-    $('.ac-team-arrow-prev').on('click',function(){ $('.ac-team-carousel').trigger('prev.owl.carousel'); });
-    $('.ac-team-arrow-next').on('click',function(){ $('.ac-team-carousel').trigger('next.owl.carousel'); });
-});
-
-/* Back to top */
-document.getElementById('backTop').addEventListener('click',function(e){
-    e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'});
-});
-</script>
- <!-- Scripts -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="lib/wow/wow.min.js"></script>
-<script src="lib/owlcarousel/owl.carousel.min.js"></script>
-
 <script src="js/main.js"></script>
 <script src="js/section360.js"></script>
 
