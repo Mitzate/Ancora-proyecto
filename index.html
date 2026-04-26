@@ -521,7 +521,6 @@
 <script src="lib/waypoints/waypoints.min.js"></script>
 <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 <script src="js/section360.js"></script>
-<<<<<<< HEAD
 <script src="js/main.js"></script>
 
 <!-- SDK de Firebase -->
@@ -553,20 +552,6 @@
     const data = snapshot.val();
     document.getElementById('presencia-valor').innerText = data;
   });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.ac-nav-links a[href^="#"]').forEach(function(a) {
-            a.addEventListener('click', function(e) {
-                var id = this.getAttribute('href').slice(1);
-                var target = document.getElementById(id);
-                if (!target) return;
-                e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth' });
-            });
-        });
-    });
 </script>
 
 </body>
