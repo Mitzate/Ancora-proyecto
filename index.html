@@ -311,18 +311,20 @@
 <!-- ══ NAVBAR ══════════════════════════════════════════════ -->
 <nav class="ac-nav" id="acNav">
     <div class="ac-nav-inner">
-        <a href="#heroSection" class="ac-logo">Ancora</a>
-        <button class="ac-nav-toggle" id="navToggle" aria-label="Menú">
-            <span></span><span></span>
-        </button>
+        <a href="#inicio" class="ac-logo">TuProyecto</a>
+
         <div class="ac-nav-links" id="navLinks">
-            <a href="#heroSection" class="active">Inicio</a>
+            <a href="#inicio">Inicio</a>
             <a href="#acercade">Acerca de</a>
             <a href="#servicios">Servicios</a>
-            <a href="#proyectos">Proyectos</a>
             <a href="#contacto">Contacto</a>
-            <a href="#!" class="ac-nav-cta" id="openLogin">Login</a>
+            <a href="#" class="ac-nav-cta" id="openLogin">Login</a>
         </div>
+
+        <button class="ac-nav-toggle" id="navToggle">
+            <span></span>
+            <span></span>
+        </button>
     </div>
 </nav>
 
@@ -333,8 +335,10 @@
         <div class="ac-hero-orb ac-hero-orb-2"></div>
         <div class="ac-hero-grid"></div>
     </div>
+
     <div class="ac-hero-content">
         <p class="ac-hero-eyebrow">Sistema de Monitoreo Inteligente</p>
+
         <h1 class="ac-hero-title">
             <span class="letter cycling l0">A</span>
             <span class="letter cycling l1">N</span>
@@ -343,8 +347,10 @@
             <span class="letter cycling l4">R</span>
             <span class="letter cycling l5">A</span>
         </h1>
+
         <p class="ac-hero-sub">Entre la caída, la presencia y la distancia</p>
     </div>
+
     <div class="ac-hero-scroll-hint">
         <div class="ac-scroll-line"></div>
         <span>Scroll</span>
@@ -359,25 +365,52 @@
                 <div class="ac-desc-inner">
                     <p class="ac-eyebrow">El proyecto</p>
                     <h2 class="ac-desc-title">Descripción<br><em>del proyecto</em></h2>
-                    <p class="ac-desc-body">Sistema basado en un sensor inteligente capaz de detectar movimiento, medir distancias y reconocer caídas.</p>
-                    <p class="ac-desc-body">Integrado con microcontroladores ESP32 para enviar alertas en tiempo real vía Telegram, con comunicación LoRa y encriptación TLS.</p>
+
+                    <p class="ac-desc-body">
+                        Sistema basado en un sensor inteligente capaz de detectar movimiento,
+                        medir distancias y reconocer caídas.
+                    </p>
+
+                    <p class="ac-desc-body">
+                        Integrado con microcontroladores ESP32 para enviar alertas en tiempo real
+                        vía Telegram, con comunicación LoRa y encriptación TLS.
+                    </p>
+
                     <div class="ac-chips">
-                        <span>Detección de caídas</span><span>Presencia</span><span>Distancia</span>
-                        <span>Movimiento</span><span>Sueño</span><span>ESP32</span>
+                        <span>Detección de caídas</span>
+                        <span>Presencia</span>
+                        <span>Distancia</span>
+                        <span>Movimiento</span>
+                        <span>Sueño</span>
+                        <span>ESP32</span>
                     </div>
+
                     <div class="ac-desc-divider"></div>
+
                     <a class="ac-btn" href="#acercade">
                         Conocer más
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M3 8h10M9 4l4 4-4 4"
+                                  stroke="currentColor"
+                                  stroke-width="1.5"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"/>
+                        </svg>
                     </a>
                 </div>
             </div>
+
             <div class="col-lg-7 ac-desc-right">
                 <div class="ac-proto-stage" id="protoStage">
                     <div class="ac-proto-glow"></div>
                     <div class="ac-proto-ring ac-proto-ring-1"></div>
                     <div class="ac-proto-ring ac-proto-ring-2"></div>
-                    <img id="protoImg" src="img/prototipo360/1.png" alt="Prototipo Ancora 360°" class="ac-proto-img" draggable="false">
+
+                    <img id="protoImg"
+                         src="img/prototipo360/1.png"
+                         alt="Prototipo Ancora 360°"
+                         class="ac-proto-img"
+                         draggable="false">
                 </div>
             </div>
         </div>
@@ -783,3 +816,4 @@
 
 </body>
 </html>
+
