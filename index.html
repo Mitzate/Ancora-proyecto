@@ -162,111 +162,6 @@
         opacity:1; transform:translateY(0);
     }
 
-    /* ── LOGIN MODAL glassmorphism premium ── */
-    .ac-modal-overlay {
-        position: fixed; inset: 0; z-index: 9000;
-        background: rgba(6,14,13,0.82);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        display: flex; align-items: center; justify-content: center;
-        opacity: 0; pointer-events: none;
-        transition: opacity 0.35s ease;
-    }
-    .ac-modal-overlay.open { opacity:1; pointer-events:all; }
-
-    .ac-modal {
-        background: linear-gradient(155deg, rgba(15,31,29,0.90) 0%, rgba(10,22,20,0.95) 100%);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(77,184,173,0.20);
-        border-radius: 24px;
-        width: 100%; max-width: 440px; margin: 20px;
-        padding: 48px 40px; position: relative;
-        transform: translateY(30px) scale(0.96);
-        transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
-        box-shadow:
-            0 40px 80px rgba(0,0,0,0.55),
-            0 0 0 1px rgba(255,255,255,0.04) inset,
-            0 0 60px rgba(12,128,120,0.10);
-    }
-    .ac-modal-overlay.open .ac-modal { transform: translateY(0) scale(1); }
-
-    .ac-modal-close {
-        position: absolute; top: 16px; right: 16px;
-        width: 34px; height: 34px; border-radius: 50%;
-        background: rgba(77,184,173,0.08);
-        border: 1px solid rgba(77,184,173,0.18);
-        color: rgba(255,255,255,0.5); cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1rem; transition: all 0.3s;
-    }
-    .ac-modal-close:hover { background: rgba(77,184,173,0.20); color:#fff; }
-
-    .ac-modal-logo {
-        font-family: var(--font-display); font-weight: 900;
-        font-size: 1.55rem; color: #fff;
-        text-align: center; display: block; margin-bottom: 5px;
-        letter-spacing: -0.5px;
-    }
-    .ac-modal-sub {
-        font-family: var(--font-body); font-size: 0.68rem; font-weight: 300;
-        color: rgba(77,184,173,0.75); text-align: center;
-        letter-spacing: 3.5px; text-transform: uppercase; margin-bottom: 30px;
-    }
-    .ac-modal-tabs {
-        display: flex; background: rgba(6,14,13,0.55);
-        border: 1px solid rgba(77,184,173,0.13);
-        border-radius: 100px; padding: 4px; margin-bottom: 26px;
-    }
-    .ac-modal-tab {
-        flex: 1; padding: 10px; font-family: var(--font-body);
-        font-size: 0.82rem; font-weight: 400;
-        color: rgba(255,255,255,0.40); background: none; border: none;
-        cursor: pointer; border-radius: 100px; transition: all 0.3s;
-    }
-    .ac-modal-tab.active {
-        background: linear-gradient(135deg, #0c8078, #063d38);
-        color: #fff; box-shadow: 0 4px 14px rgba(12,128,120,0.35);
-    }
-    .ac-modal-panel { display:none; }
-    .ac-modal-panel.active { display:block; }
-
-    .ac-field { margin-bottom: 13px; }
-    .ac-field label {
-        font-family: var(--font-body); font-size: 0.68rem; font-weight: 400;
-        letter-spacing: 1px; text-transform: uppercase;
-        color: rgba(255,255,255,0.35); display: block; margin-bottom: 7px;
-    }
-    .ac-field input {
-        width: 100%; padding: 12px 16px;
-        background: rgba(6,14,13,0.65);
-        border: 1px solid rgba(77,184,173,0.16); border-radius: 10px;
-        color: #fff; font-family: var(--font-body);
-        font-size: 0.88rem; font-weight: 300; outline: none;
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    .ac-field input:focus {
-        border-color: rgba(77,184,173,0.50);
-        box-shadow: 0 0 0 3px rgba(12,128,120,0.14);
-    }
-    .ac-field input::placeholder { color: rgba(255,255,255,0.20); }
-    .ac-modal-submit {
-        width: 100%; padding: 13px; margin-top: 6px;
-        background: linear-gradient(135deg, #0c8078 0%, #063d38 100%);
-        border: none; border-radius: 10px; color: #fff;
-        font-family: var(--font-body); font-size: 0.9rem; font-weight: 500;
-        cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 8px 24px rgba(12,128,120,0.30);
-    }
-    .ac-modal-submit:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(12,128,120,0.42); }
-    .ac-modal-footer {
-        text-align: center; margin-top: 16px;
-        font-family: var(--font-body); font-size: 0.78rem;
-        font-weight: 300; color: rgba(255,255,255,0.28);
-    }
-    .ac-modal-footer a { color: #4db8ad; text-decoration: none; }
-    .ac-modal-footer a:hover { opacity: 0.8; }
-
     /* Offset de scroll para navbar fija */
     [id] { scroll-margin-top: 80px; }
     </style>
@@ -278,45 +173,22 @@
     <div class="spinner-grow" style="color:#0c8078;width:3rem;height:3rem;" role="status"></div>
 </div>
 
-<!-- ══ LOGIN MODAL ══════════════════════════════════════════ -->
-<div class="ac-modal-overlay" id="loginModal">
-    <div class="ac-modal">
-        <button class="ac-modal-close" id="modalClose"><i class="bi bi-x"></i></button>
-        <span class="ac-modal-logo">Áncora</span>
-        <p class="ac-modal-sub">Sistema de Monitoreo</p>
-        <div class="ac-modal-tabs">
-            <button class="ac-modal-tab active" data-tab="login">Iniciar sesión</button>
-            <button class="ac-modal-tab" data-tab="register">Registrarse</button>
-        </div>
-        <div class="ac-modal-panel active" id="panel-login">
-            <div class="ac-field"><label>Correo electrónico</label><input type="email" placeholder="tu@email.com"></div>
-            <div class="ac-field"><label>Contraseña</label><input type="password" placeholder="••••••••"></div>
-            <button class="ac-modal-submit">Ingresar</button>
-            <div class="ac-modal-footer"><a href="#!">¿Olvidaste tu contraseña?</a></div>
-        </div>
-        <div class="ac-modal-panel" id="panel-register">
-            <div class="ac-field"><label>Nombre completo</label><input type="text" placeholder="Tu nombre"></div>
-            <div class="ac-field"><label>Correo electrónico</label><input type="email" placeholder="tu@email.com"></div>
-            <div class="ac-field"><label>Contraseña</label><input type="password" placeholder="Mínimo 8 caracteres"></div>
-            <div class="ac-field"><label>Confirmar contraseña</label><input type="password" placeholder="Repite tu contraseña"></div>
-            <button class="ac-modal-submit">Crear cuenta</button>
-        </div>
-    </div>
-</div>
-
 <!-- ══ NAVBAR ══════════════════════════════════════════════ -->
 <nav class="ac-nav" id="acNav">
     <div class="ac-nav-inner">
         <a href="#inicio" class="ac-logo">Ancora</a>
+
         <div class="ac-nav-links" id="navLinks">
             <a href="#inicio">Inicio</a>
             <a href="#acercade">Acerca de</a>
             <a href="#servicios">Servicios</a>
             <a href="#contacto">Contacto</a>
-            <a href="#" class="ac-nav-cta" id="openLogin">Login</a>
+            <a href="login.html" class="ac-nav-cta" onclick="window.location.href='login.html'">Login</a>
         </div>
+
         <button class="ac-nav-toggle" id="navToggle" aria-label="Menú">
-            <span></span><span></span>
+            <span></span>
+            <span></span>
         </button>
     </div>
 </nav>
@@ -649,6 +521,7 @@
 <script src="lib/waypoints/waypoints.min.js"></script>
 <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 <script src="js/section360.js"></script>
+<<<<<<< HEAD
 <script src="js/main.js"></script>
 
 <!-- SDK de Firebase -->
@@ -682,6 +555,22 @@
   });
 </script>
 </body>
+=======
+<script src="js/main.js?v=4"></script>
+>>>>>>> 9dc450c1c2b816449870bd61259c5f955cf50436
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.ac-nav-links a[href^="#"]').forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                var id = this.getAttribute('href').slice(1);
+                var target = document.getElementById(id);
+                if (!target) return;
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    });
+    </script>
 </body>
 </html>
