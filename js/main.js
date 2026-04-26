@@ -60,7 +60,7 @@
                 top: y,
                 behavior: "smooth"
             });
-        }s
+        }
     });
 });
 
@@ -81,23 +81,6 @@
             }
         });
     }, { passive: true });
-
-    /* ════════════════════════════════════════════
-       LOGIN — redirige directo a login.html
-    ════════════════════════════════════════════ */
-    /*const openLogin = document.getElementById("openLogin");
-
-    if (openLogin) {
-        console.log("✅ Botón Login encontrado correctamente");
-    
-        openLogin.addEventListener("click", function (e) {
-            e.preventDefault();
-            console.log("🔄 Redirigiendo a login.html...");
-            window.location.href = "login.html";
-         });
-     } else {
-         console.error("❌ No se encontró el botón Login. Revisa que tenga id='openLogin'");
-     }*/
 
     /* ════════════════════════════════════════════
        TEAM CAROUSEL — flechas corregidas
