@@ -80,13 +80,19 @@
     /* ════════════════════════════════════════════
        LOGIN — redirige directo a login.html
     ════════════════════════════════════════════ */
-    var openLogin = document.getElementById("openLogin");
+    const openLogin = document.getElementById("openLogin");
+
     if (openLogin) {
+        console.log("✅ Botón Login encontrado en el DOM"); // Para debug
+
         openLogin.addEventListener("click", function (e) {
             e.preventDefault();
+            console.log("🔄 Redirigiendo a login.html..."); // Para debug
             window.location.href = "login.html";
-        });
-    }
+         });
+     } else {
+         console.error("❌ No se encontró el botón con id='openLogin' en el DOM");
+     }
 
     /* ════════════════════════════════════════════
        TEAM CAROUSEL — flechas corregidas
