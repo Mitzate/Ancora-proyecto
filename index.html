@@ -335,40 +335,93 @@
         <div class="ac-team-orb ac-team-orb-2"></div>
         <div class="ac-team-orb ac-team-orb-3"></div>
         <div class="ac-team-particles">
-            <span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
         </div>
     </div>
+ 
     <div class="container position-relative" style="z-index:2;">
         <div class="ac-section-header text-center wow fadeIn">
             <p class="ac-eyebrow ac-eyebrow-teal">Conoce al equipo</p>
             <h2 class="ac-section-title ac-title-light">The <em>Team</em></h2>
         </div>
-
-        <!--
-            BUG 3 FIX: Se agregó type="button" explícito en ambos botones.
-            Sin esto, algunos navegadores tratan <button> sin type como
-            type="submit", lo que puede generar comportamientos inesperados
-            y bloquear el click handler de jQuery en ciertos contextos.
-            El wrapper ya NO tiene clase "wow fadeIn" para evitar que
-            WOW.js oculte el contenedor antes de que Owl Carousel
-            mida las dimensiones del carrusel.
-        -->
-        <div class="ac-team-slider-wrap">
-            <button type="button" class="ac-team-arrow ac-team-arrow-prev" id="teamPrev" aria-label="Anterior">
-                <i class="bi bi-arrow-left"></i>
-            </button>
-            <div class="owl-carousel ac-team-carousel" id="teamCarousel">
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="luz.jpg" alt="Luz Burgoin"><div class="ac-team-blur"><h4>Luz Burgoin</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"></i><i class="fab fa-facebook-f"></i></a></div></div></div></div>
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="ate.jpg" alt="Atenea Salgado"><div class="ac-team-blur"><h4>Atenea Salgado</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-facebook-f"></i></i></a></div></div></div></div>
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="kendra.jpg" alt="Kendra Ramirez"><div class="ac-team-blur"><h4>Kendra Ramirez</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-facebook-f"></i></i></a></div></div></div></div>
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="cristal.jpg" alt="Cristal Lopez"><div class="ac-team-blur"><h4>Cristal Lopez</h4><small>Ingeniera</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-facebook-f"></i></i></a></div></div></div></div>
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="irving.jpg" alt="Irving Solis"><div class="ac-team-blur"><h4>Irving Solis</h4><small>Ingeniero</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
-                <div class="ac-team-slide"><div class="ac-team-card"><img src="Hiro.jpg" alt="Hiro"><div class="ac-team-blur"><h4>Hiromy Roa</h4><small>Ingeniero</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
+ 
+        <!-- ── Grid estático: 6 cards sin carrusel ── -->
+        <div class="ac-team-grid">
+ 
+            <div class="ac-team-card">
+                <img src="luz.jpg" alt="Luz Burgoin">
+                <div class="ac-team-blur">
+                    <h4>Luz Burgoin</h4>
+                    <small>Ingeniera</small>
+                    <div class="ac-team-social">
+                        <a href="#!" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
             </div>
-            <button type="button" class="ac-team-arrow ac-team-arrow-next" id="teamNext" aria-label="Siguiente">
-                <i class="bi bi-arrow-right"></i>
-            </button>
-        </div>
+ 
+            <div class="ac-team-card">
+                <img src="ate.jpg" alt="Atenea Salgado">
+                <div class="ac-team-blur">
+                    <h4>Atenea Salgado</h4>
+                    <small>Ingeniera</small>
+                    <div class="ac-team-social">
+                        <a href="#!" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="ac-team-card">
+                <img src="kendra.jpg" alt="Kendra Ramirez">
+                <div class="ac-team-blur">
+                    <h4>Kendra Ramirez</h4>
+                    <small>Ingeniera</small>
+                    <div class="ac-team-social">
+                        <a href="#!" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="ac-team-card">
+                <img src="cristal.jpg" alt="Cristal Lopez">
+                <div class="ac-team-blur">
+                    <h4>Cristal Lopez</h4>
+                    <small>Ingeniera</small>
+                    <div class="ac-team-social">
+                        <a href="#!" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="ac-team-card">
+                <img src="irving.jpg" alt="Irving Solis">
+                <div class="ac-team-blur">
+                    <h4>Irving Solis</h4>
+                    <small>Ingeniero</small>
+                    <div class="ac-team-social">
+                        <a href="#!" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#!" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="ac-team-card">
+                <img src="Hiro.jpg" alt="Hiromy Roa">
+                <div class="ac-team-blur">
+                    <h4>Hiromy Roa</h4>
+                    <small>Ingeniero</small>
+                    <div class="ac-team-social">
+                        <a href="#!" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#!" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+ 
+        </div><!-- /.ac-team-grid -->
     </div>
 </section>
 
@@ -482,7 +535,7 @@
                 <a href="#acercade">Acerca de</a>
                 <a href="#contacto">Contáctanos</a>
                 <!-- BUG 2 FIX: privacy.html ahora navega correctamente via main.js footer handler -->
-                <a href="privacy.html">Política de privacidad</a>
+                <a href="privacy.html" rel="noopener">Política de privacidad</a>
                 <a href="#!">Términos y condiciones</a>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -512,6 +565,6 @@
 <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 <script src="js/section360.js"></script>
 <!-- BUG 1+2+3 FIX: main.js corregido -->
-<script src="js/main.js?v=9"></script>
+<script src="js/main.js?v=10"></script>
 </body>
 </html>
