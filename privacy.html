@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Políticas de Privacidad — ANCORA</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* ── Variables — idénticas al sitio principal ── */
+        :root {
+            --teal:       #0c8078;
+            --teal-light: #12a396;
+            --teal-sage:  #4db8ad;
+            --teal-deep:  #063d38;
+            --teal-forest:#0a5c54;
+            --dark-900: #060e0d;
+            --dark-800: #0a1614;
+            --dark-700: #0f1f1d;
+            --dark-600: #152925;
+            --dark-400: #2a4440;
+            --cream:    #f2eeea;
+            --cream-soft:#f7f4ef;
+            --white:    #ffffff;
+            --font-display: 'Playfair Display', serif;
+            --font-body:    'DM Sans', sans-serif;
+            --transition: 0.4s cubic-bezier(0.22,1,0.36,1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            font-weight: 300;
+            background: var(--dark-900);
+            color: rgba(255,255,255,0.78);
+            overflow-x: hidden;
+        }
+        img { display: block; max-width: 100%; }
+
+        /* ── NAVBAR ── */
+        .ac-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(6,14,13,0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 1px 0 rgba(77,184,173,0.12);
+        }
+        .ac-nav-inner {
+            max-width: 1320px; margin: 0 auto; padding: 22px 32px;
+            display: flex; align-items: center; gap: 48px;
+        }
+        .ac-logo {
+            font-family: var(--font-display); font-weight: 900; font-size: 1.5rem;
+            color: #fff; text-decoration: none; letter-spacing: -0.5px; flex-shrink: 0;
+        }
+        .ac-nav-links { display: flex; align-items: center; gap: 36px; margin-left: auto; }
+        .ac-nav-links a {
+            font-family: var(--font-body); font-size: 0.88rem; font-weight: 400;
+            letter-spacing: 0.4px; color: rgba(255,255,255,0.65); text-decoration: none;
+            transition: color 0.3s;
+        }
+        .ac-nav-links a:hover { color: var(--teal-sage); }
+        .ac-nav-cta {
+            border: 1px solid rgba(77,184,173,0.35) !important;
+            padding: 8px 20px !important; border-radius: 100px !important;
+            color: var(--teal-sage) !important;
+        }
+        .ac-nav-cta:hover { background: rgba(77,184,173,0.10) !important; }
+        .ac-nav-toggle { display: none; }
+
+        @media (max-width: 768px) {
+            .ac-nav-toggle {
+                display: flex; flex-direction: column; gap: 5px;
+                margin-left: auto; background: none; border: none; cursor: pointer; padding: 4px;
+            }
+            .ac-nav-toggle span {
+                width: 24px; height: 1.5px; background: rgba(255,255,255,0.7);
+                transition: all 0.3s ease; display: block;
+            }
+            .ac-nav-links {
+                display: none; position: absolute; top: 100%; left: 0; right: 0;
+                background: rgba(6,14,13,0.97); backdrop-filter: blur(20px);
+                flex-direction: column; gap: 0; padding: 16px 0;
+                border-top: 1px solid rgba(77,184,173,0.12);
+            }
+            .ac-nav-links.open { display: flex; }
+            .ac-nav-links a { padding: 14px 32px; width: 100%; border-radius: 0 !important; }
+        }
+
+        /* ── HERO COMPACTO ── */
+        .prv-hero {
+            min-height: 46vh;
+            padding: 140px 0 80px;
+            position: relative; overflow: hidden;
+            display: flex; align-items: center;
+            background: var(--dark-900);
+        }
+        .prv-hero-bg { position: absolute; inset: 0; pointer-events: none; }
+        .prv-orb {
+            position: absolute; border-radius: 50%; filter: blur(90px);
+        }
+        .prv-orb-1 {
+            width: 550px; height: 550px;
+            background: radial-gradient(circle, rgba(12,128,120,0.18) 0%, transparent 65%);
+            top: -180px; left: -120px;
+        }
+        .prv-orb-2 {
+            width: 320px; height: 320px;
+            background: radial-gradient(circle, rgba(77,184,173,0.09) 0%, transparent 65%);
+            bottom: -60px; right: -60px;
+        }
+        .prv-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(12,128,120,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(12,128,120,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 80% at 30% 50%, black 0%, transparent 100%);
+        }
+        .prv-hero-content { position: relative; z-index: 2; }
+        .prv-eyebrow {
+            font-family: var(--font-body); font-size: 0.68rem; font-weight: 400;
+            letter-spacing: 5px; text-transform: uppercase;
+            color: var(--teal-sage); display: block; margin-bottom: 18px;
+            opacity: 0; animation: fadeUp 0.8s 0.2s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        .prv-title {
+            font-family: var(--font-display); font-weight: 900;
+            font-size: clamp(2.8rem, 6vw, 5.5rem);
+            color: #fff; line-height: 1.0; letter-spacing: -2px;
+            margin-bottom: 20px;
+            opacity: 0; animation: fadeUp 0.8s 0.35s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        .prv-title em { font-style: italic; font-weight: 300; color: var(--teal-sage); }
+        .prv-subtitle {
+            font-family: var(--font-body); font-size: 1rem; font-weight: 300;
+            color: rgba(255,255,255,0.45); line-height: 1.8; max-width: 520px;
+            opacity: 0; animation: fadeUp 0.8s 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── BREADCRUMB ── */
+        .prv-breadcrumb {
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 32px;
+            opacity: 0; animation: fadeUp 0.8s 0.15s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        .prv-breadcrumb a {
+            font-family: var(--font-body); font-size: 0.75rem; font-weight: 400;
+            letter-spacing: 1px; color: var(--teal-sage); text-decoration: none;
+            transition: color 0.3s;
+        }
+        .prv-breadcrumb a:hover { color: #fff; }
+        .prv-breadcrumb span {
+            font-size: 0.7rem; color: rgba(255,255,255,0.25);
+        }
+        .prv-breadcrumb .current {
+            font-family: var(--font-body); font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* ── CONTENIDO PRINCIPAL ── */
+        .prv-body { background: var(--dark-800); padding: 90px 0 120px; }
+
+        /* Barra lateral de navegación */
+        .prv-sidebar {
+            position: sticky; top: 100px;
+        }
+        .prv-sidebar-label {
+            font-family: var(--font-body); font-size: 0.62rem; font-weight: 400;
+            letter-spacing: 4px; text-transform: uppercase;
+            color: rgba(255,255,255,0.25); margin-bottom: 18px; display: block;
+        }
+        .prv-sidebar-nav { list-style: none; }
+        .prv-sidebar-nav li { margin-bottom: 4px; }
+        .prv-sidebar-nav a {
+            display: block; padding: 9px 16px;
+            font-family: var(--font-body); font-size: 0.82rem; font-weight: 300;
+            color: rgba(255,255,255,0.45); text-decoration: none;
+            border-left: 2px solid rgba(77,184,173,0.12);
+            border-radius: 0 6px 6px 0;
+            transition: all 0.25s;
+        }
+        .prv-sidebar-nav a:hover,
+        .prv-sidebar-nav a.active {
+            color: var(--teal-sage);
+            border-left-color: var(--teal-sage);
+            background: rgba(77,184,173,0.06);
+            padding-left: 20px;
+        }
+
+        /* Secciones */
+        .prv-section { margin-bottom: 70px; scroll-margin-top: 110px; }
+        .prv-section-header {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(77,184,173,0.12);
+        }
+        .prv-section-icon {
+            width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(12,128,120,0.3) 0%, rgba(77,184,173,0.12) 100%);
+            border: 1px solid rgba(77,184,173,0.2);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--teal-sage);
+        }
+        .prv-section-icon svg { width: 20px; height: 20px; }
+        .prv-section-num {
+            font-family: var(--font-display); font-weight: 900; font-size: 0.75rem;
+            color: rgba(77,184,173,0.3); display: block; margin-bottom: 4px;
+            letter-spacing: 2px;
+        }
+        .prv-section-title {
+            font-family: var(--font-display); font-weight: 700;
+            font-size: 1.55rem; color: #fff; margin: 0;
+        }
+        .prv-section-title em { font-style: italic; font-weight: 300; color: var(--teal-sage); }
+
+        /* Cards de política */
+        .prv-card {
+            background: var(--dark-700);
+            border: 1px solid rgba(77,184,173,0.09);
+            border-radius: 14px; padding: 32px 36px; margin-bottom: 20px;
+            transition: border-color 0.3s, background 0.3s;
+        }
+        .prv-card:hover { border-color: rgba(77,184,173,0.2); background: rgba(15,31,29,0.8); }
+        .prv-card-title {
+            font-family: var(--font-display); font-weight: 700;
+            font-size: 1rem; color: #fff; margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .prv-card-title::before {
+            content: ''; display: block;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--teal-sage); flex-shrink: 0;
+        }
+        .prv-card p {
+            font-family: var(--font-body); font-size: 0.9rem; font-weight: 300;
+            color: rgba(255,255,255,0.55); line-height: 1.85; margin-bottom: 12px;
+        }
+        .prv-card p:last-child { margin-bottom: 0; }
+
+        /* Lista de bullets */
+        .prv-list { list-style: none; margin: 12px 0; }
+        .prv-list li {
+            font-family: var(--font-body); font-size: 0.88rem; font-weight: 300;
+            color: rgba(255,255,255,0.55); line-height: 1.75;
+            padding: 6px 0 6px 22px; position: relative;
+            border-bottom: 1px solid rgba(77,184,173,0.05);
+        }
+        .prv-list li:last-child { border-bottom: none; }
+        .prv-list li::before {
+            content: '›'; position: absolute; left: 0;
+            color: var(--teal-sage); font-weight: 700; font-size: 1rem;
+        }
+
+        /* Badge de proveedor */
+        .prv-provider-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(12,128,120,0.12); border: 1px solid rgba(12,128,120,0.25);
+            color: var(--teal-sage); border-radius: 100px;
+            font-family: var(--font-body); font-size: 0.68rem; font-weight: 500;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            padding: 5px 14px; margin-bottom: 16px;
+        }
+        .prv-provider-badge svg { width: 12px; height: 12px; }
+
+        /* Highlight box */
+        .prv-highlight {
+            background: rgba(12,128,120,0.10);
+            border: 1px solid rgba(77,184,173,0.20);
+            border-left: 3px solid var(--teal-sage);
+            border-radius: 8px; padding: 18px 22px; margin: 16px 0;
+        }
+        .prv-highlight p {
+            font-family: var(--font-body); font-size: 0.85rem; font-weight: 300;
+            color: rgba(255,255,255,0.65); line-height: 1.75; margin: 0;
+        }
+        .prv-highlight strong { color: var(--teal-sage); font-weight: 500; }
+
+        /* Fecha actualización */
+        .prv-updated {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: var(--font-body); font-size: 0.72rem; font-weight: 300;
+            color: rgba(255,255,255,0.3); letter-spacing: 0.5px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+            padding: 7px 16px; border-radius: 100px; margin-bottom: 48px;
+        }
+        .prv-updated svg { width: 13px; height: 13px; color: var(--teal-sage); }
+
+        /* ── CTA / VOLVER ── */
+        .prv-cta-section {
+            background: var(--dark-900);
+            border-top: 1px solid rgba(77,184,173,0.08);
+            padding: 80px 0;
+        }
+        .prv-cta-inner {
+            max-width: 580px; margin: 0 auto; text-align: center;
+        }
+        .prv-cta-inner h3 {
+            font-family: var(--font-display); font-weight: 700;
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            color: #fff; margin-bottom: 14px; line-height: 1.1;
+        }
+        .prv-cta-inner h3 em { font-style: italic; font-weight: 300; color: var(--teal-sage); }
+        .prv-cta-inner p {
+            font-family: var(--font-body); font-size: 0.92rem; font-weight: 300;
+            color: rgba(255,255,255,0.4); margin-bottom: 36px; line-height: 1.8;
+        }
+        .prv-btn-group { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .prv-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            font-family: var(--font-body); font-size: 0.88rem; font-weight: 500;
+            padding: 13px 28px; border-radius: 100px; text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .prv-btn-primary {
+            color: #fff;
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-forest) 100%);
+            box-shadow: 0 8px 24px rgba(12,128,120,0.28);
+        }
+        .prv-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(12,128,120,0.38);
+            color: #fff;
+        }
+        .prv-btn-outline {
+            color: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.15);
+            background: transparent;
+        }
+        .prv-btn-outline:hover {
+            color: var(--teal-sage);
+            border-color: rgba(77,184,173,0.4);
+            transform: translateY(-2px);
+            background: rgba(77,184,173,0.05);
+        }
+
+        /* ── FOOTER MINI ── */
+        .prv-footer {
+            background: var(--dark-900);
+            border-top: 1px solid rgba(77,184,173,0.06);
+            padding: 28px 0;
+        }
+        .prv-footer-inner {
+            max-width: 1320px; margin: 0 auto; padding: 0 32px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .prv-footer-inner span {
+            font-family: var(--font-body); font-size: 0.78rem;
+            color: rgba(255,255,255,0.25);
+        }
+        .prv-footer-inner a {
+            font-family: var(--font-body); font-size: 0.78rem;
+            color: rgba(255,255,255,0.35); text-decoration: none;
+            transition: color 0.3s;
+        }
+        .prv-footer-inner a:hover { color: var(--teal-sage); }
+        .prv-footer-links { display: flex; gap: 24px; }
+
+        /* Etiqueta discreta "Utilizado en" */
+        .prv-used-in {
+            display: block; margin-top: 16px;
+            font-family: var(--font-body); font-size: 0.72rem; font-style: italic;
+            font-weight: 300; color: rgba(77,184,173,0.5);
+            letter-spacing: 0.3px;
+        }
+
+        /* Back to top */
+        .ac-back-top {
+            position: fixed; right: 32px; bottom: 32px; z-index: 99;
+            width: 46px; height: 46px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-forest) 100%);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            text-decoration: none; font-size: 1.1rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.4s, transform 0.3s;
+            box-shadow: 0 8px 20px rgba(12,128,120,0.3);
+        }
+        .ac-back-top.show { opacity: 1; pointer-events: all; }
+        .ac-back-top:hover { transform: translateY(-3px); color: #fff; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 992px) {
+            .prv-sidebar { position: static; margin-bottom: 48px; }
+        }
+        @media (max-width: 768px) {
+            .prv-hero { padding: 120px 0 60px; min-height: auto; }
+            .prv-body { padding: 60px 0 80px; }
+            .prv-card { padding: 24px 22px; }
+            .prv-cta-section { padding: 60px 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="ac-nav" id="acNav">
+    <div class="ac-nav-inner">
+        <a href="index.html" class="ac-logo">Ancora</a>
+        <div class="ac-nav-links" id="navLinks">
+            <a href="index.html#inicio">Inicio</a>
+            <a href="index.html#acercade">Acerca de</a>
+            <a href="index.html#servicios">Servicios</a>
+            <a href="index.html#contacto">Contacto</a>
+            <a href="login.html" class="ac-nav-cta">Login</a>
+        </div>
+        <button class="ac-nav-toggle" id="navToggle" aria-label="Menú">
+            <span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="prv-hero">
+    <div class="prv-hero-bg">
+        <div class="prv-orb prv-orb-1"></div>
+        <div class="prv-orb prv-orb-2"></div>
+        <div class="prv-grid"></div>
+    </div>
+    <div class="container position-relative" style="z-index:2;">
+        <div class="prv-breadcrumb">
+            <a href="index.html">Inicio</a>
+            <span>›</span>
+            <span class="current">Políticas de Privacidad</span>
+        </div>
+        <p class="prv-eyebrow">Transparencia y confianza</p>
+        <h1 class="prv-title">Políticas de<br><em>Privacidad</em></h1>
+        <p class="prv-subtitle">Conoce cómo gestionamos, protegemos y utilizamos tu información dentro del sistema Áncora y con nuestros proveedores tecnológicos.</p>
+    </div>
+</section>
+
+<!-- BODY -->
+<section class="prv-body">
+    <div class="container">
+        <div class="row g-5">
+
+            <!-- Sidebar de navegación -->
+            <div class="col-lg-3">
+                <div class="prv-sidebar">
+                    <span class="prv-sidebar-label">En esta página</span>
+                    <ul class="prv-sidebar-nav" id="sideNav">
+                        <li><a href="#ancora-politicas" class="active">Sistema Áncora</a></li>
+                        <li><a href="#datos-recabados">Datos recabados</a></li>
+                        <li><a href="#uso-datos">Uso de datos</a></li>
+                        <li><a href="#seguridad">Seguridad</a></li>
+                        <li><a href="#proveedores">Proveedores externos</a></li>
+                        <li><a href="#derechos">Derechos ARCO</a></li>
+                        <li><a href="#contacto">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Contenido -->
+            <div class="col-lg-9">
+
+                <!-- Fecha de actualización -->
+                <div class="prv-updated">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    Última actualización: Abril 2026
+                </div>
+
+                <!-- ══ SECCIÓN 1: ANCORA ══ -->
+                <div class="prv-section" id="ancora-politicas">
+                    <div class="prv-section-header">
+                        <div class="prv-section-icon">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <div>
+                            <span class="prv-section-num">01</span>
+                            <h2 class="prv-section-title">Políticas del sistema <em>Áncora</em></h2>
+                        </div>
+                    </div>
+
+                    <div class="prv-card">
+                        <div class="prv-card-title">Responsable del tratamiento de datos</div>
+                        <p>El sistema Áncora, desarrollado como proyecto académico-tecnológico, es responsable del tratamiento de los datos personales que el usuario proporcione al interactuar con la plataforma, el portal web y los dispositivos IoT asociados.</p>
+                        <p>El sistema opera bajo los principios de licitud, consentimiento, información, calidad, finalidad, lealtad, proporcionalidad y responsabilidad conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
+                    </div>
+
+                    <div class="prv-card" id="datos-recabados">
+                        <div class="prv-card-title">Datos que recopilamos</div>
+                        <p>Áncora recopila únicamente los datos necesarios para operar el sistema de monitoreo. Los datos que podemos recabar incluyen:</p>
+                        <ul class="prv-list">
+                            <li>Nombre completo y correo electrónico del usuario registrado</li>
+                            <li>Datos de acceso al portal (usuario y contraseña cifrada)</li>
+                            <li>Datos generados por los sensores: detección de movimiento, presencia, caídas y distancias</li>
+                            <li>Marca de tiempo y localización del dispositivo sensor</li>
+                            <li>Dirección IP y tipo de navegador al acceder al portal web</li>
+                            <li>Historial de alertas enviadas vía Telegram</li>
+                        </ul>
+                        <div class="prv-highlight">
+                            <p><strong>Nota importante:</strong> Los datos de los sensores (movimiento, caídas, presencia) son exclusivamente operativos. No se comparten con terceros ni se utilizan con fines comerciales o publicitarios.</p>
+                        </div>
+                    </div>
+
+                    <div class="prv-card" id="uso-datos">
+                        <div class="prv-card-title">Uso de los datos</div>
+                        <p>Los datos recopilados se utilizan exclusivamente para las siguientes finalidades:</p>
+                        <ul class="prv-list">
+                            <li>Operar y mantener el sistema de monitoreo inteligente</li>
+                            <li>Enviar alertas en tiempo real a los contactos designados vía Telegram</li>
+                            <li>Permitir el acceso autenticado al portal de monitoreo</li>
+                            <li>Generar reportes históricos de eventos para el usuario</li>
+                            <li>Mejorar el funcionamiento y la precisión del sistema</li>
+                            <li>Cumplir con obligaciones legales aplicables</li>
+                        </ul>
+                    </div>
+
+                    <div class="prv-card" id="seguridad">
+                        <div class="prv-card-title">Seguridad de la información</div>
+                        <p>Áncora implementa medidas técnicas y organizativas para proteger tus datos:</p>
+                        <ul class="prv-list">
+                            <li>Comunicación cifrada mediante protocolo TLS/SSL entre dispositivos y la nube</li>
+                            <li>Autenticación con credenciales protegidas y sesiones seguras</li>
+                            <li>Acceso restringido a los datos: solo el usuario autorizado y el equipo técnico pueden acceder a la información</li>
+                            <li>Certificados X.509 para autenticación de dispositivos IoT a través de AWS IoT</li>
+                            <li>Datos en reposo cifrados mediante AWS KMS (Key Management Service)</li>
+                        </ul>
+                    </div>
+
+                    <div class="prv-card">
+                        <div class="prv-card-title">Cookies y tecnologías de rastreo</div>
+                        <p>El portal web de Áncora puede utilizar cookies de sesión para mantener activa la autenticación del usuario. No se utilizan cookies de seguimiento comercial ni se comparte información de navegación con redes publicitarias.</p>
+                        <p>El usuario puede configurar su navegador para rechazar cookies, aunque esto puede afectar el funcionamiento del portal.</p>
+                    </div>
+
+                    <div class="prv-card">
+                        <div class="prv-card-title">Transferencia de datos a terceros</div>
+                        <p>Áncora no vende, alquila ni cede datos personales a terceros con fines comerciales. Los únicos supuestos en que puede compartirse información son:</p>
+                        <ul class="prv-list">
+                            <li>Cuando sea requerido por autoridad competente conforme a la ley</li>
+                            <li>Con proveedores de infraestructura tecnológica esenciales para la operación del sistema (AWS IoT, Firebase), quienes actúan como procesadores de datos bajo acuerdos de confidencialidad</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- ══ SECCIÓN 2: PROVEEDORES EXTERNOS ══ -->
+                <div class="prv-section" id="proveedores">
+                    <div class="prv-section-header">
+                        <div class="prv-section-icon">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </div>
+                        <div>
+                            <span class="prv-section-num">02</span>
+                            <h2 class="prv-section-title">Políticas y <em>proveedores externos</em></h2>
+                        </div>
+                    </div>
+
+                    <!-- IOTAM -->
+                    <div class="prv-card">
+                        <span class="prv-provider-badge">
+                            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            IOTAM — Ingeniería y Optimización Tecnológica de América
+                        </span>
+                        <div class="prv-card-title">Privacidad y datos recabados</div>
+                        <ul class="prv-list">
+                            <li>Datos recabados: nombre, correo, teléfono, IP y proveedor de internet, fecha y hora de acceso</li>
+                            <li>Seguridad: cifrado SSL, acceso restringido y servidores protegidos</li>
+                            <li>Los datos de navegación se usan únicamente de forma interna y no se comparten con terceros</li>
+                            <li>Uso de cookies y tecnologías de rastreo para monitoreo interno del servicio</li>
+                            <li>Transferencia de datos solo para procesos legales o contractuales</li>
+                        </ul>
+                        <em class="prv-used-in">Utilizado en: IoT</em>
+                    </div>
+
+                    <!-- OMEI -->
+                    <div class="prv-card">
+                        <span class="prv-provider-badge">
+                            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M9 9h6M9 12h6M9 15h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            OMEI — Operación y Mantenimiento a Edificios Inteligentes
+                        </span>
+                        <div class="prv-card-title">Datos y finalidades</div>
+                        <ul class="prv-list">
+                            <li>Datos recabados: dirección IP, navegador, nombre, correo, teléfono y currículum cuando aplica</li>
+                            <li>Finalidad: contacto comercial, soporte, prevención de actividades maliciosas y cumplimiento normativo</li>
+                            <li>Seguridad: medidas técnicas y administrativas para protección de datos</li>
+                            <li>Derechos ARCO disponibles mediante correo electrónico a jurídico@grupohts.com.mx</li>
+                        </ul>
+                        <em class="prv-used-in">Utilizado en: IoT</em>
+                    </div>
+
+                    <!-- Microsoft -->
+                    <div class="prv-card">
+                        <span class="prv-provider-badge">
+                            <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="13" y="2" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="13" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="13" y="13" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+                            Microsoft
+                        </span>
+                        <div class="prv-card-title">Datos, uso y seguridad</div>
+                        <ul class="prv-list">
+                            <li>Datos recopilados: información del usuario y uso de productos y servicios</li>
+                            <li>Uso: ofrecer servicios, mejorar productos, personalizar experiencia y garantizar seguridad</li>
+                            <li>Compartición: solo con consentimiento del usuario, por obligación legal o con proveedores autorizados</li>
+                            <li>Cookies: para análisis, inicio de sesión y seguridad</li>
+                            <li>El usuario puede modificar o eliminar ciertos datos desde su cuenta</li>
+                        </ul>
+                        <em class="prv-used-in">Utilizado en: Ciberseguridad</em>
+                    </div>
+
+                    <!-- IBM / Ingram Micro -->
+                    <div class="prv-card">
+                        <span class="prv-provider-badge">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 10h16M4 14h8M4 18h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            IBM / Ingram Micro
+                        </span>
+                        <div class="prv-card-title">Protección de datos empresariales</div>
+                        <ul class="prv-list">
+                            <li>Manejo de datos orientado a procesos comerciales y soporte tecnológico empresarial</li>
+                            <li>Protección de datos mediante políticas internas de privacidad y cumplimiento normativo</li>
+                            <li>Uso de cookies para mejorar la experiencia del portal</li>
+                            <li>Conservación segura de información de clientes con base en normativas vigentes</li>
+                        </ul>
+                        <em class="prv-used-in">Utilizado en: Ciberseguridad</em>
+                    </div>
+
+                    <!-- Hostinger -->
+                    <div class="prv-card">
+                        <span class="prv-provider-badge">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="1.5"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 000 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            Hostinger
+                        </span>
+                        <div class="prv-card-title">Alojamiento web y privacidad</div>
+                        <ul class="prv-list">
+                            <li>Datos recopilados: nombre, correo, IP, datos de pago y uso del servicio</li>
+                            <li>Uso: alojamiento web, soporte técnico, facturación y mejora del servicio</li>
+                            <li>Seguridad: SSL, protección de servidores y control de acceso</li>
+                            <li>No vende datos personales a terceros</li>
+                            <li>Cumple con GDPR y normativas internacionales de privacidad</li>
+                        </ul>
+                        <em class="prv-used-in">Utilizado en: Desarrollo Web</em>
+                    </div>
+
+                    <!-- Firebase -->
+                    <div class="prv-card">
+                        <span class="prv-provider-badge">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L2 19h20L12 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2l-4 12 4 5 4-5-4-12z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Firebase — Google
+                        </span>
+                        <div class="prv-card-title">Plataforma en la nube</div>
+                        <ul class="prv-list">
+                            <li>Cifrado de datos en tránsito y en reposo de forma predeterminada</li>
+                            <li>Autenticación segura mediante Firebase Auth con soporte para múltiples proveedores</li>
+                            <li>Base de datos en tiempo real con reglas de seguridad configurables por el cliente</li>
+                            <li>Cumplimiento con GDPR y normativas internacionales de protección de datos</li>
+                            <li>Google no vende datos personales ni los utiliza para publicidad en servicios de Firebase</li>
+                            <li>El cliente conserva control total sobre la información almacenada en su proyecto</li>
+                        </ul>
+                        <em class="prv-used-in">Utilizado en: Desarrollo Web, IoT y Apps móviles</em>
+                    </div>
+
+                    <!-- GitHub -->
+                    <div class="prv-card">
+                        <span class="prv-provider-badge">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            GitHub
+                        </span>
+                        <div class="prv-card-title">Control de versiones y repositorios</div>
+                        <ul class="prv-list">
+                            <li>Datos recopilados: cuenta de usuario, dirección IP y actividad de uso en la plataforma</li>
+                            <li>El código del cliente sigue siendo propiedad exclusiva del cliente</li>
+                            <li>GitHub no accede a repositorios privados salvo para soporte técnico o requerimiento legal</li>
+                            <li>GitHub Copilot Business no utiliza el código del cliente para entrenar modelos de IA</li>
+                        </ul>
+                        <em class="prv-used-in">Utilizado en: Desarrollo Web e IA</em>
+                    </div>
+
+                    <!-- Flutter -->
+                    <div class="prv-card">
+                        <span class="prv-provider-badge">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 4l8 8-8 8M12 4l8 8-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Flutter — Google
+                        </span>
+                        <div class="prv-card-title">Framework de desarrollo móvil</div>
+                        <ul class="prv-list">
+                            <li>Recopila telemetría anónima del entorno de desarrollo (puede desactivarse)</li>
+                            <li>El código fuente de las aplicaciones pertenece íntegramente al desarrollador</li>
+                            <li>La analítica del SDK puede deshabilitarse desde la configuración del proyecto</li>
+                            <li>Compatible con las políticas de privacidad de Google</li>
+                        </ul>
+                        <em class="prv-used-in">Utilizado en: Apps móviles</em>
+                    </div>
+
+                    <!-- Google Play Store -->
+                    <div class="prv-card">
+                        <span class="prv-provider-badge">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M5 3l14 9-14 9V3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Google Play Store
+                        </span>
+                        <div class="prv-card-title">Distribución en Android</div>
+                        <ul class="prv-list">
+                            <li>Requiere declaración de privacidad detallada del usuario final dentro de la aplicación</li>
+                            <li>Exige sección de seguridad de datos con información clara sobre qué se recopila y para qué</li>
+                            <li>Debe ofrecerse la opción de eliminación de cuenta y datos a los usuarios</li>
+                            <li>Google exige transparencia sobre todos los datos recopilados por la app antes de su publicación</li>
+                        </ul>
+                        <em class="prv-used-in">Utilizado en: Apps móviles</em>
+                    </div>
+
+                    <!-- Apple App Store -->
+                    <div class="prv-card">
+                        <span class="prv-provider-badge">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" stroke="currentColor" stroke-width="0.5" fill="none"/></svg>
+                            Apple App Store
+                        </span>
+                        <div class="prv-card-title">Distribución en iOS</div>
+                        <ul class="prv-list">
+                            <li>Requiere App Privacy Labels con descripción exacta de los datos recopilados por la aplicación</li>
+                            <li>Exige consentimiento explícito del usuario para acceder a datos sensibles</li>
+                            <li>Debe ofrecerse la opción de eliminación de datos de forma accesible dentro de la app</li>
+                            <li>Cumplimiento obligatorio de los lineamientos de seguridad y privacidad de Apple para publicación</li>
+                        </ul>
+                        <em class="prv-used-in">Utilizado en: Apps móviles</em>
+                    </div>
+
+                </div>
+
+                <!-- ══ SECCIÓN 3: DERECHOS ══ -->
+                <div class="prv-section" id="derechos">
+                    <div class="prv-section-header">
+                        <div class="prv-section-icon">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </div>
+                        <div>
+                            <span class="prv-section-num">03</span>
+                            <h2 class="prv-section-title">Derechos del <em>usuario</em></h2>
+                        </div>
+                    </div>
+
+                    <div class="prv-card">
+                        <div class="prv-card-title">Derechos ARCO</div>
+                        <p>Como titular de tus datos personales, tienes derecho a:</p>
+                        <ul class="prv-list">
+                            <li><strong style="color:rgba(255,255,255,0.75);">Acceso:</strong> conocer qué datos personales tenemos de ti y cómo los usamos</li>
+                            <li><strong style="color:rgba(255,255,255,0.75);">Rectificación:</strong> solicitar la corrección de datos inexactos o incompletos</li>
+                            <li><strong style="color:rgba(255,255,255,0.75);">Cancelación:</strong> solicitar la eliminación de tus datos cuando no sean necesarios</li>
+                            <li><strong style="color:rgba(255,255,255,0.75);">Oposición:</strong> oponerte al tratamiento de tus datos para finalidades específicas</li>
+                        </ul>
+                        <div class="prv-highlight">
+                            <p>Para ejercer tus derechos, contacta al equipo Áncora en: <strong>ancora.info@gmail.com</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ SECCIÓN 4: CONTACTO ══ -->
+                <div class="prv-section" id="contacto">
+                    <div class="prv-section-header">
+                        <div class="prv-section-icon">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="1.5"/><path d="M22 6l-10 7L2 6" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </div>
+                        <div>
+                            <span class="prv-section-num">04</span>
+                            <h2 class="prv-section-title">Contacto y <em>consultas</em></h2>
+                        </div>
+                    </div>
+                    <div class="prv-card">
+                        <div class="prv-card-title">¿Tienes dudas sobre tus datos?</div>
+                        <p>Si tienes preguntas, comentarios o solicitudes relacionadas con el tratamiento de tus datos personales, puedes contactarnos por los siguientes medios:</p>
+                        <ul class="prv-list">
+                            <li>Correo electrónico: ancora.info@gmail.com</li>
+                            <li>Ubicación: San José del Cabo, Baja California Sur</li>
+                            <li>Teléfono: +52 624 582 6789</li>
+                        </ul>
+                        <p style="margin-top:16px;">Responderemos a tu solicitud en un plazo máximo de <strong style="color:var(--teal-sage);">20 días hábiles</strong> a partir de su recepción.</p>
+                    </div>
+                </div>
+
+            </div><!-- /col -->
+        </div><!-- /row -->
+    </div><!-- /container -->
+</section>
+
+<!-- CTA / VOLVER AL INICIO -->
+<section class="prv-cta-section">
+    <div class="container">
+        <div class="prv-cta-inner">
+            <h3>¿Listo para <em>volver al inicio?</em></h3>
+            <p>Conoce el sistema Áncora, nuestros servicios de monitoreo inteligente y el equipo detrás del proyecto.</p>
+            <div class="prv-btn-group">
+                <a href="index.html" class="prv-btn prv-btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M13 8H3M7 4l-4 4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Volver al inicio
+                </a>
+                <a href="index.html#contacto" class="prv-btn prv-btn-outline">
+                    Contacto
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER MINI -->
+<footer class="prv-footer">
+    <div class="prv-footer-inner">
+        <span>&copy; Ancora — Todos los derechos reservados.</span>
+        <div class="prv-footer-links">
+            <a href="index.html">Inicio</a>
+            <a href="privacy.html">Privacidad</a>
+            <a href="index.html#contacto">Contacto</a>
+        </div>
+    </div>
+</footer>
+
+<a href="#" class="ac-back-top" id="backTop"><i class="bi bi-arrow-up"></i></a>
+
+<script>
+    // Navbar toggle móvil
+    const navToggle = document.getElementById('navToggle');
+    const navLinks  = document.getElementById('navLinks');
+    if (navToggle) {
+        navToggle.addEventListener('click', () => {
+            navToggle.classList.toggle('open');
+            navLinks.classList.toggle('open');
+        });
+    }
+
+    // Back to top
+    const backTop = document.getElementById('backTop');
+    window.addEventListener('scroll', () => {
+        backTop.classList.toggle('show', window.scrollY > 300);
+    });
+    backTop.addEventListener('click', e => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Sidebar nav activa según scroll
+    const sections = document.querySelectorAll('.prv-section[id], .prv-card[id]');
+    const sideLinks = document.querySelectorAll('#sideNav a');
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                sideLinks.forEach(l => l.classList.remove('active'));
+                const active = document.querySelector(`#sideNav a[href="#${entry.target.id}"]`);
+                if (active) active.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

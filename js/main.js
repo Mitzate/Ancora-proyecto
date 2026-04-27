@@ -2,11 +2,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* ── Spinner ── */
     window.addEventListener("load", function () {
-        var sp = document.getElementById("spinner");
-        if (sp) {
-            sp.style.opacity = "0";
+        const spinner = document.getElementById("spinner");
+        if (spinner) {
+            spinner.style.opacity = "0";
             setTimeout(function () {
-                sp.style.display = "none";
+                spinner.style.display = "none";
             }, 700);
         }
     });
@@ -16,16 +16,17 @@ document.addEventListener("DOMContentLoaded", function () {
         new WOW().init();
     }
 
-    /* ── Navbar ── */
-    var acNav = document.getElementById("acNav");
-    var backTop = document.getElementById("backTop");
-    var navToggle = document.getElementById("navToggle");
-    var navLinks = document.getElementById("navLinks");
+    /* ── Elementos principales ── */
+    const acNav = document.getElementById("acNav");
+    const navLinks = document.getElementById("navLinks");
+    const navToggle = document.getElementById("navToggle");
+    const backTop = document.getElementById("backTop");
 
     function getNavHeight() {
         return acNav ? acNav.offsetHeight : 80;
     }
 
+    /* ── Scroll navbar ── */
     window.addEventListener("scroll", function () {
         if (acNav) {
             acNav.classList.toggle("ac-nav-scrolled", window.scrollY > 60);
@@ -34,9 +35,11 @@ document.addEventListener("DOMContentLoaded", function () {
         if (backTop) {
             backTop.classList.toggle("show", window.scrollY > 300);
         }
+
+        updateActiveLink();
     }, { passive: true });
 
-    /* ── Mobile menu ── */
+    /* ── Menú móvil ── */
     if (navToggle && navLinks) {
         navToggle.addEventListener("click", function () {
             navLinks.classList.toggle("open");
@@ -44,37 +47,40 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* ── Navbar links ── */
+    /* ── Links del navbar ── */
     document.querySelectorAll(".ac-nav-links a").forEach(function (link) {
         link.addEventListener("click", function (e) {
-            var href = link.getAttribute("href");
+            const href = this.getAttribute("href");
 
-            /* Login → dejar navegación normal */
-            if (!href || href.includes("login.html")) {
-                return;
-            }
+            /* Cerrar menú móvil siempre */
+            if (navLinks) navLinks.classList.remove("open");
+            if (navToggle) navToggle.classList.remove("open");
 
-            /* Solo manejar anclas internas */
-            if (!href.startsWith("#")) {
-                return;
-            }
-
-            if (href === "#" || href === "#!") {
+            /* Si no tiene href o es "#!" o "#", no hacer nada */
+            if (!href || href === "#" || href === "#!") {
                 e.preventDefault();
                 return;
             }
 
-            var target = document.getElementById(href.slice(1));
+            /* Si es un link a otra página (.html), dejar que navegue normal */
+            if (!href.startsWith("#")) {
+                return;
+            }
+
+            /* Es un link interno (#seccion) — scroll suave */
+            const target = document.querySelector(href);
+
             if (!target) {
+                console.warn("No existe sección:", href);
                 return;
             }
 
             e.preventDefault();
 
-            if (navLinks) navLinks.classList.remove("open");
-            if (navToggle) navToggle.classList.remove("open");
-
-            var offsetTop = target.getBoundingClientRect().top + window.scrollY - getNavHeight() - 16;
+            const offsetTop =
+                target.getBoundingClientRect().top +
+                window.pageYOffset -
+                getNavHeight();
 
             window.scrollTo({
                 top: offsetTop,
@@ -83,40 +89,44 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    /* ── Active link ── */
-    var allSections = document.querySelectorAll("section[id]");
-    var allNavLinks = document.querySelectorAll(".ac-nav-links a:not(.ac-nav-cta)");
+    /* ── Active links ── */
+    const sections = document.querySelectorAll("section[id]");
+    const menuLinks = document.querySelectorAll(".ac-nav-links a:not(.ac-nav-cta)");
 
-    window.addEventListener("scroll", function () {
-        var scrollPos = window.scrollY + getNavHeight() + 40;
+    function updateActiveLink() {
+        const scrollPos = window.scrollY + getNavHeight() + 50;
 
-        allSections.forEach(function (section) {
-            if (
-                scrollPos >= section.offsetTop &&
-                scrollPos < section.offsetTop + section.offsetHeight
-            ) {
-                allNavLinks.forEach(function (a) {
-                    a.classList.remove("active");
+        sections.forEach(function (section) {
+            const top = section.offsetTop;
+            const bottom = top + section.offsetHeight;
 
-                    if (a.getAttribute("href") === "#" + section.id) {
-                        a.classList.add("active");
+            if (scrollPos >= top && scrollPos < bottom) {
+                menuLinks.forEach(function (link) {
+                    link.classList.remove("active");
+
+                    if (link.getAttribute("href") === "#" + section.id) {
+                        link.classList.add("active");
                     }
                 });
             }
         });
-    }, { passive: true });
+    }
 
-    /* ── Video animation ── */
-    var videoSection = document.getElementById("videoSection");
+    /* ── Video reveal ── */
+    const videoSection = document.getElementById("videoSection");
 
     if (videoSection && "IntersectionObserver" in window) {
-        new IntersectionObserver(function (entries) {
+        const observer = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
                     videoSection.classList.add("in-view");
                 }
             });
-        }, { threshold: 0.2 }).observe(videoSection);
+        }, {
+            threshold: 0.2
+        });
+
+        observer.observe(videoSection);
     }
 
     /* ── Back to top ── */
@@ -134,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
     /* ── Owl Carousel ── */
     if (typeof jQuery !== "undefined") {
         jQuery(function ($) {
-            var $carousel = $(".ac-team-carousel");
+            const $carousel = $(".ac-team-carousel");
 
             if ($carousel.length) {
                 $carousel.owlCarousel({
