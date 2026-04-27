@@ -434,6 +434,9 @@ $stmt = $pdo->query("SELECT id_dispositivo, Tipo_monitoreo, id_usuario FROM t_di
         $id_dispositivo = $input['id_dispositivo'] ?? null;
         $since = $input['since'] ?? null;
         
+        // Obtener el usuario actual desde la sesión
+        $id_usuario = $_SESSION['id_usuario'] ?? null;
+        
         try {
             // Construir la consulta combinada (UNION) y aplicar filtros sobre el resultado
             $sql = "SELECT * FROM (\n";
@@ -460,6 +463,12 @@ $stmt = $pdo->query("SELECT id_dispositivo, Tipo_monitoreo, id_usuario FROM t_di
             $conditions = [];
             $params = [];
 
+            // FILTRO DE SEGURIDAD: Solo mostrar datos de dispositivos del usuario actual
+            if ($id_usuario) {
+                $conditions[] = "combined.id_dispositivo IN (SELECT id_dispositivo FROM t_dispositivos WHERE id_usuario = ?)";
+                $params[] = $id_usuario;
+            }
+            
             if ($id_dispositivo) {
                 $conditions[] = "combined.id_dispositivo = ?";
                 $params[] = $id_dispositivo;

@@ -1015,6 +1015,11 @@
                 if (dev.id_dispositivo == currentDeviceId) option.selected = true;
                 select.appendChild(option);
               });
+              
+              // Inicializar el ID del dispositivo en la UI de Firebase
+              const fbDeviceIdSpan = document.getElementById('firebase-device-id');
+              if (fbDeviceIdSpan) fbDeviceIdSpan.textContent = currentDeviceId;
+              
               select.onchange = (e) => {
                 const newId = e.target.value;
                 const selectedDev = devices.find(d => d.id_dispositivo == newId);
@@ -1023,7 +1028,20 @@
                   localStorage.setItem('tipo_monitoreo', selectedDev.Tipo_monitoreo);
                   const newMode = (selectedDev.Tipo_monitoreo || '').toLowerCase();
                   localStorage.setItem('monitoring_mode', (newMode.includes('sueno') || newMode.includes('sueño')) ? 'sueno' : 'caidas');
-                  location.reload(); // Recargar para mostrar datos del nuevo dispositivo
+                  
+                  // Actualizar UI de Firebase
+                  const fbDeviceIdSpan = document.getElementById('firebase-device-id');
+                  if (fbDeviceIdSpan) fbDeviceIdSpan.textContent = newId;
+                  
+                  // Reconfigurar Firebase listeners para el nuevo dispositivo
+                  if (typeof setupFirebaseListeners === 'function') {
+                    setupFirebaseListeners(userId, newId);
+                  }
+                  
+                  // Recargar datos del dashboard sin recargar la página
+                  if (typeof updateFullDashboard === 'function') {
+                    updateFullDashboard();
+                  }
                 }
               };
             }
@@ -1831,8 +1849,14 @@ function renderAllReadingsTable(rows, limit = 20) {
       }
 
       async function updateFullDashboard() {
-  // Obtener datos de TODOS los dispositivos (sin filtro)
-  const allRows = await fetchSensorDataForDevice(null, 100, null);
+  // Obtener el dispositivo seleccionado actualmente
+  const currentDeviceId = localStorage.getItem('id_dispositivo');
+  
+  // Si hay un dispositivo seleccionado y no estamos en modo debug, filtrar por dispositivo
+  // Si no hay dispositivo seleccionado o estamos en modo debug, mostrar todos
+  const deviceIdToFetch = (currentDeviceId && !debugShowAll) ? currentDeviceId : null;
+  
+  const allRows = await fetchSensorDataForDevice(deviceIdToFetch, 100, null);
   if (allRows && allRows.length > 0) {
     // Renderizar las tarjetas de cada dispositivo y la tabla completa
     renderDeviceCards(allRows);
@@ -1840,7 +1864,7 @@ function renderAllReadingsTable(rows, limit = 20) {
     updateConnectedModulesInfo(allRows);
   } else {
     const container = document.getElementById('devicesCardsContainer');
-    if (container) container.innerHTML = '<div class="col-12 alert alert-info">No hay datos de ningún dispositivo.</div>';
+    if (container) container.innerHTML = '<div class="col-12 alert alert-info">No hay datos para el dispositivo seleccionado.</div>';
     const tbody = document.getElementById('allReadingsTableBody');
     if (tbody) tbody.innerHTML = '<tr><td colspan="10">Sin datos</td></tr>';
   }
@@ -2152,19 +2176,39 @@ async function pollNew() {
   const db = getDatabase(app);
 
   // ========== OBTENER IDs DEL USUARIO Y DISPOSITIVO ACTUAL ==========
-  const userId = localStorage.getItem('id_usuario');
-  const deviceId = localStorage.getItem('id_dispositivo');
+  // Ahora usamos el dispositivo seleccionado del dropdown o localStorage
+  let userId = localStorage.getItem('id_usuario');
+  let deviceId = localStorage.getItem('id_dispositivo');
 
-  if (!userId || !deviceId) {
-    console.warn('⚠️ Usuario o dispositivo no identificado en localStorage. No se conectarán listeners de Firebase.');
-  } else {
+  // Referencias para cleanup de listeners anteriores
+  let presenciaUnsubscribe = null;
+  let caidaUnsubscribe = null;
+  let modoUnsubscribe = null;
+
+  // Función para configurar listeners de Firebase según el dispositivo actual
+  function setupFirebaseListeners(uid, did) {
+    if (!uid || !did) {
+      console.warn('⚠️ Usuario o dispositivo no identificado en localStorage. No se conectarán listeners de Firebase.');
+      return;
+    }
+
+    // Limpiar listeners anteriores si existen
+    if (presenciaUnsubscribe) { presenciaUnsubscribe(); presenciaUnsubscribe = null; }
+    if (caidaUnsubscribe) { caidaUnsubscribe(); caidaUnsubscribe = null; }
+    if (modoUnsubscribe) { modoUnsubscribe(); modoUnsubscribe = null; }
+
+    console.log('🔌 Conectando Firebase para usuario:', uid, 'dispositivo:', did);
+
     // ========== CONSTRUIR RUTAS DINÁMICAS ==========
-    const presenciaRef = ref(db, `/usuarios/${userId}/dispositivos/${deviceId}/ultima_lectura/presencia`);
-    const ultimaCaidaRef = ref(db, `/usuarios/${userId}/dispositivos/${deviceId}/ultima_lectura/estado_caida`);
-    const modoMonitoreoRef = ref(db, `/usuarios/${userId}/dispositivos/${deviceId}/modo`); // si lo usas
+    const presenciaRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/presencia`);
+    const ultimaCaidaRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/estado_caida`);
+    const movimientoRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/movimiento`);
+    const parametroMovRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/parametro_movimiento`);
+    const modoMonitoreoRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/modo`);
+    const ultimaActualizacionRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/fecha_hora`);
 
     // --- Escuchar presencia en tiempo real ---
-    onValue(presenciaRef, (snapshot) => {
+    presenciaUnsubscribe = onValue(presenciaRef, (snapshot) => {
       const data = snapshot.val();
       const presenciaElement = document.getElementById('firebase-presencia');
       if (presenciaElement) {
@@ -2174,8 +2218,26 @@ async function pollNew() {
       console.log('Presencia desde Firebase:', data);
     });
 
+    // --- Escuchar movimiento en tiempo real ---
+    onValue(movimientoRef, (snapshot) => {
+      const data = snapshot.val();
+      const movimientoElement = document.getElementById('firebase-movimiento');
+      if (movimientoElement) {
+        movimientoElement.innerText = data || 'Sin datos';
+      }
+    });
+
+    // --- Escuchar parámetro de movimiento ---
+    onValue(parametroMovRef, (snapshot) => {
+      const data = snapshot.val();
+      const paramElement = document.getElementById('firebase-parametro');
+      if (paramElement) {
+        paramElement.innerText = data !== null ? data : '---';
+      }
+    });
+
     // --- Escuchar último evento de caída ---
-    onValue(ultimaCaidaRef, (snapshot) => {
+    caidaUnsubscribe = onValue(ultimaCaidaRef, (snapshot) => {
       const caida = snapshot.val();
       // caida puede ser un string "CAÍDA DETECTADA" o un objeto con texto
       const esCaida = (typeof caida === 'string' && caida.includes('CAÍDA')) || (caida && caida.estado_caida && caida.estado_caida.includes('CAÍDA'));
@@ -2190,8 +2252,17 @@ async function pollNew() {
       }
     });
 
-    // (Opcional) Escuchar modo de monitoreo si tu ESP32 lo publica
-    onValue(modoMonitoreoRef, (snapshot) => {
+    // --- Escuchar última actualización ---
+    onValue(ultimaActualizacionRef, (snapshot) => {
+      const fecha = snapshot.val();
+      const fechaElement = document.getElementById('firebase-ultima-actualizacion');
+      if (fechaElement && fecha) {
+        fechaElement.innerText = new Date(fecha).toLocaleString();
+      }
+    });
+
+    // --- Escuchar modo de monitoreo ---
+    modoUnsubscribe = onValue(modoMonitoreoRef, (snapshot) => {
       const modo = snapshot.val();
       if (modo) {
         localStorage.setItem('monitoring_mode', modo);
@@ -2200,14 +2271,40 @@ async function pollNew() {
     });
   }
 
-  // ========== CONTROL DE PAUSA VÍA FIREBASE (global, sin usuario/dispositivo) ==========
-  // Puedes dejarlo así o también filtrarlo por usuario/dispositivo
+  // Inicializar listeners con el dispositivo actual
+  if (userId && deviceId) {
+    setupFirebaseListeners(userId, deviceId);
+  }
+
+  // Escuchar cambios en el selector de dispositivo
+  const deviceSelector = document.getElementById('deviceSelector');
+  if (deviceSelector) {
+    deviceSelector.addEventListener('change', function() {
+      const newDeviceId = this.value;
+      if (newDeviceId) {
+        deviceId = newDeviceId;
+        localStorage.setItem('id_dispositivo', newDeviceId);
+        setupFirebaseListeners(userId, newDeviceId);
+        
+        // Actualizar el ID del dispositivo en la UI de Firebase
+        const fbDeviceIdSpan = document.getElementById('firebase-device-id');
+        if (fbDeviceIdSpan) {
+          fbDeviceIdSpan.textContent = newDeviceId;
+        }
+        
+        // Recargar datos del dashboard para el nuevo dispositivo
+        if (typeof updateFullDashboard === 'function') {
+          updateFullDashboard();
+        }
+      }
+    });
+  }
+
+  // ========== CONTROL DE PAUSA VÍA FIREBASE ==========
   const pauseResumeBtn = document.getElementById('pauseResumeBtn');
   if (pauseResumeBtn) {
     pauseResumeBtn.addEventListener('click', async () => {
-      // Ya existe tu lógica de isMonitoringPaused (variable global)
-      const nuevaPausa = !isMonitoringPaused; // variable global que tienes
-      // Ruta global (sin filtrar) – si quieres que también sea por dispositivo, usa la ruta dinámica
+      const nuevaPausa = !isMonitoringPaused;
       await set(ref(db, '/comandos/pausa'), nuevaPausa);
     });
   }
@@ -2217,19 +2314,58 @@ async function pollNew() {
 
 <div class="row mb-3">
   <div class="col-md-6">
-    <div class="card">
+    <div class="card border-info">
       <div class="card-header bg-info text-white">
-        <i class="bi bi-broadcast"></i> Estado en tiempo real (Firebase)
+        <i class="bi bi-broadcast"></i> Estado en tiempo real (Firebase) - Dispositivo: <span id="firebase-device-id">---</span>
       </div>
       <div class="card-body">
-        <h5>Presencia actual:</h5>
-        <div class="display-6" id="firebase-presencia">---</div>
+        <div class="row">
+          <div class="col-6">
+            <h6>Presencia:</h6>
+            <div class="display-6" id="firebase-presencia">---</div>
+          </div>
+          <div class="col-6">
+            <h6>Movimiento:</h6>
+            <div class="h5" id="firebase-movimiento">---</div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-6">
+            <h6>Parámetro:</h6>
+            <div class="h4" id="firebase-parametro">---</div>
+          </div>
+          <div class="col-6">
+            <h6>Última actualización:</h6>
+            <small id="firebase-ultima-actualizacion">---</small>
+          </div>
+        </div>
         <hr>
         <div id="firebase-alerta"></div>
       </div>
     </div>
   </div>
+  <div class="col-md-6">
+    <div class="card border-secondary">
+      <div class="card-header bg-secondary text-white">
+        <i class="bi bi-clock-history"></i> Historial (Hostinger)
+      </div>
+      <div class="card-body">
+        <p class="text-muted">Los datos históricos se muestran en la tabla inferior.</p>
+        <button class="btn btn-sm btn-outline-primary" onclick="if(typeof updateFullDashboard==='function')updateFullDashboard();">
+          <i class="bi bi-arrow-clockwise"></i> Actualizar historial
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+// Actualizar el ID del dispositivo en la UI de Firebase cuando cambie
+const fbDeviceIdSpan = document.getElementById('firebase-device-id');
+if (fbDeviceIdSpan && deviceId) {
+  fbDeviceIdSpan.textContent = deviceId;
+}
+</script>
 
   </body>
   <!--end::Body-->
