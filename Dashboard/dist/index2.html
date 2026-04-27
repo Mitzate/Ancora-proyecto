@@ -261,6 +261,15 @@
                 <span id="userDisplayName" class="d-none d-md-inline">Usuario</span>
                 <span id="deviceBadge" class="badge bg-secondary ms-2 d-none" title="ID dispositivo" style="font-size:0.8em; vertical-align:middle;"></span>
               </a>
+
+              <!-- NUEVO-->
+                <span id="deviceSelectorContainer" class="ms-2" style="display: inline-block;">
+            <select id="deviceSelector" class="form-select form-select-sm" style="width: auto; display: none;">
+                <option>Cargando...</option>
+            </select>
+                 </span>
+                </a>
+              
               <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                 <!--begin::User Image-->
                 <li class="user-header text-bg-primary">
@@ -819,19 +828,59 @@
               body: JSON.stringify({ check_device: true, id_usuario: idUsuario })
             });
             const j = await safeJson(res);
-            if (j && j.success && j.hasDevice) {
-              // store device id locally so dashboard can fetch readings for this device
+            
+            if (j && j.success && j.hasDevices && j.devices && j.devices.length > 0) {
+              // El usuario tiene dispositivos - guardar el primero o el que estaba seleccionado
+              const devices = j.devices;
+              const storedDeviceId = localStorage.getItem('id_dispositivo');
+              
+              // Buscar el dispositivo guardado o usar el primero
+              let selectedDevice = null;
+              if (storedDeviceId) {
+                selectedDevice = devices.find(d => d.id_dispositivo == storedDeviceId);
+              }
+              if (!selectedDevice) {
+                selectedDevice = devices[0];
+              }
+              
+              if (selectedDevice) {
+                localStorage.setItem('id_dispositivo', selectedDevice.id_dispositivo);
+                localStorage.setItem('tipo_monitoreo', selectedDevice.tipo_monitoreo);
+                const mode = (selectedDevice.tipo_monitoreo || '').toLowerCase();
+                localStorage.setItem('monitoring_mode', (mode.includes('sueno') || mode.includes('sueño')) ? 'sueno' : 'caidas');
+                
+                // Guardar lista de dispositivos para referencia
+                localStorage.setItem('devices_list', JSON.stringify(devices));
+                
+                // Actualizar badge con cantidad de dispositivos
+                try {
+                  const badge = document.getElementById('deviceBadge');
+                  if (badge) {
+                    badge.textContent = `ID:${selectedDevice.id_dispositivo} (${devices.length})`;
+                    badge.classList.remove('d-none');
+                  }
+                } catch (e) {}
+              }
+              return; // tiene dispositivos
+            }
+
+            // Si no tiene dispositivos, verificar si hay uno en localStorage (por si acaso)
+            const storedDeviceId = localStorage.getItem('id_dispositivo');
+            if (storedDeviceId) {
+              // Hay un dispositivo guardado, verificar si existe en el servidor
               try {
-                if (j.device && j.device.id_dispositivo) {
-                  localStorage.setItem('id_dispositivo', j.device.id_dispositivo);
-                  localStorage.setItem('tipo_monitoreo', j.device.tipo_monitoreo);
-                  // Guardar modo para las tablas
-                  const mode = j.device.tipo_monitoreo === 'sueño' || j.device.tipo_monitoreo === 'sueno' ? 'sueno' : 'caidas';
-                  localStorage.setItem('monitoring_mode', mode);
+                const badge = document.getElementById('deviceBadge');
+                if (badge) {
+                  badge.textContent = `ID:${storedDeviceId}`;
+                  badge.classList.remove('d-none');
                 }
               } catch (e) {}
-              return; // already has device
+              return;
             }
+
+            // No tiene dispositivos - mostrar modal para registrar (opcional, no obligatorio ahora)
+            // Nota: Cambiamos a opcional ya que el usuario puede omitir en el registro
+            console.log('Usuario sin dispositivos registrados');
 
             // update device badge (in case localStorage already had id)
             try {
@@ -929,6 +978,146 @@
           }
         })();
       });
+    </script>
+
+        <script>
+      // Helper: parse response text safely to JSON (ya lo tienes)
+      async function safeJson(res) { /* ... */ }
+
+      // ========== NUEVA LÓGICA: CARGAR DISPOSITIVOS Y SELECTOR ==========
+      async function cargarDispositivosYSelector() {
+        const idUsuario = localStorage.getItem('id_usuario');
+        if (!idUsuario) return;
+
+        try {
+          const res = await fetch('../../api/coneccion.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ get_user_devices: true, id_usuario: idUsuario })
+          });
+          const data = await safeJson(res);
+          if (data && data.success && data.devices && data.devices.length > 0) {
+            const devices = data.devices;
+            localStorage.setItem('devices_list', JSON.stringify(devices));
+
+            // Determinar dispositivo actual (el guardado o el primero)
+            let currentDeviceId = localStorage.getItem('id_dispositivo');
+            if (!currentDeviceId || !devices.find(d => d.id_dispositivo == currentDeviceId)) {
+              currentDeviceId = devices[0].id_dispositivo;
+              localStorage.setItem('id_dispositivo', currentDeviceId);
+              localStorage.setItem('tipo_monitoreo', devices[0].Tipo_monitoreo);
+              const mode = (devices[0].Tipo_monitoreo || '').toLowerCase();
+              localStorage.setItem('monitoring_mode', (mode.includes('sueno') || mode.includes('sueño')) ? 'sueno' : 'caidas');
+            }
+
+            // Llenar el selector
+            const select = document.getElementById('deviceSelector');
+            if (select) {
+              select.style.display = 'inline-block';
+              select.innerHTML = '';
+              devices.forEach(dev => {
+                const option = document.createElement('option');
+                option.value = dev.id_dispositivo;
+                option.textContent = `${dev.nombre_identificador} (${dev.ubicacion_lugar}) - ${dev.Tipo_monitoreo}`;
+                if (dev.id_dispositivo == currentDeviceId) option.selected = true;
+                select.appendChild(option);
+              });
+              select.onchange = (e) => {
+                const newId = e.target.value;
+                const selectedDev = devices.find(d => d.id_dispositivo == newId);
+                if (selectedDev) {
+                  localStorage.setItem('id_dispositivo', newId);
+                  localStorage.setItem('tipo_monitoreo', selectedDev.Tipo_monitoreo);
+                  const newMode = (selectedDev.Tipo_monitoreo || '').toLowerCase();
+                  localStorage.setItem('monitoring_mode', (newMode.includes('sueno') || newMode.includes('sueño')) ? 'sueno' : 'caidas');
+                  location.reload(); // Recargar para mostrar datos del nuevo dispositivo
+                }
+              };
+            }
+
+            // Actualizar badge con cantidad de dispositivos
+            const badge = document.getElementById('deviceBadge');
+            if (badge) {
+              badge.textContent = `${devices.length} disp.`;
+              badge.classList.remove('d-none');
+            }
+          } else {
+            console.log('Usuario sin dispositivos');
+            // Opcional: mostrar modal para registrar un dispositivo
+          }
+        } catch (error) {
+          console.error('Error cargando dispositivos:', error);
+        }
+      }
+
+      // Reemplazar el bloque DOMContentLoaded existente (el que hacía check_device) por este:
+      document.addEventListener('DOMContentLoaded', function () {
+        // Actualizar nombre de usuario en la interfaz (igual que antes)
+        try {
+          const userName = localStorage.getItem('user_name');
+          if (userName) {
+            const displayNameEl = document.getElementById('userDisplayName');
+            const headerNameEl = document.getElementById('userHeaderName');
+            if (displayNameEl) displayNameEl.textContent = userName;
+            if (headerNameEl) headerNameEl.innerHTML = userName + '<br><small>Miembro desde...</small>';
+          }
+        } catch (e) {}
+
+        // Botón de cerrar sesión (igual)
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = '../../index.html';
+          });
+        }
+
+        // Estado inicial del botón de pausa (igual)
+        const pauseResumeBtnInit = document.getElementById('pauseResumeBtn');
+        const monitoringStatusBadgeInit = document.getElementById('monitoringStatusBadge');
+        if (pauseResumeBtnInit) {
+          pauseResumeBtnInit.classList.remove('btn-warning');
+          pauseResumeBtnInit.classList.add('btn-success');
+          pauseResumeBtnInit.innerHTML = '<i class="bi bi-play-circle"></i> Reanudar monitoreo';
+        }
+        if (monitoringStatusBadgeInit) monitoringStatusBadgeInit.style.display = 'inline-block';
+
+        // Enviar pausa inicial al servidor (opcional)
+        (async function() {
+          const dev = localStorage.getItem('id_dispositivo');
+          if (dev) {
+            try {
+              await fetch('../../api/coneccion.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ set_monitoring_pause: true, id_dispositivo: dev, is_paused: true })
+              });
+            } catch(e) {}
+          }
+        })();
+
+        // ========== Cargar dispositivos y selector (nuevo) ==========
+        cargarDispositivosYSelector().then(() => {
+          // Después de cargar dispositivos, iniciar el polling y tablas
+          const deviceId = localStorage.getItem('id_dispositivo');
+          if (deviceId) {
+            // Aquí puedes llamar a las funciones de polling que ya tienes
+            // (las funciones como initialLoad, pollNew, etc. ya están definidas más abajo)
+            // Para no duplicar, simplemente iniciamos el polling si ya existe.
+            if (typeof initialLoad === 'function') initialLoad();
+            if (typeof pollNew === 'function') setInterval(pollNew, 2000);
+          }
+        });
+
+        // ========== El resto del código de polling y tablas se mantiene igual ==========
+        // (no lo repito aquí para no alargar, pero debe conservarse todo lo que ya tenías)
+      });
+
+      // NOTA: Debes mantener todas las funciones que ya tenías: fetchSensorDataForDevice,
+      // renderCaidasTable, renderSuenioTable, loadHistoryData, etc. No se modifican.
+      // La única diferencia es que ahora el dispositivo activo se maneja mediante localStorage
+      // y el selector, y las peticiones a la API usan el id_dispositivo actual.
     </script>
     <!--end::OverlayScrollbars Configure-->
 

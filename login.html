@@ -283,6 +283,202 @@
         }
         .back-link:hover { color: var(--teal-lt); }
 
+        /* ── Panel de dispositivos ── */
+        .device-panel { display: none; }
+        .device-panel.active { display: block; }
+        
+        .device-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .device-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .device-header p {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.45);
+            line-height: 1.5;
+        }
+        
+        .device-list {
+            max-height: 320px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            padding-right: 8px;
+        }
+        
+        .device-item {
+            background: rgba(6,14,13,0.55);
+            border: 1px solid rgba(77,184,173,0.15);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+            animation: deviceIn 0.3s ease;
+        }
+        @keyframes deviceIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .device-item .remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(179,38,30,0.2);
+            border: none;
+            color: #ff8a80;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .device-item .remove-btn:hover {
+            background: rgba(179,38,30,0.4);
+        }
+        
+        .device-item h4 {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: rgba(77,184,173,0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding-right: 30px;
+        }
+        
+        .device-item .field {
+            margin-bottom: 10px;
+        }
+        
+        .device-item .field:last-child {
+            margin-bottom: 0;
+        }
+        
+        .device-item .field label {
+            font-size: 0.6rem;
+        }
+        
+        .device-item .field input,
+        .device-item .field select {
+            padding: 10px 12px 10px 36px;
+            font-size: 0.82rem;
+        }
+        
+        .device-item .field-wrap i {
+            left: 10px;
+            font-size: 0.75rem;
+        }
+        
+        .device-item select {
+            width: 100%;
+            padding: 13px 16px 13px 40px;
+            background: rgba(6,14,13,0.55);
+            border: 1px solid rgba(77,184,173,0.15);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .device-item select:focus {
+            border-color: rgba(77,184,173,0.50);
+            box-shadow: 0 0 0 3px rgba(12,128,120,0.14);
+        }
+        
+        .device-item select option {
+            background: var(--dark2);
+            color: #fff;
+        }
+        
+        .add-device-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(77,184,173,0.1);
+            border: 1px dashed rgba(77,184,173,0.3);
+            border-radius: 10px;
+            color: var(--teal-lt);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 12px;
+        }
+        .add-device-btn:hover {
+            background: rgba(77,184,173,0.2);
+            border-color: rgba(77,184,173,0.5);
+        }
+        .add-device-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .device-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        
+        .btn-skip {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: rgba(255,255,255,0.5);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-skip:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.25);
+            color: #fff;
+        }
+        
+        .btn-save-devices {
+            flex: 2;
+            padding: 14px;
+            background: linear-gradient(135deg, #0c8078 0%, #063d38 100%);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 24px rgba(12,128,120,0.30);
+        }
+        .btn-save-devices:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(12,128,120,0.42);
+        }
+        .btn-save-devices:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .device-count {
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 12px;
+        }
+
         /* ── Loading spinner en botón ── */
         .spinner-btn {
             display: inline-block;
@@ -424,6 +620,43 @@
             </button>
 
         </form>
+
+        <div class="login-sep"><span>o</span></div>
+        <div class="login-footer">
+            ¿Ya tienes cuenta?
+            <a href="#!" data-panel="login">Inicia sesión</a>
+        </div>
+
+    </div>
+
+    <!-- ══ PANEL REGISTRO DE DISPOSITIVOS ══════════════════════════════ -->
+    <div class="login-panel device-panel" id="panel-devices">
+
+        <div class="msg-box" id="msg-devices"></div>
+
+        <div class="device-header">
+            <h3>📱 Registra tus dispositivos</h3>
+            <p>Puedes registrar hasta 6 dispositivos de monitoreo.<br>Si no quieres registrar ninguno ahora, puedes omitir este paso.</p>
+        </div>
+
+        <div class="device-count" id="deviceCount">0 de 6 dispositivos</div>
+
+        <div class="device-list" id="deviceList">
+            <!-- Los dispositivos se agregan dinámicamente -->
+        </div>
+
+        <button type="button" class="add-device-btn" id="addDeviceBtn">
+            <i class="fas fa-plus"></i> Agregar dispositivo
+        </button>
+
+        <div class="device-actions">
+            <button type="button" class="btn-skip" id="skipDevicesBtn">
+                Omitir
+            </button>
+            <button type="button" class="btn-save-devices" id="saveDevicesBtn" disabled>
+                Guardar dispositivos
+            </button>
+        </div>
 
         <div class="login-sep"><span>o</span></div>
         <div class="login-footer">
@@ -622,9 +855,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 if (res.ok && data && data.success) {
-                    showMsg('register', '¡Cuenta creada! Ahora puedes iniciar sesión.', 'success');
+                    // Guardar el ID del usuario y mostrar panel de dispositivos
+                    if (data.id_usuario) {
+                        localStorage.setItem('id_usuario', data.id_usuario);
+                        localStorage.setItem('pending_user_id', data.id_usuario);
+                    }
+                    showMsg('register', '¡Cuenta creada! Ahora registra tus dispositivos.', 'success');
                     registerForm.reset();
-                    setTimeout(function(){ switchPanel('login'); }, 1500);
+                    // Mostrar panel de dispositivos después de 1 segundo
+                    setTimeout(function(){ switchPanel('devices'); }, 1000);
                 } else {
                     showMsg('register', (data && data.error) ? data.error : 'Error al registrar usuario.', 'error');
                     setLoading(btn, false, 'Crear cuenta');
@@ -637,7 +876,198 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /* ════════════════════════════════════════
+       REGISTRO DE DISPOSITIVOS
+    ════════════════════════════════════════ */
+    var deviceList = document.getElementById('deviceList');
+    var addDeviceBtn = document.getElementById('addDeviceBtn');
+    var saveDevicesBtn = document.getElementById('saveDevicesBtn');
+    var skipDevicesBtn = document.getElementById('skipDevicesBtn');
+    var deviceCountEl = document.getElementById('deviceCount');
+    var deviceCounter = 0;
+    var registeredDevices = [];
+
+    function updateDeviceCount() {
+        var count = deviceList.querySelectorAll('.device-item').length;
+        deviceCountEl.textContent = count + ' de 6 dispositivos';
+        addDeviceBtn.disabled = count >= 6;
+        
+        // Habilitar botón guardar si hay al menos un dispositivo con datos
+        var hasValidDevice = false;
+        var items = deviceList.querySelectorAll('.device-item');
+        items.forEach(function(item) {
+            var nombre = item.querySelector('.device-nombre').value.trim();
+            var ubicacion = item.querySelector('.device-ubicacion').value.trim();
+            var tipo = item.querySelector('.device-tipo').value;
+            if (nombre && ubicacion && tipo) {
+                hasValidDevice = true;
+            }
+        });
+        saveDevicesBtn.disabled = !hasValidDevice && count > 0;
+    }
+
+    function createDeviceItem(index) {
+        var div = document.createElement('div');
+        div.className = 'device-item';
+        div.dataset.index = index;
+        div.innerHTML = '<button type="button" class="remove-btn" title="Eliminar"><i class="fas fa-times"></i></button>' +
+            '<h4>Dispositivo ' + (index + 1) + '</h4>' +
+            '<div class="field">' +
+                '<label>Nombre identificador</label>' +
+                '<div class="field-wrap">' +
+                    '<i class="fas fa-tag"></i>' +
+                    '<input type="text" class="device-nombre" placeholder="Ej: Dormitorio principal" autocomplete="off">' +
+                '</div>' +
+            '</div>' +
+            '<div class="field">' +
+                '<label>Ubicación</label>' +
+                '<div class="field-wrap">' +
+                    '<i class="fas fa-map-marker-alt"></i>' +
+                    '<input type="text" class="device-ubicacion" placeholder="Ej: Casa de Juan" autocomplete="off">' +
+                '</div>' +
+            '</div>' +
+            '<div class="field">' +
+                '<label>Tipo de monitoreo</label>' +
+                '<div class="field-wrap">' +
+                    '<i class="fas fa-heartbeat"></i>' +
+                    '<select class="device-tipo">' +
+                        '<option value="">Seleccionar...</option>' +
+                        '<option value="caidas">Caídas</option>' +
+                        '<option value="sueño">Sueño</option>' +
+                    '</select>' +
+                '</div>' +
+            '</div>' +
+            '<div class="field">' +
+                '<label>Fecha de instalación</label>' +
+                '<div class="field-wrap">' +
+                    '<i class="fas fa-calendar"></i>' +
+                    '<input type="date" class="device-fecha" value="' + new Date().toISOString().split('T')[0] + '">' +
+                '</div>' +
+            '</div>';
+        
+        // Evento para eliminar
+        div.querySelector('.remove-btn').addEventListener('click', function() {
+            div.remove();
+            updateDeviceCount();
+        });
+        
+        // Eventos para validar campos
+        var inputs = div.querySelectorAll('input, select');
+        inputs.forEach(function(input) {
+            input.addEventListener('input', updateDeviceCount);
+            input.addEventListener('change', updateDeviceCount);
+        });
+        
+        return div;
+    }
+
+    if (addDeviceBtn) {
+        addDeviceBtn.addEventListener('click', function() {
+            if (deviceCounter < 6) {
+                var item = createDeviceItem(deviceCounter);
+                deviceList.appendChild(item);
+                deviceCounter++;
+                updateDeviceCount();
+            }
+        });
+    }
+
+    if (saveDevicesBtn) {
+        saveDevicesBtn.addEventListener('click', async function() {
+            var items = deviceList.querySelectorAll('.device-item');
+            var dispositivos = [];
+            
+            items.forEach(function(item) {
+                var nombre = item.querySelector('.device-nombre').value.trim();
+                var ubicacion = item.querySelector('.device-ubicacion').value.trim();
+                var tipo = item.querySelector('.device-tipo').value;
+                var fecha = item.querySelector('.device-fecha').value;
+                
+                // Solo agregar si tiene datos
+                if (nombre || ubicacion) {
+                    dispositivos.push({
+                        nombre_identificador: nombre,
+                        ubicacion_lugar: ubicacion,
+                        tipo_monitoreo: tipo,
+                        fecha_instalacion: fecha
+                    });
+                }
+            });
+            
+            var userId = localStorage.getItem('pending_user_id');
+            if (!userId) {
+                showMsg('devices', 'Error: ID de usuario no encontrado.', 'error');
+                return;
+            }
+            
+            setLoading(saveDevicesBtn, true, 'Guardar dispositivos');
+            
+            try {
+                var res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        register_devices: true,
+                        id_usuario: parseInt(userId),
+                        dispositivos: dispositivos
+                    })
+                });
+                
+                var text = await res.text();
+                var data = null;
+                
+                try { data = text ? JSON.parse(text) : null; }
+                catch(err) {
+                    showMsg('devices', 'Error del servidor: respuesta inválida.', 'error');
+                    setLoading(saveDevicesBtn, false, 'Guardar dispositivos');
+                    return;
+                }
+                
+                if (res.ok && data && data.success) {
+                    showMsg('devices', data.message || '¡Dispositivos guardados!', 'success');
+                    registeredDevices = data.devices || [];
+                    
+                    // Guardar primer dispositivo en localStorage
+                    if (registeredDevices.length > 0) {
+                        localStorage.setItem('id_dispositivo', registeredDevices[0].id_dispositivo);
+                        localStorage.setItem('tipo_monitoreo', registeredDevices[0].tipo_monitoreo);
+                        var modo = (registeredDevices[0].tipo_monitoreo || '').toLowerCase();
+                        localStorage.setItem('monitoring_mode', (modo.includes('sueno') || modo.includes('sueño')) ? 'sueno' : 'caidas');
+                    }
+                    
+                    // Limpiar pending_user_id
+                    localStorage.removeItem('pending_user_id');
+                    
+                    // Redirigir al dashboard después de 1.5 segundos
+                    setTimeout(function() {
+                        window.location.href = DASHBOARD_URL;
+                    }, 1500);
+                } else {
+                    showMsg('devices', (data && data.error) ? data.error : 'Error al registrar dispositivos.', 'error');
+                    setLoading(saveDevicesBtn, false, 'Guardar dispositivos');
+                }
+                
+            } catch(err) {
+                showMsg('devices', 'Error de red: ' + err.message, 'error');
+                setLoading(saveDevicesBtn, false, 'Guardar dispositivos');
+            }
+        });
+    }
+
+    if (skipDevicesBtn) {
+        skipDevicesBtn.addEventListener('click', function() {
+            // Limpiar pending_user_id
+            localStorage.removeItem('pending_user_id');
+            showMsg('devices', 'Puedes registrar dispositivos más tarde desde el dashboard.', 'success');
+            // Redirigir al dashboard
+            setTimeout(function() {
+                window.location.href = DASHBOARD_URL;
+            }, 1000);
+        });
+    }
+
 });
+
 </script>
 
 </body>

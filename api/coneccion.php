@@ -127,6 +127,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         exit;
     }
+///////////////////
+    // Obtener todos los dispositivos del usuario
+if (isset($input['get_user_devices']) && !empty($input['id_usuario'])) {
+    $userId = (int)$input['id_usuario'];
+    try {
+        $stmt = $pdo->prepare("SELECT id_dispositivo, nombre_identificador, ubicacion_lugar, Tipo_monitoreo FROM t_dispositivos WHERE id_usuario = ?");
+        $stmt->execute([$userId]);
+        $devices = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode(['success' => true, 'devices' => $devices]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage(), 'devices' => []]);
+    }
+    exit;
+}
 
     // REGISTRO (solo si se envía flag `register`)
     if (isset($input['register']) && $input['register'] === true) {
@@ -182,6 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         exit;
     }
+/*
 
     // Registrar dispositivo para el usuario
     if (isset($input['register_device']) && !empty($input['id_usuario'])) {
@@ -214,7 +230,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         exit;
     }
+        */
+    // Registrar múltiples dispositivos (desde el panel de registro)
+    if (isset($input['register_devices']) && $input['register_devices'] === true) {
+        if (empty($input['id_usuario']) || empty($input['dispositivos']) || !is_array($input['dispositivos'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Faltan datos o formato inválido']);
+            exit;
+        }
 
+        $userId = (int)$input['id_usuario'];
+        $devices = $input['dispositivos'];
+        $registered = [];
+
+        try {
+            // Verificar que el usuario exista
+            $checkUser = $pdo->prepare("SELECT id_usuario FROM t_usuarios WHERE id_usuario = ?");
+            $checkUser->execute([$userId]);
+            if (!$checkUser->fetch()) {
+                http_response_code(404);
+                echo json_encode(['error' => 'Usuario no encontrado']);
+                exit;
+            }
+
+            $pdo->beginTransaction();
+
+            foreach ($devices as $device) {
+                $nombre = trim($device['nombre_identificador'] ?? '');
+                $ubicacion = trim($device['ubicacion_lugar'] ?? '');
+                $tipo = $device['tipo_monitoreo'] ?? '';
+                $fecha = $device['fecha_instalacion'] ?? date('Y-m-d');
+
+                // Validar campo obligatorio (al menos nombre o ubicación, pero se puede ajustar)
+                if (empty($nombre) && empty($ubicacion)) {
+                    continue; // omitir dispositivo sin datos mínimos
+                }
+
+                $stmt = $pdo->prepare("
+                    INSERT INTO t_dispositivos 
+                    (id_usuario, nombre_identificador, ubicacion_lugar, fecha_instalacion, Tipo_monitoreo, monitoreo_pausado) 
+                    VALUES (?, ?, ?, ?, ?, 0)
+                ");
+                $stmt->execute([$userId, $nombre, $ubicacion, $fecha, $tipo]);
+                $newId = $pdo->lastInsertId();
+
+                $registered[] = [
+                    'id_dispositivo' => (int)$newId,
+                    'nombre_identificador' => $nombre,
+                    'ubicacion_lugar' => $ubicacion,
+                    'tipo_monitoreo' => $tipo
+                ];
+            }
+
+            $pdo->commit();
+
+            echo json_encode([
+                'success' => true,
+                'message' => count($registered) . ' dispositivo(s) registrado(s) correctamente',
+                'devices' => $registered
+            ]);
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            http_response_code(500);
+            echo json_encode(['error' => 'Error al registrar dispositivos: ' . $e->getMessage()]);
+        }
+        exit;
+    }
     // ============================================
     // ENDPOINTS PARA ESP32
     // ============================================
