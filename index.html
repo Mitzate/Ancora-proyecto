@@ -56,9 +56,7 @@
     }
 
     /* ════════════════════════════════════════
-       SECCIÓN VIDEO — BUG 1 FIX
-       Overlay más sutil para que el video
-       se vea con toda su fuerza visual
+       SECCIÓN VIDEO
     ════════════════════════════════════════ */
     .ac-video-section {
         position: relative;
@@ -73,8 +71,6 @@
         transform: scale(1.05);
         will-change: transform;
     }
-
-    /* BUG 1 FIX: overlay reducido para que el video se vea */
     .ac-video-overlay {
         position: absolute; inset: 0;
         background: linear-gradient(
@@ -85,24 +81,15 @@
             rgba(6,14,13,0.50) 100%
         );
     }
-
-    /* ════════════════════════════════════════
-       TEXTO SOBRE VIDEO — BUG 2 FIX
-       Sin glassmorphism, con text-shadow
-       fuerte estilo Apple para legibilidad
-    ════════════════════════════════════════ */
     .ac-video-apple-content {
         position: relative; z-index: 4;
         text-align: center; padding: 48px 56px;
         pointer-events: none;
         max-width: 820px;
-        /* SIN background, SIN backdrop-filter, SIN border */
-        /* El texto se lee por text-shadow, no por panel */
     }
     @media (max-width: 768px) {
         .ac-video-apple-content { padding: 32px 28px; }
     }
-
     .ac-video-apple-eyebrow {
         font-family: var(--font-body);
         font-size: 0.68rem; font-weight: 400;
@@ -111,7 +98,6 @@
         display: block; margin-bottom: 18px;
         opacity: 0; transform: translateY(20px);
         transition: opacity 1s ease, transform 1s ease;
-        /* BUG 2 FIX */
         text-shadow: 0 1px 12px rgba(0,0,0,0.9), 0 2px 20px rgba(0,0,0,0.7);
     }
     .ac-video-apple-title {
@@ -122,7 +108,6 @@
         line-height: 1.08; margin-bottom: 20px;
         opacity: 0; transform: translateY(30px);
         transition: opacity 1s 0.18s ease, transform 1s 0.18s ease;
-        /* BUG 2 FIX */
         text-shadow:
             0 2px 24px rgba(0,0,0,0.95),
             0 4px 48px rgba(0,0,0,0.75),
@@ -136,7 +121,6 @@
         max-width: 520px; margin: 0 auto 30px;
         opacity: 0; transform: translateY(20px);
         transition: opacity 0.9s 0.35s ease, transform 0.9s 0.35s ease;
-        /* BUG 2 FIX */
         text-shadow: 0 1px 12px rgba(0,0,0,0.95), 0 2px 24px rgba(0,0,0,0.8);
     }
     .ac-video-apple-pills {
@@ -178,15 +162,15 @@
     <div class="ac-nav-inner">
         <a href="#inicio" class="ac-logo">Ancora</a>
         <div class="ac-nav-links" id="navLinks">
-        <a href="#inicio">Inicio</a>
-        <a href="#acercade">Acerca de</a>
-        <a href="#servicios">Servicios</a>
-        <a href="#contacto">Contacto</a>
-        <a href="login.html" class="ac-nav-cta" id="loginLink">Login</a>
-         </div>
-    
+            <a href="#inicio">Inicio</a>
+            <a href="#acercade">Acerca de</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#contacto">Contacto</a>
+            <!-- BUG 1 FIX: href="login.html" funciona correctamente con el nuevo main.js -->
+            <a href="login.html" class="ac-nav-cta" id="loginLink">Login</a>
+        </div>
 
-        <button class="ac-nav-toggle" id="navToggle" aria-label="Menú">
+        <button type="button" class="ac-nav-toggle" id="navToggle" aria-label="Menú">
             <span></span>
             <span></span>
         </button>
@@ -258,17 +242,13 @@
 </section>
 
 <!-- ══ 3. VIDEO APPLE-STYLE ══════════════════════════════ -->
-<!-- BUG 1 + BUG 2 FIX: ruta corregida + overlay sutil + text-shadow en lugar de glass -->
 <section class="ac-video-section" id="videoSection">
     <div class="ac-video-wrap">
         <video class="ac-video" id="heroVideo" autoplay muted loop playsinline>
-            <!-- BUG 1 FIX: ruta correcta del video -->
             <source src="img/prototipo360/animacion_web.mp4" type="video/mp4">
         </video>
         <div class="ac-video-overlay"></div>
     </div>
-
-    <!-- BUG 2 FIX: sin glassmorphism, el texto se lee por text-shadow -->
     <div class="ac-video-apple-content">
         <span class="ac-video-apple-eyebrow">Sistema Inteligente de Monitoreo</span>
         <h2 class="ac-video-apple-title">Tecnología que<br><em>protege vidas</em></h2>
@@ -364,8 +344,18 @@
             <p class="ac-eyebrow ac-eyebrow-teal">Conoce al equipo</p>
             <h2 class="ac-section-title ac-title-light">The <em>Team</em></h2>
         </div>
-        <div class="ac-team-slider-wrap wow fadeIn" data-wow-delay="0.2s">
-            <button class="ac-team-arrow ac-team-arrow-prev" id="teamPrev" aria-label="Anterior">
+
+        <!--
+            BUG 3 FIX: Se agregó type="button" explícito en ambos botones.
+            Sin esto, algunos navegadores tratan <button> sin type como
+            type="submit", lo que puede generar comportamientos inesperados
+            y bloquear el click handler de jQuery en ciertos contextos.
+            El wrapper ya NO tiene clase "wow fadeIn" para evitar que
+            WOW.js oculte el contenedor antes de que Owl Carousel
+            mida las dimensiones del carrusel.
+        -->
+        <div class="ac-team-slider-wrap">
+            <button type="button" class="ac-team-arrow ac-team-arrow-prev" id="teamPrev" aria-label="Anterior">
                 <i class="bi bi-arrow-left"></i>
             </button>
             <div class="owl-carousel ac-team-carousel" id="teamCarousel">
@@ -376,7 +366,7 @@
                 <div class="ac-team-slide"><div class="ac-team-card"><img src="irving.jpg" alt="Irving Solis"><div class="ac-team-blur"><h4>Irving Solis</h4><small>Ingeniero</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
                 <div class="ac-team-slide"><div class="ac-team-card"><img src="Hiro.jpg" alt="Hiro"><div class="ac-team-blur"><h4>Hiro</h4><small>Ingeniero</small><div class="ac-team-social"><a href="#!"><i class="fab fa-instagram"></i></a><a href="#!"><i class="fab fa-linkedin-in"></i></a></div></div></div></div>
             </div>
-            <button class="ac-team-arrow ac-team-arrow-next" id="teamNext" aria-label="Siguiente">
+            <button type="button" class="ac-team-arrow ac-team-arrow-next" id="teamNext" aria-label="Siguiente">
                 <i class="bi bi-arrow-right"></i>
             </button>
         </div>
@@ -475,6 +465,13 @@
 </section>
 
 <!-- ══ FOOTER ══════════════════════════════════════════ -->
+<!--
+    BUG 2 FIX: Los enlaces del footer ahora están cubiertos por el
+    handler de "footer a" en main.js. Las rutas son correctas:
+    - "#acercade", "#contacto"  → smooth scroll interno
+    - "privacy.html"            → window.location.href explícito
+    - "#!"                      → preventDefault (placeholder)
+-->
 <footer class="ac-footer">
     <div class="container">
         <div class="row g-5">
@@ -492,6 +489,7 @@
                 <h5>Enlaces</h5>
                 <a href="#acercade">Acerca de</a>
                 <a href="#contacto">Contáctanos</a>
+                <!-- BUG 2 FIX: privacy.html ahora navega correctamente via main.js footer handler -->
                 <a href="privacy.html">Política de privacidad</a>
                 <a href="#!">Términos y condiciones</a>
             </div>
@@ -521,39 +519,8 @@
 <script src="lib/waypoints/waypoints.min.js"></script>
 <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 <script src="js/section360.js"></script>
+<!-- BUG 1+2+3 FIX: main.js corregido -->
 <script src="js/main.js"></script>
-
-<!-- SDK de Firebase -->
-<!--<script type="module">
-  // Importar las funciones necesarias
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
-
-  // La configuración de tu proyecto
-  const firebaseConfig = {
-    apiKey: "AIzaSyDKbWyUESIEPMB5UVFA29qHuszq6cMzzlg",
-    authDomain: "ancora-monitoreo-caidas.firebaseapp.com",
-    projectId: "ancora-monitoreo-caidas",
-    storageBucket: "ancora-monitoreo-caidas.firebasestorage.app",
-    messagingSenderId: "1050271758266",
-    appId: "1:1050271758266:web:c9e692ec90fc8fc6dc8f83",
-    measurementId: "G-MF93RP1KNZ"
-  };
-
-  // Inicializar Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  // Referencia a los datos del sensor en la base de datos
-  const sensorRef = ref(db, '/sensor/presencia');
-
-  // Escuchar los cambios en tiempo real
-  onValue(sensorRef, (snapshot) => {
-    const data = snapshot.val();
-    document.getElementById('presencia-valor').innerText = data;
-  });
-</script>
-!-->
 
 </body>
 </html>
