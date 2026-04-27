@@ -1,22 +1,57 @@
-document.addEventListener("DOMContentLoaded", function () {
+/**
+ * ANCORA — main.js  (versión defensiva final)
+ *
+ * Estrategia de diseño:
+ * ─────────────────────
+ * Cada bloque funcional está envuelto en try/catch independiente.
+ * Un error en cualquier sección NO detiene el resto del script.
+ *
+ * Todos los listeners de clic usan fase de CAPTURA (tercer arg = true)
+ * para ejecutarse ANTES que cualquier handler de jQuery, Bootstrap,
+ * section360.js u Owl Carousel.
+ *
+ * El carrusel se inicializa en window "load" (no DOMContentLoaded)
+ * para garantizar que jQuery y Owl estén completamente cargados.
+ */
 
-    /* ── Spinner ── */
+/* ── Diagnóstico de carga (visible en consola del navegador) ── */
+console.log("[Ancora] main.js cargado —", new Date().toLocaleTimeString());
+
+/* ════════════════════════════════════════════════════════════════
+   BLOQUE 1 — SPINNER
+   ════════════════════════════════════════════════════════════════ */
+try {
     window.addEventListener("load", function () {
         var spinner = document.getElementById("spinner");
         if (spinner) {
-            spinner.style.opacity = "0";
-            setTimeout(function () {
-                spinner.style.display = "none";
-            }, 700);
+            spinner.style.transition = "opacity 0.6s ease-out";
+            spinner.style.opacity   = "0";
+            setTimeout(function () { spinner.style.display = "none"; }, 700);
         }
     });
+} catch (err) {
+    console.warn("[Ancora] spinner:", err.message);
+}
 
-    /* ── WOW animations ── */
+/* ════════════════════════════════════════════════════════════════
+   BLOQUE 2 — WOW ANIMATIONS
+   ════════════════════════════════════════════════════════════════ */
+try {
     if (typeof WOW !== "undefined") {
         new WOW().init();
+        console.log("[Ancora] WOW.js inicializado.");
     }
+} catch (err) {
+    console.warn("[Ancora] WOW.js:", err.message);
+}
 
-    /* ── Elementos principales ── */
+/* ════════════════════════════════════════════════════════════════
+   BLOQUE 3 — NAVBAR + FOOTER + SCROLL
+   ════════════════════════════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", function () {
+
+    console.log("[Ancora] DOMContentLoaded — navbar, footer, scroll.");
+
     var acNav     = document.getElementById("acNav");
     var navLinks  = document.getElementById("navLinks");
     var navToggle = document.getElementById("navToggle");
@@ -26,310 +61,280 @@ document.addEventListener("DOMContentLoaded", function () {
         return acNav ? acNav.offsetHeight : 80;
     }
 
-    /* ────────────────────────────────────────────────────────
-       HELPER: scroll suave a un selector CSS con offset navbar
-    ─────────────────────────────────────────────────────────── */
     function smoothScrollTo(selector) {
-        var target = document.querySelector(selector);
-        if (!target) return;
-        var offsetTop =
-            target.getBoundingClientRect().top +
-            window.pageYOffset -
-            getNavHeight();
-        window.scrollTo({ top: offsetTop, behavior: "smooth" });
+        try {
+            var target = document.querySelector(selector);
+            if (!target) return;
+            var top = target.getBoundingClientRect().top + window.pageYOffset - getNavHeight();
+            window.scrollTo({ top: top, behavior: "smooth" });
+        } catch (err) {
+            console.warn("[Ancora] smoothScrollTo:", err.message);
+        }
     }
 
     /* ── Scroll: navbar sombra + back-to-top ── */
-    window.addEventListener("scroll", function () {
-        if (acNav) {
-            acNav.classList.toggle("ac-nav-scrolled", window.scrollY > 60);
-        }
-        if (backTop) {
-            backTop.classList.toggle("show", window.scrollY > 300);
-        }
-        updateActiveLink();
-    }, { passive: true });
+    try {
+        window.addEventListener("scroll", function () {
+            if (acNav)   acNav.classList.toggle("ac-nav-scrolled", window.scrollY > 60);
+            if (backTop) backTop.classList.toggle("show", window.scrollY > 300);
+            updateActiveLink();
+        }, { passive: true });
+    } catch (err) {
+        console.warn("[Ancora] scroll handler:", err.message);
+    }
 
     /* ── Menú móvil toggle ── */
-    if (navToggle && navLinks) {
-        navToggle.addEventListener("click", function () {
-            navLinks.classList.toggle("open");
-            navToggle.classList.toggle("open");
-        });
+    try {
+        if (navToggle && navLinks) {
+            navToggle.addEventListener("click", function () {
+                navLinks.classList.toggle("open");
+                navToggle.classList.toggle("open");
+            });
+        }
+    } catch (err) {
+        console.warn("[Ancora] mobile menu:", err.message);
     }
 
-    /* ════════════════════════════════════════════════════════
-       PRIORIDAD 1 — NAVBAR
-       ─────────────────────────────────────────────────────────
-       CAUSA RAÍZ DEL BUG:
-       El selector original "document.querySelectorAll('.ac-nav-links a')"
-       es correcto, pero la condición de desvío a window.location.href
-       nunca se ejecutaba porque jQuery (cargado después en el HTML)
-       puede agregar sus propios listeners que compiten con los listeners
-       vanilla JS cuando preventDefault() ya fue llamado.
+    /* ──────────────────────────────────────────────────────────
+       NAVBAR — Clics (fase de CAPTURA, antes que cualquier otro script)
+    ────────────────────────────────────────────────────────── */
+    try {
+        var navLinkEls = document.querySelectorAll(".ac-nav-links a");
+        console.log("[Ancora] Navbar links encontrados:", navLinkEls.length);
 
-       SOLUCIÓN:
-       1. Registrar el handler en la fase de CAPTURA (tercer argumento
-          `true` en addEventListener). La fase de captura se ejecuta
-          ANTES que cualquier listener de jQuery o Bootstrap, garantizando
-          que nuestro handler sea el primero en procesar el evento.
-       2. Para enlaces externos (.html) usar window.location.href explícito.
-       3. Para anclas internas (#) usar smoothScrollTo.
-       4. Para placeholders (#, #!) solo preventDefault sin más.
-    ════════════════════════════════════════════════════════ */
-    var navLinkEls = document.querySelectorAll(".ac-nav-links a");
-    navLinkEls.forEach(function (link) {
-        link.addEventListener("click", function (e) {
-            var href = this.getAttribute("href");
+        navLinkEls.forEach(function (link) {
+            link.addEventListener("click", function (e) {
+                var href = this.getAttribute("href");
+                console.log("[Ancora] Navbar clic →", href);
 
-            /* Siempre cerrar menú móvil primero */
-            if (navLinks)  navLinks.classList.remove("open");
-            if (navToggle) navToggle.classList.remove("open");
+                if (navLinks)  navLinks.classList.remove("open");
+                if (navToggle) navToggle.classList.remove("open");
 
-            /* Placeholder vacío o solo "#" — bloquear sin hacer nada */
-            if (!href || href === "#" || href === "#!") {
-                e.preventDefault();
-                return;
-            }
+                if (!href || href === "#" || href === "#!") {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    return;
+                }
 
-            /* ✅ ENLACE EXTERNO: login.html, registro.html, etc.
-               Llamamos preventDefault() para cancelar el comportamiento
-               nativo del navegador y luego navegamos de forma explícita.
-               Esto evita que cualquier otro listener (jQuery, Bootstrap,
-               section360.js, Owl Carousel) interfiera. */
-            if (!href.startsWith("#")) {
-                e.preventDefault();
-                e.stopImmediatePropagation(); /* cancela listeners subsecuentes */
-                window.location.href = href;
-                return;
-            }
+                /* Enlace externo: login.html, etc. */
+                if (!href.startsWith("#")) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    console.log("[Ancora] Redirigiendo a:", href);
+                    window.location.href = href;
+                    return;
+                }
 
-            /* ✅ ANCLA INTERNA: #inicio, #acercade, #servicios, #contacto
-               Prevenimos el salto nativo y aplicamos smooth scroll con
-               offset de navbar. */
-            e.preventDefault();
-            smoothScrollTo(href);
-
-        }, true); /* <-- true = fase de CAPTURA: se ejecuta antes que jQuery */
-    });
-
-    /* ════════════════════════════════════════════════════════
-       PRIORIDAD 2 — FOOTER: enlace a privacy.html y otros
-       ─────────────────────────────────────────────────────────
-       CAUSA RAÍZ DEL BUG (doble listener):
-       El selector original era "footer a, .ac-footer a".
-       El <footer> en el HTML tiene AMBAS: es un <footer> (tag) Y
-       tiene la clase .ac-footer. Por eso querySelectorAll devolvía
-       el mismo nodo dos veces en el NodeList, y se registraban
-       DOS event listeners en cada enlace del footer.
-
-       El resultado: preventDefault() se llamaba dos veces, y en
-       algunos navegadores el segundo listener volvía a procesar
-       el evento ya prevenido, interfiriendo con window.location.href.
-
-       SOLUCIÓN:
-       1. Usar un Set para deduplicar los nodos antes de iterar.
-       2. Registrar también en fase de captura para evitar interferencia
-          de otros scripts (misma razón que el navbar).
-       3. stopImmediatePropagation() para enlaces externos.
-    ════════════════════════════════════════════════════════ */
-    var footerLinkSet = new Set();
-    document.querySelectorAll("footer a").forEach(function (el) { footerLinkSet.add(el); });
-    document.querySelectorAll(".ac-footer a").forEach(function (el) { footerLinkSet.add(el); });
-
-    footerLinkSet.forEach(function (link) {
-        link.addEventListener("click", function (e) {
-            var href = this.getAttribute("href");
-
-            /* Placeholder vacío */
-            if (!href || href === "#" || href === "#!") {
-                e.preventDefault();
-                return;
-            }
-
-            /* ✅ ENLACE EXTERNO: privacy.html, otras páginas */
-            if (!href.startsWith("#")) {
+                /* Ancla interna: smooth scroll */
                 e.preventDefault();
                 e.stopImmediatePropagation();
-                window.location.href = href;
-                return;
-            }
+                smoothScrollTo(href);
 
-            /* ✅ ANCLA INTERNA: smooth scroll con offset navbar */
-            e.preventDefault();
-            smoothScrollTo(href);
-
-        }, true); /* fase de captura */
-    });
-
-    /* ── Active links según sección visible ── */
-    var sections  = document.querySelectorAll("section[id]");
-    var menuLinks = document.querySelectorAll(".ac-nav-links a:not(.ac-nav-cta)");
-
-    function updateActiveLink() {
-        var scrollPos = window.scrollY + getNavHeight() + 50;
-
-        sections.forEach(function (section) {
-            var top    = section.offsetTop;
-            var bottom = top + section.offsetHeight;
-
-            if (scrollPos >= top && scrollPos < bottom) {
-                menuLinks.forEach(function (link) {
-                    link.classList.remove("active");
-                    if (link.getAttribute("href") === "#" + section.id) {
-                        link.classList.add("active");
-                    }
-                });
-            }
+            }, true); /* ← fase de CAPTURA */
         });
+
+    } catch (err) {
+        console.error("[Ancora] navbar links:", err.message);
     }
 
-    /* ── Video section reveal con IntersectionObserver ── */
-    var videoSection = document.getElementById("videoSection");
-    if (videoSection && "IntersectionObserver" in window) {
-        var videoObserver = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    videoSection.classList.add("in-view");
+    /* ──────────────────────────────────────────────────────────
+       FOOTER — Clics (Set para evitar doble listener)
+    ────────────────────────────────────────────────────────── */
+    try {
+        var footerSet = new Set();
+        document.querySelectorAll("footer a").forEach(function (el) { footerSet.add(el); });
+        document.querySelectorAll(".ac-footer a").forEach(function (el) { footerSet.add(el); });
+
+        console.log("[Ancora] Footer links (deduplicados):", footerSet.size);
+
+        footerSet.forEach(function (link) {
+            link.addEventListener("click", function (e) {
+                var href = this.getAttribute("href");
+                console.log("[Ancora] Footer clic →", href);
+
+                if (!href || href === "#" || href === "#!") {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    return;
+                }
+
+                if (!href.startsWith("#")) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    console.log("[Ancora] Footer redirigiendo a:", href);
+                    window.location.href = href;
+                    return;
+                }
+
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                smoothScrollTo(href);
+
+            }, true); /* ← fase de CAPTURA */
+        });
+
+    } catch (err) {
+        console.error("[Ancora] footer links:", err.message);
+    }
+
+    /* ── Active links según sección visible ── */
+    try {
+        var sections  = document.querySelectorAll("section[id]");
+        var menuLinks = document.querySelectorAll(".ac-nav-links a:not(.ac-nav-cta)");
+
+        function updateActiveLink() {
+            var scrollPos = window.scrollY + getNavHeight() + 50;
+            sections.forEach(function (section) {
+                var top    = section.offsetTop;
+                var bottom = top + section.offsetHeight;
+                if (scrollPos >= top && scrollPos < bottom) {
+                    menuLinks.forEach(function (link) {
+                        link.classList.remove("active");
+                        if (link.getAttribute("href") === "#" + section.id) {
+                            link.classList.add("active");
+                        }
+                    });
                 }
             });
-        }, { threshold: 0.2 });
-        videoObserver.observe(videoSection);
+        }
+
+        /* Hacer updateActiveLink accesible para el scroll handler de arriba */
+        window.__ancoraUpdateActive = updateActiveLink;
+
+    } catch (err) {
+        console.warn("[Ancora] active links:", err.message);
+        window.__ancoraUpdateActive = function () {};
+    }
+
+    function updateActiveLink() {
+        if (typeof window.__ancoraUpdateActive === "function") {
+            window.__ancoraUpdateActive();
+        }
+    }
+
+    /* ── Video reveal ── */
+    try {
+        var videoSection = document.getElementById("videoSection");
+        if (videoSection && "IntersectionObserver" in window) {
+            new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        videoSection.classList.add("in-view");
+                    }
+                });
+            }, { threshold: 0.2 }).observe(videoSection);
+        }
+    } catch (err) {
+        console.warn("[Ancora] video observer:", err.message);
     }
 
     /* ── Back to top ── */
-    if (backTop) {
-        backTop.addEventListener("click", function (e) {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        });
+    try {
+        if (backTop) {
+            backTop.addEventListener("click", function (e) {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+        }
+    } catch (err) {
+        console.warn("[Ancora] back-to-top:", err.message);
     }
 
-    /* ════════════════════════════════════════════════════════
-       PRIORIDAD 3 — TEAM CAROUSEL (Owl Carousel + flechas)
-       ─────────────────────────────────────────────────────────
-       CAUSAS RAÍZ DEL BUG:
+    console.log("[Ancora] DOMContentLoaded — completado.");
 
-       A) TIMING: jQuery y Owl Carousel se cargan DESPUÉS del
-          DOMContentLoaded (están al final del body en el HTML).
-          Si este script corre demasiado rápido, $.fn.owlCarousel
-          todavía no existe cuando se intenta inicializar.
+}); /* fin DOMContentLoaded */
 
-       B) FLECHAS SIN RESPUESTA: Los triggers
-          .trigger("prev.owl.carousel") y .trigger("next.owl.carousel")
-          solo funcionan después de que owlCarousel() haya inicializado
-          exitosamente. Si la inicialización falló silenciosamente (por
-          el problema de timing), los triggers no hacen nada.
+/* ════════════════════════════════════════════════════════════════
+   BLOQUE 4 — TEAM CAROUSEL
+   window "load" garantiza que jQuery y Owl estén 100% ejecutados
+   ════════════════════════════════════════════════════════════════ */
+window.addEventListener("load", function () {
 
-       C) WOW.js: Si el wrapper del carrusel tiene wow fadeIn y está
-          en opacity:0 cuando Owl intenta medir el ancho de los items,
-          Owl calcula width:0 y el carrusel queda roto (items sin ancho).
-          El HTML ya removió wow del wrapper — esto está bien.
+    console.log("[Ancora] window load — iniciando carrusel.");
 
-       SOLUCIÓN:
-       1. Usar window.addEventListener("load") en lugar de
-          document.addEventListener("DOMContentLoaded"). El evento
-          "load" se dispara DESPUÉS de que todos los scripts externos
-          (jQuery, Owl Carousel) han terminado de cargarse y ejecutarse,
-          eliminando el problema de timing completamente.
-
-       2. Verificar que $.fn.owlCarousel exista antes de inicializar.
-
-       3. Usar delegación de eventos $(document).on() para las flechas,
-          que funciona independientemente del orden de inicialización.
-
-       4. Pasar duración explícita [300] al trigger de Owl.
-
-       5. Llamar .trigger("refresh.owl.carousel") después de inicializar
-          para forzar a Owl a recalcular dimensiones en caso de que el
-          carrusel haya sido inicializado mientras estaba oculto.
-    ════════════════════════════════════════════════════════ */
-    window.addEventListener("load", function () {
+    try {
 
         if (typeof jQuery === "undefined") {
-            console.warn("Ancora: jQuery no está disponible. Verifica que ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js cargue correctamente.");
+            console.error("[Ancora] jQuery no disponible. Verifica que cargue desde ajax.googleapis.com");
             return;
         }
 
         jQuery(function ($) {
 
-            /* ── Team Carousel ── */
+            if (typeof $.fn.owlCarousel === "undefined") {
+                console.error("[Ancora] Owl Carousel no disponible. Verifica: lib/owlcarousel/owl.carousel.min.js");
+                return;
+            }
+
             var $carousel = $(".ac-team-carousel");
 
             if (!$carousel.length) {
-                console.warn("Ancora: .ac-team-carousel no encontrado en el DOM.");
+                console.warn("[Ancora] .ac-team-carousel no encontrado en el DOM.");
                 return;
             }
 
-            if (typeof $.fn.owlCarousel === "undefined") {
-                console.warn("Ancora: owl.carousel.min.js no está cargado. Verifica la ruta lib/owlcarousel/owl.carousel.min.js");
-                return;
-            }
+            console.log("[Ancora] Owl: slides encontrados =",
+                $carousel.find(".ac-team-slide").length);
 
-            /* Destruir instancia previa si existiera (evita doble init) */
+            /* Destruir instancia previa si ya estaba inicializada */
             if ($carousel.hasClass("owl-loaded")) {
                 $carousel.trigger("destroy.owl.carousel");
                 $carousel.removeClass("owl-loaded owl-drag");
+                console.log("[Ancora] Owl: instancia previa destruida.");
             }
 
             $carousel.owlCarousel({
-                loop: true,
-                margin: 20,
-                nav: false,
-                dots: false,
-                autoplay: false,
-                smartSpeed: 400,
-                responsive: {
-                    0:    { items: 1 },
-                    576:  { items: 2 },
-                    768:  { items: 3 },
-                    1200: { items: 4 }
+                loop       : true,
+                margin     : 20,
+                nav        : false,
+                dots       : false,
+                autoplay   : false,
+                smartSpeed : 400,
+                responsive : {
+                    0    : { items: 1 },
+                    576  : { items: 2 },
+                    768  : { items: 3 },
+                    1200 : { items: 4 }
                 },
-                onInitialized: function () {
-                    /*
-                       ✅ FIX TIMING: Después de inicializar, forzamos
-                       un refresh para que Owl recalcule dimensiones
-                       correctamente aunque el contenedor haya estado
-                       oculto previamente (ej. por WOW.js).
-                    */
+                onInitialized: function (event) {
+                    console.log("[Ancora] Owl inicializado. Items:", event.item.count);
                     setTimeout(function () {
                         $carousel.trigger("refresh.owl.carousel");
+                        console.log("[Ancora] Owl refreshed.");
                     }, 150);
                 }
             });
 
-            /*
-               ✅ FLECHAS: Delegación de eventos en document.
-               Funciona aunque los botones se rendericen tarde.
-               stopPropagation() evita que el clic suba al handler
-               del navbar o footer por error.
-            */
-            $(document).on("click", "#teamPrev", function (e) {
+            /* ── Flechas: off().on() previene acumulación de listeners ── */
+            $(document).off("click.ancora", "#teamPrev").on("click.ancora", "#teamPrev", function (e) {
                 e.stopPropagation();
+                console.log("[Ancora] Flecha PREV.");
                 $carousel.trigger("prev.owl.carousel", [300]);
             });
 
-            $(document).on("click", "#teamNext", function (e) {
+            $(document).off("click.ancora", "#teamNext").on("click.ancora", "#teamNext", function (e) {
                 e.stopPropagation();
+                console.log("[Ancora] Flecha NEXT.");
                 $carousel.trigger("next.owl.carousel", [300]);
             });
 
-            /* ── Testimonial Carousel (si existe en la página) ── */
+            console.log("[Ancora] Flechas #teamPrev y #teamNext conectadas.");
+
+            /* ── Testimonial Carousel opcional ── */
             if ($(".testimonial-carousel").length) {
                 $(".testimonial-carousel").owlCarousel({
-                    items: 1,
-                    autoplay: true,
-                    smartSpeed: 1000,
-                    animateIn: "fadeIn",
-                    animateOut: "fadeOut",
-                    dots: true,
-                    loop: true,
-                    nav: false
+                    items: 1, autoplay: true, smartSpeed: 1000,
+                    animateIn: "fadeIn", animateOut: "fadeOut",
+                    dots: true, loop: true, nav: false
                 });
             }
 
         }); /* jQuery ready */
 
-    }); /* window load */
+    } catch (err) {
+        console.error("[Ancora] Carrusel error crítico:", err.message);
+    }
 
-}); /* DOMContentLoaded */
+    console.log("[Ancora] window load — completado.");
+
+}); /* fin window load */
