@@ -215,23 +215,40 @@ if (isset($input['get_user_devices']) && !empty($input['id_usuario'])) {
         exit;
     }
 
-    // Check device for user
-    if (isset($input['check_device']) && !empty($input['id_usuario'])) {
-        try {
-            $stmt = $pdo->prepare("SELECT id_dispositivo, fecha_instalacion, nombre_identificador, Tipo_monitoreo AS tipo_monitoreo, ubicacion_lugar FROM t_dispositivos WHERE id_usuario = ? LIMIT 1");
-            $stmt->execute([$input['id_usuario']]);
-            $dispositivo = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($dispositivo) {
-                echo json_encode(['success' => true, 'hasDevice' => true, 'device' => $dispositivo]);
-            } else {
-                echo json_encode(['success' => true, 'hasDevice' => false]);
-            }
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Error al verificar dispositivo: ' . $e->getMessage()]);
+// Check device for user - múltiples dispositivos
+if (isset($input['check_device']) && !empty($input['id_usuario'])) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT 
+                id_dispositivo, 
+                fecha_instalacion, 
+                nombre_identificador, 
+                Tipo_monitoreo AS tipo_monitoreo, 
+                ubicacion_lugar 
+            FROM t_dispositivos 
+            WHERE id_usuario = ?
+        ");
+        $stmt->execute([$input['id_usuario']]);
+        $devices = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        if (count($devices) > 0) {
+            echo json_encode([
+                'success' => true,
+                'hasDevices' => true,
+                'devices' => $devices
+            ]);
+        } else {
+            echo json_encode([
+                'success' => true,
+                'hasDevices' => false
+            ]);
         }
-        exit;
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Error al verificar dispositivos: ' . $e->getMessage()]);
     }
+    exit;
+}
 /*
 
     // Registrar dispositivo para el usuario
