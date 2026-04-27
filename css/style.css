@@ -1079,12 +1079,11 @@ img { display: block; max-width: 100%; }
   cursor: pointer;
 }
 
-/* Card del centro ligeramente más alta → efecto premium asimétrico */
 .ac-tg-card--mid {
-  transform: translateY(-14px);
+  transform: translateY(0);
 }
 .ac-tg-card--mid:hover {
-  transform: translateY(-22px) !important;
+  transform: translateY(-8px) !important;
 }
 
 .ac-tg-card:hover {
@@ -1099,7 +1098,7 @@ img { display: block; max-width: 100%; }
 /* Imagen */
 .ac-tg-img-wrap {
   position: relative;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 4;
   overflow: hidden;
 }
 
