@@ -1157,7 +1157,14 @@
 
       async function fetchSensorDataForDevice(id_dispositivo, limit = 50, since = null) {
         try {
+          const userId = localStorage.getItem('id_usuario');
           const body = { get_sensor_data: true, limit: limit };
+          
+          // Incluir el ID del usuario para filtrar datos en el servidor
+          if (userId) {
+            body.id_usuario = parseInt(userId);
+          }
+          
           // Solo filtrar si se proporcionó un id_dispositivo válido (no null/undefined) y no estamos en modo debug
           if (id_dispositivo && !debugShowAll) {
             body.id_dispositivo = id_dispositivo;
