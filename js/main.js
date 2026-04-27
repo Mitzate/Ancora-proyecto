@@ -1,9 +1,9 @@
 /* =========================================================
-   ANCORA — main.js v11
-   Carousel vanilla integrado — sin Owl, sin jQuery para team
+   ANCORA — main.js v12
+   Fix: carousel init con timing correcto + privacy link
 ========================================================= */
 
-console.log("[Ancora] main.js v11 cargado");
+console.log("[Ancora] main.js v12 cargado");
 
 /* =========================
    SPINNER
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
     /* ── SMOOTH SCROLL ──────────────────────────────────────
        Solo intercepta anclas puras (#seccion).
        Links reales como login.html y privacy.html se ignoran
-       para que el browser navegue normalmente.
+       y el browser navega normalmente.
     ─────────────────────────────────────────────────────── */
     document.querySelectorAll('a[href^="#"]').forEach(link => {
         link.addEventListener("click", function (e) {
@@ -56,26 +56,32 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const target = document.querySelector(href);
-
             if (target) {
                 e.preventDefault();
-
                 const navHeight = nav ? nav.offsetHeight : 80;
                 const top = target.getBoundingClientRect().top + window.scrollY - navHeight;
-
                 window.scrollTo({ top, behavior: "smooth" });
-
                 if (navLinks) navLinks.classList.remove("open");
                 if (navToggle) navToggle.classList.remove("open");
             }
         });
     });
 
-    /* ── FOOTER: privacy link — navegación directa ── */
-    document.querySelectorAll('.ac-footer a[href$=".html"]').forEach(link => {
-        link.addEventListener("click", function () {
+    /* ── FOOTER: privacy.html — forzar navegación directa ──
+       Busca CUALQUIER link en el footer que apunte a .html
+       y lo ejecuta con window.location para garantizar la
+       navegación sin importar otros listeners activos.
+    ─────────────────────────────────────────────────────── */
+    document.querySelectorAll('.ac-footer a').forEach(link => {
+        const href = link.getAttribute("href");
+        if (!href || href.startsWith("#")) return; /* solo links reales */
+
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
             if (navLinks) navLinks.classList.remove("open");
             if (navToggle) navToggle.classList.remove("open");
+            window.location.href = href;
         });
     });
 
@@ -104,7 +110,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /* ════════════════════════════════════════════════════════
-       TEAM CAROUSEL — Vanilla JS puro (sin Owl, sin jQuery)
+       TEAM CAROUSEL — Vanilla JS puro
+       FIX v12: init() se ejecuta en window.load para que
+       viewport.clientWidth ya tenga las dimensiones reales.
+       En DOMContentLoaded el layout aún no está pintado y
+       clientWidth puede devolver 0, haciendo que slideW = 0
+       y las flechas muevan 0px (parecen no funcionar).
     ════════════════════════════════════════════════════════ */
     const track    = document.getElementById("acvTrack");
     const viewport = document.getElementById("acvViewport");
@@ -122,38 +133,30 @@ document.addEventListener("DOMContentLoaded", function () {
         let slideW    = 0;
         let animating = false;
 
-        /* Cuántos slides caben según el ancho del viewport */
         function calcVisible() {
             const vw = viewport.clientWidth;
             if      (vw <= 575) visible = 1;
             else if (vw <= 991) visible = 3;
             else                visible = 4;
-
             slideW = (vw - GAP * (visible - 1)) / visible + GAP;
         }
 
-        /* Mover el track al índice indicado */
         function goTo(index, animate) {
             const maxIndex = Math.max(0, total - visible);
             current = Math.max(0, Math.min(index, maxIndex));
-
             track.style.transition = animate
                 ? "transform 0.48s cubic-bezier(0.22,1,0.36,1)"
                 : "none";
-
             track.style.transform = `translateX(${-(current * slideW)}px)`;
-
             updateDots();
             updateButtons();
         }
 
-        /* Estado de los botones */
         function updateButtons() {
             btnPrev.disabled = current <= 0;
             btnNext.disabled = current >= total - visible;
         }
 
-        /* Crear dots */
         function buildDots() {
             if (!dotsWrap) return;
             dotsWrap.innerHTML = "";
@@ -168,7 +171,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        /* Actualizar dot activo */
         function updateDots() {
             if (!dotsWrap) return;
             dotsWrap.querySelectorAll(".acv-dot").forEach((dot, i) => {
@@ -176,44 +178,49 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        /* Inicializar */
         function init() {
             calcVisible();
             buildDots();
-            goTo(0, false);
+            /* Sin animación en la posición inicial */
+            track.style.transition = "none";
+            track.style.transform  = "translateX(0px)";
+            updateButtons();
+            updateDots();
+            /* Habilitar animaciones tras un frame */
             requestAnimationFrame(() => {
                 track.style.transition = "transform 0.48s cubic-bezier(0.22,1,0.36,1)";
             });
+            console.log("[Ancora] Carousel init — slideW:", slideW, "visible:", visible);
         }
 
         /* Clicks en flechas */
-        btnPrev.addEventListener("click", () => { if (!animating) goTo(current - 1, true); });
-        btnNext.addEventListener("click", () => { if (!animating) goTo(current + 1, true); });
+        btnPrev.addEventListener("click", () => {
+            if (!animating) goTo(current - 1, true);
+        });
+        btnNext.addEventListener("click", () => {
+            if (!animating) goTo(current + 1, true);
+        });
 
-        /* Bloquear clicks durante la animación */
         track.addEventListener("transitionstart", () => { animating = true; });
         track.addEventListener("transitionend",   () => { animating = false; });
 
         /* Touch / Swipe */
         let touchStartX = 0;
         let touchDeltaX = 0;
-
         viewport.addEventListener("touchstart", e => {
             touchStartX = e.touches[0].clientX;
             touchDeltaX = 0;
         }, { passive: true });
-
         viewport.addEventListener("touchmove", e => {
             touchDeltaX = e.touches[0].clientX - touchStartX;
         }, { passive: true });
-
         viewport.addEventListener("touchend", () => {
             if (Math.abs(touchDeltaX) > 40) {
                 goTo(touchDeltaX < 0 ? current + 1 : current - 1, true);
             }
         });
 
-        /* Recalcular en resize */
+        /* Resize */
         let resizeTimer;
         window.addEventListener("resize", () => {
             clearTimeout(resizeTimer);
@@ -224,8 +231,14 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 150);
         });
 
-        init();
-        console.log("[Ancora] Carousel vanilla inicializado");
+        /* ── CLAVE DEL FIX: inicializar en window.load, no en
+           DOMContentLoaded, para que clientWidth sea correcto ── */
+        if (document.readyState === "complete") {
+            /* La página ya cargó (ej: script diferido) */
+            init();
+        } else {
+            window.addEventListener("load", init);
+        }
     }
 
 }); // end DOMContentLoaded

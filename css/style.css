@@ -581,43 +581,6 @@ img { display: block; max-width: 100%; }
     90%  { opacity:0.6; }
     100% { transform:translateY(-65px); opacity:0; }
 }
-
-.ac-team-slider-wrap {
-    position: relative; padding: 0 72px;
-    z-index: 2;
-}
-.ac-team-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 1px solid rgba(77,184,173,0.45);
-    background: rgba(12,128,120,0.25);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    color: #ffffff;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 10;
-    outline: none;
-}
-.ac-team-arrow:hover {
-    background: linear-gradient(135deg, rgba(12,128,120,0.60) 0%, rgba(77,184,173,0.35) 100%);
-    border-color: rgba(77,184,173,0.65);
-    box-shadow: 0 0 18px rgba(77,184,173,0.20); color: #fff;
-}
-.ac-team-arrow-prev { left: 0; }
-.ac-team-arrow-next { right: 0; }
-.ac-team-carousel .owl-nav,
-.ac-team-carousel .owl-dots { display: none !important; }
-
-.ac-team-slide { padding: 0 10px; }
 .ac-team-card {
     border-radius: 20px; overflow: hidden; position: relative;
     aspect-ratio: 3/4; max-height: 340px;
@@ -898,7 +861,6 @@ img { display: block; max-width: 100%; }
 @media (max-width: 992px) {
     .ac-desc-right { min-height: 60vh; }
     .ac-proto-stage { max-width: 340px; }
-    .ac-team-slider-wrap { padding: 0 60px; }
     .ac-newsletter-inner { flex-direction: column; text-align: center; }
     .ac-newsletter-form { width: 100%; justify-content: center; }
     .ac-newsletter-form input { min-width: 0; flex: 1; }
@@ -910,7 +872,6 @@ img { display: block; max-width: 100%; }
     .ac-video-features { flex-direction: column; align-items: flex-start; padding: 0 24px; }
     .ac-srv-cards { grid-template-columns: 1fr; }
     .ac-footer-bottom { flex-direction: column; text-align: center; }
-    .ac-team-slider-wrap { padding: 0 52px; }
 }
 
 /* ===== SOLUCIÓN CLICS BLOQUEADOS ===== */
@@ -931,19 +892,10 @@ img { display: block; max-width: 100%; }
     z-index: 99999 !important;
 }
 
-/* flechas arriba del carrusel */
-.ac-team-arrow {
-    z-index: 9999 !important;
-    pointer-events: auto !important;
-}
-
 /* ═══════════════════════════════════════════════════════════
    ANCORA — CSS Carousel Vanilla (Opción B)
    Pega al final de css/style.css
    ═══════════════════════════════════════════════════════════ */
-
-/* Oculta flechas antiguas por si quedan restos */
-.ac-team-arrow { display: none !important; }
 
 /* ── Wrapper principal ── */
 .acv-carousel-wrap {
@@ -1088,4 +1040,12 @@ img { display: block; max-width: 100%; }
     .acv-slide { flex: 0 0 calc(78% - 10px); }
     .acv-arrow { width: 40px; height: 40px; }
     .acv-viewport { margin: 0 8px; }
+}
+
+/* Fix: footer links siempre clickeables */
+.ac-footer a,
+.ac-footer-bottom a {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto !important;
 }
