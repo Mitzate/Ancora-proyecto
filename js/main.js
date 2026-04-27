@@ -42,14 +42,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* SMOOTH SCROLL */
-    document.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", function (e) {
-        const href = this.getAttribute("href");
+     /* SMOOTH SCROLL */
+     document.querySelectorAll("a").forEach(link => {
+         link.addEventListener("click", function (e) {
+         const href = this.getAttribute("href");
 
-        if (!href) return;
+         if (!href) return;
 
-        if (href.startsWith("#")) {
+         /* enlaces internos */
+         if (href.startsWith("#")) {
+
             if (href === "#" || href === "#!") {
                 e.preventDefault();
                 return;
@@ -71,6 +73,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (navLinks) navLinks.classList.remove("open");
                 if (navToggle) navToggle.classList.remove("open");
             }
+        }
+
+        /* privacy */
+        else if (href === "privacy.html") {
+            e.preventDefault();
+            window.location.href = "privacy.html";
+        }
+
+        /* login */
+        else if (href === "login.html") {
+            e.preventDefault();
+            window.location.href = "login.html";
         }
     });
 });
@@ -112,49 +126,49 @@ document.addEventListener("DOMContentLoaded", function () {
         observer.observe(videoSection);
     }
 
-    /* =========================
-       TEAM CAROUSEL
-    ========================= */
-    if (typeof jQuery !== "undefined" && typeof jQuery.fn.owlCarousel !== "undefined") {
+     /* =========================
+      TEAM CAROUSEL
+     ========================= */
+     if (typeof jQuery !== "undefined" && typeof jQuery.fn.owlCarousel !== "undefined") {
 
-        const $carousel = jQuery("#teamCarousel");
+          const $carousel = jQuery("#teamCarousel");
 
-        if ($carousel.length) {
+         if ($carousel.length) {
 
-            $carousel.owlCarousel({
+             setTimeout(function () {
+
+             $carousel.owlCarousel({
                 loop: true,
                 margin: 20,
                 nav: false,
                 dots: false,
                 autoplay: false,
                 smartSpeed: 600,
+                mouseDrag: true,
+                touchDrag: true,
+                pullDrag: true,
                 responsive: {
                     0: { items: 1 },
                     576: { items: 2 },
                     768: { items: 3 },
                     1200: { items: 4 }
                 }
-            });
+             });
 
-            const prevBtn = document.getElementById("teamPrev");
-            const nextBtn = document.getElementById("teamNext");
+             document.getElementById("teamPrev")?.addEventListener("click", function(e){
+                e.preventDefault();
+                $carousel.trigger("prev.owl.carousel");
+             });
 
-            if (prevBtn) {
-                prevBtn.addEventListener("click", function (e) {
-                     e.preventDefault();
-                     $carousel.trigger("prev.owl.carousel", [500]);
-                });
-            }
+             document.getElementById("teamNext")?.addEventListener("click", function(e){
+                e.preventDefault();
+                $carousel.trigger("next.owl.carousel");
+             });
 
-            if (nextBtn) {
-                nextBtn.addEventListener("click", function (e) {
-                     e.preventDefault();
-                     $carousel.trigger("next.owl.carousel", [500]);
-                });
-            }
+             console.log("Carrusel funcionando correctamente");
 
-            console.log("Carrusel funcionando");
-        }
+        }, 300);
     }
+}
 
 });
