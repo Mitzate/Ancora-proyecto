@@ -163,20 +163,25 @@ if (isset($input['get_user_devices']) && !empty($input['id_usuario'])) {
         }
 
         // Insertar usuario
-        try {
-            $stmt = $pdo->prepare("INSERT INTO t_usuarios (nombre, apellido_paterno, apellido_materno, correo_electronico, contrasena) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([
-                $input['nombre'],
-                $input['apellido_paterno'],
-                $input['apellido_materno'],
-                $input['correo'],
-                $input['contrasena']
-            ]);
-            echo json_encode(['success' => true, 'message' => 'Usuario registrado correctamente']);
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Error al registrar usuario: ' . $e->getMessage()]);
-        }
+       try {
+    $stmt = $pdo->prepare("INSERT INTO t_usuarios (nombre, apellido_paterno, apellido_materno, correo_electronico, contrasena) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([
+        $input['nombre'],
+        $input['apellido_paterno'],
+        $input['apellido_materno'],
+        $input['correo'],
+        $input['contrasena']
+    ]);
+    $newUserId = $pdo->lastInsertId();
+    echo json_encode([
+        'success' => true, 
+        'message' => 'Usuario registrado correctamente',
+        'id_usuario' => (int)$newUserId   // ← ¡AGREGA ESTA LÍNEA!
+    ]);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Error al registrar usuario: ' . $e->getMessage()]);
+}
         exit;
     }
 
