@@ -45,46 +45,30 @@ document.addEventListener("DOMContentLoaded", function () {
      /* SMOOTH SCROLL */
      document.querySelectorAll('a[href^="#"]').forEach(link => {
          link.addEventListener("click", function (e) {
-         const href = this.getAttribute("href");
+             const href = this.getAttribute("href");
 
-         if (!href) return;
+             if (!href) return;
+ 
+             if (href === "#" || href === "#!") {
+                 e.preventDefault();
+                 return;
+             }
 
-         /* enlaces internos */
-         if (href.startsWith("#")) {
+             const target = document.querySelector(href);
 
-            if (href === "#" || href === "#!") {
-                e.preventDefault();
-                return;
-            }
+             if (target) {
+                 e.preventDefault();
 
-            const target = document.querySelector(href);
-
-            if (target) {
-                e.preventDefault();
-
-                const navHeight = nav ? nav.offsetHeight : 80;
-                const top = target.offsetTop - navHeight;
-
-                window.scrollTo({
-                    top: top,
-                    behavior: "smooth"
+                 const navHeight = nav ? nav.offsetHeight : 80;
+                 const top = target.offsetTop - navHeight;
+  
+                 window.scrollTo({
+                     top: top,
+                     behavior: "smooth"
                 });
 
-                if (navLinks) navLinks.classList.remove("open");
-                if (navToggle) navToggle.classList.remove("open");
-            }
-        }
-
-        /* privacy */
-        else if (href === "privacy.html") {
-            e.preventDefault();
-            window.location.href = "privacy.html";
-        }
-
-        /* login */
-        else if (href === "login.html") {
-            e.preventDefault();
-            window.location.href = "login.html";
+              if (navLinks) navLinks.classList.remove("open");
+              if (navToggle) navToggle.classList.remove("open");
         }
     });
 });
