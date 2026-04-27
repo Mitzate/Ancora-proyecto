@@ -52,20 +52,22 @@ document.addEventListener("DOMContentLoaded", function () {
         link.addEventListener("click", function (e) {
             const href = this.getAttribute("href");
 
-            /* LOGIN */
-            if (href === "login.html") {
-                if (navLinks) navLinks.classList.remove("open");
-                if (navToggle) navToggle.classList.remove("open");
+            /* Cerrar menú móvil siempre */
+            if (navLinks) navLinks.classList.remove("open");
+            if (navToggle) navToggle.classList.remove("open");
 
-                window.location.href = "login.html";
+            /* Si no tiene href o es "#!" o "#", no hacer nada */
+            if (!href || href === "#" || href === "#!") {
+                e.preventDefault();
                 return;
             }
 
-            /* Solo enlaces internos */
-            if (!href || !href.startsWith("#")) {
+            /* Si es un link a otra página (.html), dejar que navegue normal */
+            if (!href.startsWith("#")) {
                 return;
             }
 
+            /* Es un link interno (#seccion) — scroll suave */
             const target = document.querySelector(href);
 
             if (!target) {
@@ -74,9 +76,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             e.preventDefault();
-
-            if (navLinks) navLinks.classList.remove("open");
-            if (navToggle) navToggle.classList.remove("open");
 
             const offsetTop =
                 target.getBoundingClientRect().top +
