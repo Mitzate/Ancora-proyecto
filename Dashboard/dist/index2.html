@@ -2216,9 +2216,7 @@ async function pollNew() {
     const modoMonitoreoRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/modo`);
     const ultimaActualizacionRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/fecha_hora`);
 
-    let debugShowAll = false;
-let currentMonitoringMode = null;
-let isMonitoringPaused = true;
+    
 
     // --- Escuchar presencia en tiempo real ---
     presenciaUnsubscribe = onValue(presenciaRef, (snapshot) => {
@@ -2371,16 +2369,6 @@ let isMonitoringPaused = true;
     </div>
   </div>
 </div>
-
-<script>
-// Actualizar el ID del dispositivo en la UI de Firebase cuando cambie
-
-const fbDeviceIdSpan = document.getElementById('firebase-device-id');
-
-if (fbDeviceIdSpan && deviceId) {
-  fbDeviceIdSpan.textContent = deviceId;
-}
-</script>
 
   </body>
   <!--end::Body-->
