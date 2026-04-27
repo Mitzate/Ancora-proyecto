@@ -2169,7 +2169,7 @@ async function pollNew() {
 <!-- Firebase SDK y configuración -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-  import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+  import { getDatabase, ref, onValue, query, orderByKey, limitToLast } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDKbWyUESIEPMB5UVFA29qHuszq6cMzzlg",
@@ -2180,147 +2180,80 @@ async function pollNew() {
     appId: "1:1050271758266:web:c9e692ec90fc8fc6dc8f83"
   };
 
-  // Inicializar Firebase
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // ========== OBTENER IDs DEL USUARIO Y DISPOSITIVO ACTUAL ==========
-  // Ahora usamos el dispositivo seleccionado del dropdown o localStorage
-  let userId = localStorage.getItem('id_usuario');
-  let deviceId = localStorage.getItem('id_dispositivo');
+  // Referencia a la colección /lecturas
+  const lecturasRef = ref(db, 'lecturas');
+  const ultimasLecturasQuery = query(lecturasRef, orderByKey(), limitToLast(20));
 
-  // Referencias para cleanup de listeners anteriores
-  let presenciaUnsubscribe = null;
-  let caidaUnsubscribe = null;
-  let modoUnsubscribe = null;
+  // Función para actualizar el cuadro de estado en tiempo real
+  function actualizarUIconUltimaLectura(lectura, deviceId) {
+    const deviceIdActual = localStorage.getItem('id_dispositivo');
+    // Si la lectura no corresponde al dispositivo seleccionado, la ignoramos (opcional)
+    if (lectura.node_id != deviceIdActual) return;
 
-  // Función para configurar listeners de Firebase según el dispositivo actual
-  function setupFirebaseListeners(uid, did) {
-    if (!uid || !did) {
-      console.warn('⚠️ Usuario o dispositivo no identificado en localStorage. No se conectarán listeners de Firebase.');
-      return;
+    const presenciaElem = document.getElementById('firebase-presencia');
+    const movimientoElem = document.getElementById('firebase-movimiento');
+    const parametroElem = document.getElementById('firebase-parametro');
+    const fechaElem = document.getElementById('firebase-ultima-actualizacion');
+    const alertaElem = document.getElementById('firebase-alerta');
+
+    if (presenciaElem) presenciaElem.innerText = lectura.presencia || '---';
+    if (movimientoElem) movimientoElem.innerText = lectura.movimiento || '---';
+    if (parametroElem) parametroElem.innerText = lectura.parametro_movimiento ?? '---';
+    if (fechaElem) fechaElem.innerText = new Date().toLocaleString();
+
+    // Detectar caída
+    const esCaida = lectura.estado_caida && lectura.estado_caida.includes('CAÍDA');
+    if (esCaida && alertaElem) {
+      alertaElem.innerHTML = `<div class="alert alert-danger">🚨 ¡CAÍDA DETECTADA! (Firebase)</div>`;
+      setTimeout(() => {
+        if (alertaElem.innerHTML.includes('CAÍDA DETECTADA')) alertaElem.innerHTML = '';
+      }, 5000);
     }
+  }
 
-    // Limpiar listeners anteriores si existen
-    if (presenciaUnsubscribe) { presenciaUnsubscribe(); presenciaUnsubscribe = null; }
-    if (caidaUnsubscribe) { caidaUnsubscribe(); caidaUnsubscribe = null; }
-    if (modoUnsubscribe) { modoUnsubscribe(); modoUnsubscribe = null; }
+  // Escuchar nuevas lecturas
+  onValue(ultimasLecturasQuery, (snapshot) => {
+    const lecturas = snapshot.val();
+    if (!lecturas) return;
 
-    console.log('🔌 Conectando Firebase para usuario:', uid, 'dispositivo:', did);
+    // Obtener la lectura más reciente (el último key)
+    const keys = Object.keys(lecturas).sort();
+    const ultimaKey = keys[keys.length - 1];
+    if (ultimaKey) {
+      const ultimaLectura = lecturas[ultimaKey];
+      actualizarUIconUltimaLectura(ultimaLectura, ultimaLectura.node_id);
+    }
+  });
 
-    // ========== CONSTRUIR RUTAS DINÁMICAS ==========
-    const presenciaRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/presencia`);
-    const ultimaCaidaRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/estado_caida`);
-    const movimientoRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/movimiento`);
-    const parametroMovRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/parametro_movimiento`);
-    const modoMonitoreoRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/modo`);
-    const ultimaActualizacionRef = ref(db, `/usuarios/${uid}/dispositivos/${did}/ultima_lectura/fecha_hora`);
-
-    
-
-    // --- Escuchar presencia en tiempo real ---
-    presenciaUnsubscribe = onValue(presenciaRef, (snapshot) => {
-      const data = snapshot.val();
-      const presenciaElement = document.getElementById('firebase-presencia');
-      if (presenciaElement) {
-        presenciaElement.innerText = (data === 1) ? '✅ Persona presente' : '❌ Vacío';
-        presenciaElement.className = (data === 1) ? 'badge bg-success' : 'badge bg-secondary';
-      }
-      console.log('Presencia desde Firebase:', data);
-    });
-
-    // --- Escuchar movimiento en tiempo real ---
-    onValue(movimientoRef, (snapshot) => {
-      const data = snapshot.val();
-      const movimientoElement = document.getElementById('firebase-movimiento');
-      if (movimientoElement) {
-        movimientoElement.innerText = data || 'Sin datos';
-      }
-    });
-
-    // --- Escuchar parámetro de movimiento ---
-    onValue(parametroMovRef, (snapshot) => {
-      const data = snapshot.val();
-      const paramElement = document.getElementById('firebase-parametro');
-      if (paramElement) {
-        paramElement.innerText = data !== null ? data : '---';
-      }
-    });
-
-    // --- Escuchar último evento de caída ---
-    caidaUnsubscribe = onValue(ultimaCaidaRef, (snapshot) => {
-      const caida = snapshot.val();
-      // caida puede ser un string "CAÍDA DETECTADA" o un objeto con texto
-      const esCaida = (typeof caida === 'string' && caida.includes('CAÍDA')) || (caida && caida.estado_caida && caida.estado_caida.includes('CAÍDA'));
-      if (esCaida) {
-        const alertaCard = document.getElementById('firebase-alerta');
-        if (alertaCard) {
-          alertaCard.innerHTML = `<div class="alert alert-danger">🚨 ¡CAÍDA DETECTADA!</div>`;
-          setTimeout(() => {
-            if (alertaCard.innerHTML.includes('CAÍDA DETECTADA')) alertaCard.innerHTML = '';
-          }, 5000);
+  // También puedes optar por mostrar los datos del dispositivo seleccionado actualmente
+  // al cambiar el selector de dispositivo, puedes forzar una nueva lectura de la última lectura
+  window.actualizarFirebaseParaDispositivo = (deviceId) => {
+    // Buscar en las últimas lecturas la que coincida con node_id = deviceId
+    onValue(ultimasLecturasQuery, (snapshot) => {
+      const lecturas = snapshot.val();
+      if (!lecturas) return;
+      const keys = Object.keys(lecturas).sort();
+      for (let i = keys.length-1; i >= 0; i--) {
+        const lectura = lecturas[keys[i]];
+        if (lectura.node_id == deviceId) {
+          actualizarUIconUltimaLectura(lectura, deviceId);
+          break;
         }
       }
-    });
+    }, { onlyOnce: true });
+  };
 
-    // --- Escuchar última actualización ---
-    onValue(ultimaActualizacionRef, (snapshot) => {
-      const fecha = snapshot.val();
-      const fechaElement = document.getElementById('firebase-ultima-actualizacion');
-      if (fechaElement && fecha) {
-        fechaElement.innerText = new Date(fecha).toLocaleString();
-      }
-    });
-
-    // --- Escuchar modo de monitoreo ---
-    modoUnsubscribe = onValue(modoMonitoreoRef, (snapshot) => {
-      const modo = snapshot.val();
-      if (modo) {
-        localStorage.setItem('monitoring_mode', modo);
-        if (window.updateTableVisibility) window.updateTableVisibility(modo);
-      }
-    });
+  // Mostrar el ID del dispositivo en la tarjeta de Firebase
+  const fbDeviceSpan = document.getElementById('firebase-device-id');
+  if (fbDeviceSpan) {
+    const deviceId = localStorage.getItem('id_dispositivo');
+    if (deviceId) fbDeviceSpan.textContent = deviceId;
   }
 
-  // Inicializar listeners con el dispositivo actual
-  if (userId && deviceId) {
-    setupFirebaseListeners(userId, deviceId);
-  }
-
-  // Escuchar cambios en el selector de dispositivo
-  const deviceSelector = document.getElementById('deviceSelector');
-  if (deviceSelector) {
-    deviceSelector.addEventListener('change', function() {
-      const newDeviceId = this.value;
-      if (newDeviceId) {
-        deviceId = newDeviceId;
-        localStorage.setItem('id_dispositivo', newDeviceId);
-        setupFirebaseListeners(userId, newDeviceId);
-        
-        // Actualizar el ID del dispositivo en la UI de Firebase
-        const fbDeviceIdSpan = document.getElementById('firebase-device-id');
-        if (fbDeviceIdSpan) {
-          fbDeviceIdSpan.textContent = newDeviceId;
-        }
-        
-        // Recargar datos del dashboard para el nuevo dispositivo
-        if (typeof updateFullDashboard === 'function') {
-          updateFullDashboard();
-        }
-      }
-    });
-  }
-
-  // ========== CONTROL DE PAUSA VÍA FIREBASE ==========
-  const pauseResumeBtn = document.getElementById('pauseResumeBtn');
-  if (pauseResumeBtn) {
-    pauseResumeBtn.addEventListener('click', async () => {
-      const nuevaPausa = !isMonitoringPaused;
-      await set(ref(db, '/comandos/pausa'), nuevaPausa);
-    });
-  }
-
-  console.log('✅ Firebase conectado en dashboard (rutas dinámicas por usuario/dispositivo)');
+  console.log('✅ Firebase conectado - escuchando /lecturas');
 </script>
 
 <div class="row mb-3">
