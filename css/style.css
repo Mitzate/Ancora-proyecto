@@ -884,3 +884,27 @@ img { display: block; max-width: 100%; }
     .ac-footer-bottom { flex-direction: column; text-align: center; }
     .ac-team-slider-wrap { padding: 0 52px; }
 }
+
+/* ===== SOLUCIÓN CLICS BLOQUEADOS ===== */
+.ac-team-bg,
+.ac-team-orb,
+.ac-team-particles,
+.ac-team-particles span,
+.ac-video-overlay,
+.ac-proto-glow,
+.ac-proto-ring,
+.ac-hero-orb,
+.ac-hero-grid {
+    pointer-events: none !important;
+}
+
+/* navbar arriba de todo */
+.ac-nav {
+    z-index: 99999 !important;
+}
+
+/* flechas arriba del carrusel */
+.ac-team-arrow {
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}

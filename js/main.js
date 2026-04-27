@@ -34,9 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const navLinks = document.getElementById("navLinks");
     const backTop = document.getElementById("backTop");
 
-    /* =========================
-       NAV TOGGLE MOBILE
-    ========================= */
+    /* NAV TOGGLE */
     if (navToggle && navLinks) {
         navToggle.addEventListener("click", function () {
             navLinks.classList.toggle("open");
@@ -44,17 +42,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* =========================
-       SMOOTH SCROLL SOLO INTERNOS
-    ========================= */
+    /* SMOOTH SCROLL */
     document.querySelectorAll('a[href^="#"]').forEach(link => {
         link.addEventListener("click", function (e) {
             const href = this.getAttribute("href");
 
-            if (href === "#" || href === "#!") {
-                e.preventDefault();
-                return;
-            }
+            if (href === "#" || href === "#!") return;
 
             const target = document.querySelector(href);
 
@@ -75,9 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    /* =========================
-       SCROLL EFFECTS
-    ========================= */
+    /* SCROLL */
     window.addEventListener("scroll", function () {
         if (nav) {
             nav.classList.toggle("ac-nav-scrolled", window.scrollY > 60);
@@ -88,9 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    /* =========================
-       BACK TO TOP
-    ========================= */
+    /* BACK TO TOP */
     if (backTop) {
         backTop.addEventListener("click", function (e) {
             e.preventDefault();
@@ -101,9 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* =========================
-       VIDEO REVEAL
-    ========================= */
+    /* VIDEO */
     const videoSection = document.getElementById("videoSection");
 
     if (videoSection && "IntersectionObserver" in window) {
@@ -113,73 +100,56 @@ document.addEventListener("DOMContentLoaded", function () {
                     videoSection.classList.add("in-view");
                 }
             });
-        }, {
-            threshold: 0.2
-        });
+        }, { threshold: 0.2 });
 
         observer.observe(videoSection);
     }
-});
 
-/* =========================
-   TEAM CAROUSEL
-========================= */
-window.addEventListener("load", function () {
+    /* =========================
+       TEAM CAROUSEL
+    ========================= */
+    if (typeof jQuery !== "undefined" && typeof jQuery.fn.owlCarousel !== "undefined") {
 
-    if (typeof jQuery === "undefined") {
-        console.error("jQuery no cargó");
-        return;
-    }
+        const $carousel = jQuery("#teamCarousel");
 
-    if (typeof jQuery.fn.owlCarousel === "undefined") {
-        console.error("Owl Carousel no cargó");
-        return;
-    }
+        if ($carousel.length) {
 
-    const $carousel = jQuery("#teamCarousel");
+            $carousel.owlCarousel({
+                loop: true,
+                margin: 20,
+                nav: false,
+                dots: false,
+                autoplay: false,
+                smartSpeed: 600,
+                responsive: {
+                    0: { items: 1 },
+                    576: { items: 2 },
+                    768: { items: 3 },
+                    1200: { items: 4 }
+                }
+            });
 
-    if (!$carousel.length) {
-        console.error("No existe #teamCarousel");
-        return;
-    }
+            const prevBtn = document.getElementById("teamPrev");
+            const nextBtn = document.getElementById("teamNext");
 
-    $carousel.owlCarousel({
-        loop: true,
-        margin: 20,
-        nav: false,
-        dots: false,
-        autoplay: false,
-        smartSpeed: 500,
-        responsive: {
-            0: {
-                items: 1
-            },
-            576: {
-                items: 2
-            },
-            768: {
-                items: 3
-            },
-            1200: {
-                items: 4
+            if (prevBtn) {
+                prevBtn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $carousel.trigger("prev.owl.carousel");
+                });
             }
+
+            if (nextBtn) {
+                nextBtn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $carousel.trigger("next.owl.carousel");
+                });
+            }
+
+            console.log("Carrusel funcionando");
         }
-    });
-
-    const prevBtn = document.getElementById("teamPrev");
-    const nextBtn = document.getElementById("teamNext");
-
-    if (prevBtn) {
-        prevBtn.addEventListener("click", function () {
-            $carousel.trigger("prev.owl.carousel");
-        });
     }
 
-    if (nextBtn) {
-        nextBtn.addEventListener("click", function () {
-            $carousel.trigger("next.owl.carousel");
-        });
-    }
-
-    console.log("Carrusel inicializado correctamente");
 });
