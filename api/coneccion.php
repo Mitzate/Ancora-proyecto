@@ -63,6 +63,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $input = is_array($decoded) ? $decoded : [];
 
+    // ============================================
+    // Aceptar datos directos del ESP32 (sin action)
+    // ============================================
+    if (isset($input['node_id'])) {
+        $device_id = $input['node_id'];
+        $presencia = $input['presencia'] ?? '';
+        $movimiento = $input['movimiento'] ?? '';
+        $parametro = $input['parametro_movimiento'] ?? 0;
+        $estado_caida = $input['estado_caida'] ?? '';
+
+        // Validar que el dispositivo exista
+        $stmt = $pdo->prepare("SELECT id_dispositivo FROM t_dispositivos WHERE id_dispositivo = ?");
+        $stmt->execute([$device_id]);
+        if (!$stmt->fetch()) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Dispositivo no registrado']);
+            exit;
+        }
+
+        // Insertar en t_sensores_caidas
+        $stmt = $pdo->prepare("
+            INSERT INTO t_sensores_caidas 
+            (id_dispositivo, presencia, movimiento, parametro_movimiento, estado_caida) 
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([$device_id, $presencia, $movimiento, $parametro, $estado_caida]);
+
+        echo json_encode(['success' => true, 'id_caida' => $pdo->lastInsertId()]);
+        exit;
+    }
     // LOGIN
  if (isset($input['login']) && $input['login'] === true) {
     error_log("=== PROCESANDO LOGIN ===");
