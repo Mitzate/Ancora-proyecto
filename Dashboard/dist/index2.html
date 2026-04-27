@@ -403,30 +403,23 @@
                   <div class="card-body">
                     <div id="noDeviceMsg" class="alert alert-warning d-none">No hay dispositivo asociado. Registra uno para ver lecturas.</div>
                     
-                    <!-- Tabla CAÍDAS EN VIVO -->
-                    <div id="cadasTableContainer" style="display:none;">
-                      <div class="table-responsive">
-                        <table class="table table-striped table-sm" id="sensorTable">
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>Fecha / Hora</th>
-                              <th>Dispositivo</th>
-                              <th>Lugar instalación</th>
-                              <th>Presencia</th>
-                              <th>Movimiento</th>
-                              <th>Parámetro Mov.</th>
-                              <th>Estado Caída</th>
-                              <th>Estado Inmovilidad</th>
-                              <th>Estado módulo</th>
-                            </tr>
-                          </thead>
-                          <tbody id="sensorTableBody">
-                            <tr><td colspan="10" class="text-center">Cargando...</td></tr>
-                          </tbody>
-                        </table>
-                      </div>
+                    <!-- Tarjetas de dispositivos (una por cada dispositivo del usuario) -->
+                    <div class="row mb-3" id="devicesCardsContainer">
+                      <!-- Aquí se generarán dinámicamente las tarjetas de cada dispositivo -->
                     </div>
+                    
+                    <!-- Tabla CAÍDAS EN VIVO -->
+<div class="table-responsive mt-4">
+  <table class="table table-striped table-sm" id="allReadingsTable">
+    <thead>
+      <tr><th>#</th><th>Fecha/Hora</th><th>ID Disp.</th><th>Nombre</th><th>Ubicación</th><th>Presencia</th><th>Movimiento</th><th>Parámetro</th><th>Estado Caída</th><th>Estado Módulo</th></tr>
+    </thead>
+    <tbody id="allReadingsTableBody">
+      <tr><td colspan="10" class="text-center">Cargando...</td></tr>
+    </tbody>
+  </table>
+</div>
+
 
                     <!-- Tabla SUEÑO EN VIVO -->
                     <div id="suenioTableContainer" style="display:none;">
@@ -1147,8 +1140,10 @@
       async function fetchSensorDataForDevice(id_dispositivo, limit = 50, since = null) {
         try {
           const body = { get_sensor_data: true, limit: limit };
-          const deviceId = id_dispositivo || localStorage.getItem('id_dispositivo');
-          if (!debugShowAll && deviceId) body.id_dispositivo = deviceId;
+          // Solo filtrar si se proporcionó un id_dispositivo válido (no null/undefined) y no estamos en modo debug
+          if (id_dispositivo && !debugShowAll) {
+            body.id_dispositivo = id_dispositivo;
+          }
           if (since) body.since = since;
           const res = await fetch('../../api/coneccion.php', {
             method: 'POST',
@@ -1306,6 +1301,95 @@
         tbody.innerHTML = htmlRows.join('');
         updateConnectedModulesInfo(caidas);
       }
+      // Genera tarjetas de resumen por dispositivo (último dato de cada uno)
+function renderDeviceCards(rows) {
+  const container = document.getElementById('devicesCardsContainer');
+  if (!container) return;
+
+  // Agrupar por dispositivo (id_dispositivo)
+  const latestByDevice = new Map();
+  rows.forEach(r => {
+    if (!r.id_dispositivo) return;
+    if (!latestByDevice.has(r.id_dispositivo) || new Date(r.fecha_hora) > new Date(latestByDevice.get(r.id_dispositivo).fecha_hora)) {
+      latestByDevice.set(r.id_dispositivo, r);
+    }
+  });
+
+  if (latestByDevice.size === 0) {
+    container.innerHTML = '<div class="col-12"><div class="alert alert-info">No hay datos aún.</div></div>';
+    return;
+  }
+
+  let html = '';
+  latestByDevice.forEach((r, deviceId) => {
+    const isOnline = (Date.now() - new Date(r.fecha_hora).getTime()) < 5 * 60 * 1000;
+    const movVal = Number(r.parametro_movimiento ?? 0);
+    const isFall = movVal >= 80 || /ca[ií]d/i.test(r.estado_caida || '') || /ca[ií]d/i.test(r.informacion_movimiento || '');
+    const fallBadge = isFall ? '<span class="badge bg-danger">Caída</span>' : '<span class="badge bg-success">Normal</span>';
+    const onlineBadge = isOnline ? '<span class="badge bg-success">Conectado</span>' : '<span class="badge bg-secondary">Desconectado</span>';
+    const deviceName = r.nombre_identificador || `Dispositivo ${deviceId}`;
+    const location = r.ubicacion_lugar || 'Desconocido';
+
+    html += `
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          <div class="card-header py-2 d-flex justify-content-between">
+            <strong>${escapeHtml(deviceName)}</strong>
+            ${onlineBadge}
+          </div>
+          <div class="card-body py-2">
+            <p class="mb-1"><i class="bi bi-geo-alt"></i> ${escapeHtml(location)}</p>
+            <p class="mb-1"><i class="bi bi-person"></i> ${escapeHtml(r.presencia || 'N/A')}</p>
+            <p class="mb-1"><i class="bi bi-activity"></i> ${escapeHtml(r.informacion_movimiento || 'N/A')}</p>
+            <p class="mb-0">${fallBadge}</p>
+          </div>
+          <div class="card-footer text-muted small">
+            Última: ${r.fecha_hora || ''}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+// Tabla con todas las lecturas recientes (sin filtrar por dispositivo)
+function renderAllReadingsTable(rows, limit = 20) {
+  const tbody = document.getElementById('allReadingsTableBody');
+  if (!tbody) return;
+  if (!rows || rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" class="text-center">No hay lecturas</td></tr>';
+    return;
+  }
+
+  // Tomar las más recientes
+  const sorted = [...rows].sort((a,b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
+  const latest = sorted.slice(0, limit);
+
+  let html = '';
+  latest.forEach((r, idx) => {
+    const movVal = Number(r.parametro_movimiento ?? 0);
+    const isFall = movVal >= 80 || /ca[ií]d/i.test(r.estado_caida || '') || /ca[ií]d/i.test(r.informacion_movimiento || '');
+    const fallBadge = isFall ? '<span class="badge bg-danger">Caída</span>' : '<span class="badge bg-success">Normal</span>';
+    const isOnline = (Date.now() - new Date(r.fecha_hora).getTime()) < 5 * 60 * 1000;
+    const onlineBadge = isOnline ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>';
+    const deviceName = r.nombre_identificador || `ID ${r.id_dispositivo}`;
+
+    html += `<tr>
+      <td>${idx+1}</td>
+      <td>${escapeHtml(r.fecha_hora || '')}</td>
+      <td>${r.id_dispositivo || ''}</td>
+      <td>${escapeHtml(deviceName)}</td>
+      <td>${escapeHtml(r.ubicacion_lugar || '')}</td>
+      <td>${escapeHtml(r.presencia || '')}</td>
+      <td>${escapeHtml(r.informacion_movimiento || '')}</td>
+      <td>${r.parametro_movimiento ?? ''}</td>
+      <td>${fallBadge}</td>
+      <td>${onlineBadge}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+}
 
       // Render sueño - MÚLTIPLES MODULOS (último dato por módulo)
       function renderSuenioTable(rows) {
@@ -1746,6 +1830,24 @@
         return first?.origen || 'caidas';
       }
 
+      async function updateFullDashboard() {
+  // Obtener datos de TODOS los dispositivos (sin filtro)
+  const allRows = await fetchSensorDataForDevice(null, 100, null);
+  if (allRows && allRows.length > 0) {
+    // Renderizar las tarjetas de cada dispositivo y la tabla completa
+    renderDeviceCards(allRows);
+    renderAllReadingsTable(allRows);
+    updateConnectedModulesInfo(allRows);
+  } else {
+    const container = document.getElementById('devicesCardsContainer');
+    if (container) container.innerHTML = '<div class="col-12 alert alert-info">No hay datos de ningún dispositivo.</div>';
+    const tbody = document.getElementById('allReadingsTableBody');
+    if (tbody) tbody.innerHTML = '<tr><td colspan="10">Sin datos</td></tr>';
+  }
+  // Cargar historial (opcional, si quieres mantener la tabla histórica)
+  await loadHistoryData();
+}
+
       // Real-time polling: fetch latest readings every 3 seconds and render
       document.addEventListener('DOMContentLoaded', function () {
         const refreshBtn = document.getElementById('refreshSensorBtn');
@@ -1757,81 +1859,17 @@
         let lastTimestampGlobal = null;
 
         // initial load for both device and global views
-        async function initialLoad() {
-          const deviceId = localStorage.getItem('id_dispositivo');
-          let monitoringMode = localStorage.getItem('monitoring_mode');
-          
-          // Device-specific (datos en vivo)
-          if (!deviceId) {
-            // Sin dispositivo: usa modo almacenado o default
-            monitoringMode = resolveMonitoringMode([]);
-            updateTableVisibility(monitoringMode);
-            noDeviceMsg.classList.remove('d-none');
-            if (currentMonitoringMode === 'caidas') renderCaidasTable([]);
-            else if (currentMonitoringMode === 'sueno') renderSuenioTable([]);
-          } else {
-            // ⭐ Cargar los datos recientes para todos los módulos en "Datos en Vivo"
-            const rows = await fetchSensorDataForDevice(deviceId, 100, null);
-            // ⭐ Derivar modo de las filas si no está guardado
-            if (!monitoringMode && rows && rows.length > 0) {
-              monitoringMode = resolveMonitoringMode(rows);
-              localStorage.setItem('monitoring_mode', monitoringMode);
-            }
-            // Si aún no hay modo, usar 'caidas' por defecto
-            if (!monitoringMode) monitoringMode = 'caidas';
-            
-            updateTableVisibility(monitoringMode);
-            
-            if (rows && rows.length > 0) {
-              noDeviceMsg.classList.add('d-none');
-              lastTimestamp = rows[0].fecha_hora;
-              // Render según modo
-              if (currentMonitoringMode === 'caidas') renderCaidasTable(rows);
-              else if (currentMonitoringMode === 'sueno') renderSuenioTable(rows);
-            } else {
-              noDeviceMsg.classList.remove('d-none');
-              if (currentMonitoringMode === 'caidas') renderCaidasTable([]);
-              else if (currentMonitoringMode === 'sueno') renderSuenioTable([]);
-            }
-          }
+async function initialLoad() {
+  await updateFullDashboard();
+}
 
-          // Cargar historial
-          await loadHistoryData();
-        }
-
-        async function pollNew() {
-          try {
-            // Si el monitoreo está pausado, no hacer nada
-            if (isMonitoringPaused) {
-              return;
-            }
-            
-            const deviceId = localStorage.getItem('id_dispositivo');
-            if (!deviceId && !debugShowAll) return;
-            
-            // ⭐ RECARGAR DATOS EN VIVO (datos de todos los módulos activos)
-            const liveRows = await fetchSensorDataForDevice(deviceId, 100, null);
-            if (liveRows && liveRows.length > 0) {
-              if (!currentMonitoringMode) {
-                const mode = resolveMonitoringMode(liveRows);
-                updateTableVisibility(mode);
-                localStorage.setItem('monitoring_mode', mode);
-              }
-              if (currentMonitoringMode === 'caidas') {
-                renderCaidasTable(liveRows);
-              } else if (currentMonitoringMode === 'sueno') {
-                renderSuenioTable(liveRows);
-              }
-              lastTimestamp = liveRows[0].fecha_hora;
-            }
-            
-            // ⭐ RECARGAR HISTORIAL COMPLETO
-            await loadHistoryData();
-            
-          } catch (e) {
-            console.error('Error polling new sensor data:', e);
-          }
-        }
+// ======================================================
+// REEMPLAZA pollNew
+// ======================================================
+async function pollNew() {
+  if (isMonitoringPaused) return;
+  await updateFullDashboard();
+}
 
         if (refreshBtn) refreshBtn.addEventListener('click', () => { if (!lastTimestamp) initialLoad(); else pollNew(); });
         
