@@ -1116,15 +1116,15 @@ if (isset($input['action']) && $input['action'] === 'esp32_get_status') {
         $stmt->execute($params);
         $session = $stmt->fetch();
         
-        if ($session) {
-            // Hay sesión activa
-            echo json_encode([
-                'success' => true,
-                'has_active_session' => true,
-                'device_id' => (int)$session['id_dispositivo'],
-                'monitoreo_pausado' => (bool)$session['monitoreo_pausado'],
-                'modo' => $session['Tipo_monitoreo']
-            ]);
+    if ($session) {
+        echo json_encode([
+            'success' => true,
+            'has_active_session' => true,
+            'device_id' => (int)$session['id_dispositivo'],
+            'user_id' => (int)$session['id_usuario'],
+            'monitoreo_pausado' => (bool)$session['monitoreo_pausado'],
+            'modo' => $session['Tipo_monitoreo']
+    ]);
         } else {
             // No hay sesión activa
             echo json_encode([
