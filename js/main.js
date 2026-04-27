@@ -43,11 +43,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /* SMOOTH SCROLL */
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-        link.addEventListener("click", function (e) {
-            const href = this.getAttribute("href");
+    document.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", function (e) {
+        const href = this.getAttribute("href");
 
-            if (href === "#" || href === "#!") return;
+        if (!href) return;
+
+        if (href.startsWith("#")) {
+            if (href === "#" || href === "#!") {
+                e.preventDefault();
+                return;
+            }
 
             const target = document.querySelector(href);
 
@@ -65,8 +71,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (navLinks) navLinks.classList.remove("open");
                 if (navToggle) navToggle.classList.remove("open");
             }
-        });
+        }
     });
+});
 
     /* SCROLL */
     window.addEventListener("scroll", function () {
@@ -134,17 +141,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (prevBtn) {
                 prevBtn.addEventListener("click", function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    $carousel.trigger("prev.owl.carousel");
+                     e.preventDefault();
+                     $carousel.trigger("prev.owl.carousel", [500]);
                 });
             }
 
             if (nextBtn) {
                 nextBtn.addEventListener("click", function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    $carousel.trigger("next.owl.carousel");
+                     e.preventDefault();
+                     $carousel.trigger("next.owl.carousel", [500]);
                 });
             }
 
