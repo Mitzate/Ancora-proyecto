@@ -318,20 +318,23 @@ if (isset($input['get_user_devices']) && !empty($input['id_usuario'])) {
         }
         
         // Preferir asociar con dispositivo SIN MAC (pendiente)
-        $stmt = $pdo->query("SELECT id_dispositivo, Tipo_monitoreo FROM t_dispositivos WHERE mac_address IS NULL OR mac_address = '' ORDER BY id_dispositivo DESC LIMIT 1");
+$stmt = $pdo->query("SELECT id_dispositivo, Tipo_monitoreo, id_usuario FROM t_dispositivos WHERE mac_address IS NULL OR mac_address = '' ORDER BY id_dispositivo DESC LIMIT 1");
         $pendingDevice = $stmt->fetch();
 
-        if ($pendingDevice) {
-            try {
-                $upd = $pdo->prepare("UPDATE t_dispositivos SET mac_address = ? WHERE id_dispositivo = ?");
-                $upd->execute([$mac, $pendingDevice['id_dispositivo']]);
+    if ($pendingDevice) {
+        try {
+            $upd = $pdo->prepare("UPDATE t_dispositivos SET mac_address = ? WHERE id_dispositivo = ?");
+            $upd->execute([$mac, $pendingDevice['id_dispositivo']]);
 
-                echo json_encode([
-                    'success' => true,
-                    'device_id' => (int)$pendingDevice['id_dispositivo'],
-                    'current_mode' => $pendingDevice['Tipo_monitoreo'] ?? 'ninguno'
-                ]);
-                exit;
+            // Obtener el user_id (podrías leerlo directamente de $pendingDevice)
+            $userId = $pendingDevice['id_usuario'];  // ya viene en la consulta original
+            echo json_encode([
+                'success' => true,
+                'device_id' => (int)$pendingDevice['id_dispositivo'],
+                'user_id' => (int)$userId,
+                'current_mode' => $pendingDevice['Tipo_monitoreo'] ?? 'ninguno'
+            ]);
+            exit;
             } catch (PDOException $e) {
                 if ($e->getCode() === '23000') {
                     http_response_code(409);
@@ -346,7 +349,7 @@ if (isset($input['get_user_devices']) && !empty($input['id_usuario'])) {
         }
 
         // Si no hay pendientes, devolver dispositivo con esta MAC
-        $stmt = $pdo->prepare("SELECT id_dispositivo, Tipo_monitoreo FROM t_dispositivos WHERE mac_address = ? ORDER BY id_dispositivo DESC LIMIT 1");
+        /*$stmt = $pdo->prepare("SELECT id_dispositivo, Tipo_monitoreo FROM t_dispositivos WHERE mac_address = ? ORDER BY id_dispositivo DESC LIMIT 1");
         $stmt->execute([$mac]);
         $device = $stmt->fetch();
         
@@ -357,6 +360,20 @@ if (isset($input['get_user_devices']) && !empty($input['id_usuario'])) {
                 'current_mode' => $device['Tipo_monitoreo']
             ]);
             exit;
+        }*/
+
+            if ($device) {
+        // Obtener el user_id asociado
+        $stmtUser = $pdo->prepare("SELECT id_usuario FROM t_dispositivos WHERE id_dispositivo = ?");
+        $stmtUser->execute([$device['id_dispositivo']]);
+        $userId = $stmtUser->fetchColumn();
+        echo json_encode([
+            'success' => true,
+            'device_id' => (int)$device['id_dispositivo'],
+            'user_id' => (int)$userId,
+            'current_mode' => $device['Tipo_monitoreo']
+        ]);
+        exit;
         }
 
         // Fallback: usar tabla de pendientes
