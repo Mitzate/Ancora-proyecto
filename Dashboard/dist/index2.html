@@ -2072,7 +2072,7 @@ async function pollNew() {
           const id_usuario = localStorage.getItem('id_usuario');
           if (!id_usuario) return;
 
-          const res = await fetch('../api/coneccion.php', {
+          const res = await fetch('/../api/coneccion.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
