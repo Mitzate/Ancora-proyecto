@@ -1154,36 +1154,35 @@
       let currentMonitoringMode = null; // 'caidas' o 'sueno'
       // comenzar con el monitoreo pausado para que el usuario tenga que reanudar manualmente
       let isMonitoringPaused = true; // Control de pausa del monitoreo
-
-      async function fetchSensorDataForDevice(id_dispositivo, limit = 50, since = null) {
-        try {
-          const userId = localStorage.getItem('id_usuario');
-          const body = { get_sensor_data: true, limit: limit };
-          
-          // Incluir el ID del usuario para filtrar datos en el servidor
-          if (userId) {
-            body.id_usuario = parseInt(userId);
-          }
-          
-          // Solo filtrar si se proporcionó un id_dispositivo válido (no null/undefined) y no estamos en modo debug
-          if (id_dispositivo && !debugShowAll) {
-            body.id_dispositivo = id_dispositivo;
-          }
-          if (since) body.since = since;
-          const res = await fetch('../../api/coneccion.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-          });
-          const json = await safeJson(res);
-          console.debug('fetchSensorDataForDevice response:', json);
-          if (json && json.success) return json.data;
-          return [];
-        } catch (e) {
-          console.error('Error fetching sensor data:', e);
-          return [];
-        }
-      }
+      //FETCH SENSOR DATA FOR DEVICE
+ async function fetchSensorDataForDevice(id_dispositivo, limit = 50, since = null) {
+  try {
+    const id_usuario = localStorage.getItem('id_usuario'); // Obtener ID del usuario logueado
+    const body = { get_sensor_data: true, limit: limit };
+    
+    // Si hay usuario, enviarlo siempre para filtrar
+    if (id_usuario) {
+      body.id_usuario = parseInt(id_usuario);
+    }
+    
+    // Si se proporciona un id_dispositivo específico y no estamos en debugShowAll, filtrar también por dispositivo
+    if (id_dispositivo && !debugShowAll) {
+      body.id_dispositivo = id_dispositivo;
+    }
+    if (since) body.since = since;
+    
+    const res = await fetch('../../api/coneccion.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const json = await safeJson(res);
+    return json && json.success ? json.data : [];
+  } catch (e) {
+    console.error('Error fetching sensor data:', e);
+    return [];
+  }
+}
 
       async function fetchSensorDataGlobal(limit = 50, since = null) {
         try {
@@ -1854,16 +1853,19 @@ function renderAllReadingsTable(rows, limit = 20) {
         const first = Array.isArray(rows) ? rows.find(r => r?.origen) : null;
         return first?.origen || 'caidas';
       }
-
+//UPDATE FULL DASHBOARD
       async function updateFullDashboard() {
   // Obtener el dispositivo seleccionado actualmente
   const currentDeviceId = localStorage.getItem('id_dispositivo');
   
+  
   // Si hay un dispositivo seleccionado y no estamos en modo debug, filtrar por dispositivo
   // Si no hay dispositivo seleccionado o estamos en modo debug, mostrar todos
+
   const deviceIdToFetch = (currentDeviceId && !debugShowAll) ? currentDeviceId : null;
   
-  const allRows = await fetchSensorDataForDevice(deviceIdToFetch, 100, null);
+  //const allRows = await fetchSensorDataForDevice(deviceIdToFetch, 100, null);
+  const allRows = await fetchSensorDataForDevice(null, 100, null);
   if (allRows && allRows.length > 0) {
     // Renderizar las tarjetas de cada dispositivo y la tabla completa
     renderDeviceCards(allRows);
