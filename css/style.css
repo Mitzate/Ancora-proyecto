@@ -338,9 +338,14 @@ img { display: block; max-width: 100%; }
     min-height: 80vh; background: var(--dark-900);
 }
 .ac-proto-stage {
-    position: relative; width: 100%; max-width: 520px;
-    aspect-ratio: 1; display: flex;
-    align-items: center; justify-content: center; margin: 60px auto;
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 60px auto;
 }
 .ac-proto-glow {
     position: absolute; inset: 10%; border-radius: 50%;
@@ -356,14 +361,26 @@ img { display: block; max-width: 100%; }
     position: absolute; border-radius: 50%;
     border: 1px solid rgba(12,128,120,0.12);
 }
-.ac-proto-ring-1 { inset: 4%; border-style: dashed; animation: ringRotate 24s linear infinite; }
-.ac-proto-ring-2 { inset: 15%; border-color: rgba(77,184,173,0.08); animation: ringRotate 34s linear infinite reverse; }
+.ac-proto-ring-1 {
+    inset: 0%;
+    border-style: dashed;
+    animation: ringRotate 24s linear infinite;
+}
+
+.ac-proto-ring-2 {
+    inset: 10%;
+    border-color: rgba(77,184,173,0.08);
+    animation: ringRotate 34s linear infinite reverse;
+}
+
 @keyframes ringRotate {
     from { transform: rotate(0deg); } to { transform: rotate(360deg); }
 }
 .ac-proto-img {
-    position: relative; z-index: 2;
-    width: 72%; height: 72%;
+    position: relative;
+    z-index: 2;
+    width: 92%;
+    height: 92%;
     object-fit: contain;
     filter: drop-shadow(0 20px 50px rgba(6,61,56,0.35));
     transition: opacity 0.2s ease;
@@ -570,14 +587,25 @@ img { display: block; max-width: 100%; }
     z-index: 2;
 }
 .ac-team-arrow {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    width: 50px; height: 50px; border-radius: 50%; cursor: pointer;
-    border: 1px solid rgba(77,184,173,0.35);
-    background: linear-gradient(135deg, rgba(12,128,120,0.35) 0%, rgba(77,184,173,0.18) 100%);
-    backdrop-filter: blur(10px);
-    color: #a8e6e0; font-size: 1rem;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s ease; z-index: 10; outline: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid rgba(77,184,173,0.45);
+    background: rgba(12,128,120,0.25);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    color: #ffffff;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+    outline: none;
 }
 .ac-team-arrow:hover {
     background: linear-gradient(135deg, rgba(12,128,120,0.60) 0%, rgba(77,184,173,0.35) 100%);
