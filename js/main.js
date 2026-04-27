@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
      /* SMOOTH SCROLL */
-     document.querySelectorAll("a").forEach(link => {
+     document.querySelectorAll('a[href^="#"]').forEach(link => {
          link.addEventListener("click", function (e) {
          const href = this.getAttribute("href");
 
