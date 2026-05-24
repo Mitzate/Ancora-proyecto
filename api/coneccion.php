@@ -1197,6 +1197,67 @@ if (isset($input['action']) && $input['action'] === 'esp32_get_status') {
     }
     exit;
 }
+    if (isset($input['action']) && $input['action'] === 'get_user_devices_mapping') {
+        $id_usuario = $input['id_usuario'] ?? null;
+        
+        if (!$id_usuario) {
+            http_response_code(400);
+            echo json_encode(['error' => 'id_usuario requerido']);
+            exit;
+        }
+        
+        try {
+            // Obtener dispositivos en orden (id_dispositivo ascendente)
+            // Esto asegura que el mapeo sea consistente
+            $stmt = $pdo->prepare("
+                SELECT 
+                    id_dispositivo,
+                    nombre_identificador,
+                    ubicacion_lugar,
+                    Tipo_monitoreo,
+                    monitoreo_pausado
+                FROM t_dispositivos
+                WHERE id_usuario = ?
+                ORDER BY id_dispositivo ASC
+                LIMIT 5
+            ");
+            $stmt->execute([$id_usuario]);
+            $devices = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (count($devices) === 0) {
+                echo json_encode([
+                    'success' => true,
+                    'mapping' => [],
+                    'message' => 'Usuario sin dispositivos registrados'
+                ]);
+                exit;
+            }
+            
+            // Crear mapeo: nodo_1 → device_id[0], nodo_2 → device_id[1], etc.
+            $mapping = [];
+            foreach ($devices as $index => $device) {
+                $node_id = $index + 1; // 1, 2, 3, 4, 5
+                $mapping[$node_id] = [
+                    'device_id' => (int)$device['id_dispositivo'],
+                    'nombre_identificador' => $device['nombre_identificador'],
+                    'ubicacion_lugar' => $device['ubicacion_lugar'],
+                    'Tipo_monitoreo' => $device['Tipo_monitoreo'],
+                    'monitoreo_pausado' => (bool)$device['monitoreo_pausado']
+                ];
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'mapping' => $mapping,
+                'total_devices' => count($devices),
+                'user_id' => (int)$id_usuario
+            ]);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+        exit;
+    }
 
 // ===== SESIÓN ACTIVA =====
 // ===== SESIÓN ACTIVA (POST) =====
