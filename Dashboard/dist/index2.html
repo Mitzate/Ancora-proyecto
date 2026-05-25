@@ -645,14 +645,23 @@ document.addEventListener('visibilitychange', () => {
 // ── Fetch datos del sensor ──────────────────────────────
 async function fetchSensorData(limit = 100) {
   try {
-    const body = { get_sensor_data:true, limit, id_usuario: parseInt(currentUserId) };
-    if (!debugShowAll && currentDeviceId) body.id_dispositivo = currentDeviceId;
+    const body = {
+      get_sensor_data: true,
+      limit,
+      mode: currentMode,
+      id_usuario: parseInt(currentUserId)
+    };
+    if (!debugShowAll && currentDeviceId) body.id_dispositivo = parseInt(currentDeviceId);
     const res  = await fetch(API_URL, {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify(body)
     });
     const json = await safeJson(res);
-    return json?.success ? (json.data || []) : [];
+    if (!json?.success) {
+      console.warn('fetchSensorData API error:', json);
+      return [];
+    }
+    return json.data || [];
   } catch(e) {
     console.error('fetchSensorData:', e);
     return [];

@@ -447,67 +447,102 @@ $stmt = $pdo->query("SELECT id_dispositivo, Tipo_monitoreo, id_usuario FROM t_di
     
     // Obtener datos del sensor
     if (isset($input['get_sensor_data'])) {
-        $limit = $input['limit'] ?? 50;
+        $limit       = (int)($input['limit'] ?? 50);
         $id_dispositivo = $input['id_dispositivo'] ?? null;
-        $since = $input['since'] ?? null;
-        
-        // Obtener el usuario desde el cuerpo de la petición o desde la sesión
-        $id_usuario = $input['id_usuario'] ?? ($_SESSION['id_usuario'] ?? null);
-        
+        $since       = $input['since'] ?? null;
+        $mode        = $input['mode'] ?? null; // 'caidas' | 'sueno' | null
+        $id_usuario  = $input['id_usuario'] ?? ($_SESSION['id_usuario'] ?? null);
+
         try {
-            // Construir la consulta combinada (UNION) y aplicar filtros sobre el resultado
-            $sql = "SELECT * FROM (\n";
-            $sql .= "  SELECT sc.id_caida AS id, sc.id_dispositivo, sc.fecha_hora, 'caidas' AS origen,\n";
-            $sql .= "         d.nombre_identificador AS nombre_identificador, d.ubicacion_lugar,\n";
-            $sql .= "         sc.presencia, sc.movimiento AS informacion_movimiento, sc.parametro_movimiento,\n";
-            $sql .= "         NULL AS tasa_respiracion, NULL AS Frecuencia_cardiaca,\n";
-            $sql .= "         NULL AS en_cama, NULL AS estado_sueno, NULL AS calidad_sueno_puntaje,\n";
-            $sql .= "         NULL AS duracion_sueno_profundo, NULL AS duracion_despierto, NULL AS numero_vueltas\n";
-            $sql .= "    FROM t_sensores_caidas sc\n";
-            $sql .= "    LEFT JOIN t_dispositivos d ON sc.id_dispositivo = d.id_dispositivo\n";
-            $sql .= "  UNION ALL\n";
-            $sql .= "  SELECT ss.id_sueno AS id, ss.id_dispositivo, ss.fecha_hora, 'sueno' AS origen,\n";
-            $sql .= "         d.nombre_identificador AS nombre_identificador, d.ubicacion_lugar,\n";
-            $sql .= "         NULL AS presencia, NULL AS informacion_movimiento, NULL AS parametro_movimiento,\n";
-            $sql .= "         ss.frecuencia_respiratoria_promedio AS tasa_respiracion,\n";
-            $sql .= "         ss.frecuencia_cardiaca_promedio AS Frecuencia_cardiaca,\n";
-            $sql .= "         ss.en_cama, ss.estado_sueno, ss.calidad_sueno_puntaje,\n";
-            $sql .= "         ss.duracion_sueno_profundo, ss.duracion_despierto, ss.numero_vueltas\n";
-            $sql .= "    FROM t_sensores_sueño ss\n";
-            $sql .= "    LEFT JOIN t_dispositivos d ON ss.id_dispositivo = d.id_dispositivo\n";
-            $sql .= ") AS combined";
-
             $conditions = [];
-            $params = [];
+            $params     = [];
 
-            // FILTRO DE SEGURIDAD: Solo mostrar datos de dispositivos del usuario actual
-            if ($id_usuario) {
-                $conditions[] = "combined.id_dispositivo IN (SELECT id_dispositivo FROM t_dispositivos WHERE id_usuario = ?)";
-                $params[] = $id_usuario;
-            }
-            
-            if ($id_dispositivo) {
-                $conditions[] = "combined.id_dispositivo = ?";
-                $params[] = $id_dispositivo;
-            }
-            if ($since) {
-                $conditions[] = "combined.fecha_hora > ?";
-                $params[] = $since;
+            if ($mode === 'caidas') {
+                // Consulta directa a caídas — incluye todos los campos relevantes
+                $sql = "SELECT sc.id_caida AS id, sc.id_dispositivo, sc.fecha_hora, 'caidas' AS origen,
+                               d.nombre_identificador, d.ubicacion_lugar,
+                               sc.presencia, sc.movimiento AS informacion_movimiento,
+                               sc.parametro_movimiento, sc.estado_caida,
+                               NULL AS estado_inmovilidad,
+                               NULL AS tasa_respiracion, NULL AS Frecuencia_cardiaca,
+                               NULL AS en_cama, NULL AS estado_sueno, NULL AS calidad_sueno_puntaje,
+                               NULL AS duracion_sueno_profundo, NULL AS duracion_despierto, NULL AS numero_vueltas
+                        FROM t_sensores_caidas sc
+                        LEFT JOIN t_dispositivos d ON sc.id_dispositivo = d.id_dispositivo";
+
+                if ($id_usuario) {
+                    $conditions[] = "sc.id_dispositivo IN (SELECT id_dispositivo FROM t_dispositivos WHERE id_usuario = ?)";
+                    $params[] = $id_usuario;
+                }
+                if ($id_dispositivo) { $conditions[] = "sc.id_dispositivo = ?"; $params[] = $id_dispositivo; }
+                if ($since)          { $conditions[] = "sc.fecha_hora > ?";      $params[] = $since; }
+                if (!empty($conditions)) $sql .= " WHERE " . implode(' AND ', $conditions);
+                $sql .= " ORDER BY sc.fecha_hora DESC LIMIT ?";
+
+            } elseif ($mode === 'sueno') {
+                // Consulta directa a sueño
+                $sql = "SELECT ss.id_sueno AS id, ss.id_dispositivo, ss.fecha_hora, 'sueno' AS origen,
+                               d.nombre_identificador, d.ubicacion_lugar,
+                               NULL AS presencia, NULL AS informacion_movimiento, NULL AS parametro_movimiento,
+                               NULL AS estado_caida, NULL AS estado_inmovilidad,
+                               ss.frecuencia_respiratoria_promedio AS tasa_respiracion,
+                               ss.frecuencia_cardiaca_promedio AS Frecuencia_cardiaca,
+                               ss.en_cama, ss.estado_sueno, ss.calidad_sueno_puntaje,
+                               ss.duracion_sueno_profundo, ss.duracion_despierto, ss.numero_vueltas
+                        FROM t_sensores_sueño ss
+                        LEFT JOIN t_dispositivos d ON ss.id_dispositivo = d.id_dispositivo";
+
+                if ($id_usuario) {
+                    $conditions[] = "ss.id_dispositivo IN (SELECT id_dispositivo FROM t_dispositivos WHERE id_usuario = ?)";
+                    $params[] = $id_usuario;
+                }
+                if ($id_dispositivo) { $conditions[] = "ss.id_dispositivo = ?"; $params[] = $id_dispositivo; }
+                if ($since)          { $conditions[] = "ss.fecha_hora > ?";      $params[] = $since; }
+                if (!empty($conditions)) $sql .= " WHERE " . implode(' AND ', $conditions);
+                $sql .= " ORDER BY ss.fecha_hora DESC LIMIT ?";
+
+            } else {
+                // Sin modo: UNION de ambas tablas (fallback)
+                $sql = "SELECT * FROM (
+                          SELECT sc.id_caida AS id, sc.id_dispositivo, sc.fecha_hora, 'caidas' AS origen,
+                                 d.nombre_identificador, d.ubicacion_lugar,
+                                 sc.presencia, sc.movimiento AS informacion_movimiento,
+                                 sc.parametro_movimiento, sc.estado_caida,
+                                 NULL AS estado_inmovilidad,
+                                 NULL AS tasa_respiracion, NULL AS Frecuencia_cardiaca,
+                                 NULL AS en_cama, NULL AS estado_sueno, NULL AS calidad_sueno_puntaje,
+                                 NULL AS duracion_sueno_profundo, NULL AS duracion_despierto, NULL AS numero_vueltas
+                            FROM t_sensores_caidas sc
+                            LEFT JOIN t_dispositivos d ON sc.id_dispositivo = d.id_dispositivo
+                          UNION ALL
+                          SELECT ss.id_sueno AS id, ss.id_dispositivo, ss.fecha_hora, 'sueno' AS origen,
+                                 d.nombre_identificador, d.ubicacion_lugar,
+                                 NULL AS presencia, NULL AS informacion_movimiento, NULL AS parametro_movimiento,
+                                 NULL AS estado_caida, NULL AS estado_inmovilidad,
+                                 ss.frecuencia_respiratoria_promedio AS tasa_respiracion,
+                                 ss.frecuencia_cardiaca_promedio AS Frecuencia_cardiaca,
+                                 ss.en_cama, ss.estado_sueno, ss.calidad_sueno_puntaje,
+                                 ss.duracion_sueno_profundo, ss.duracion_despierto, ss.numero_vueltas
+                            FROM t_sensores_sueño ss
+                            LEFT JOIN t_dispositivos d ON ss.id_dispositivo = d.id_dispositivo
+                        ) AS combined";
+
+                if ($id_usuario) {
+                    $conditions[] = "combined.id_dispositivo IN (SELECT id_dispositivo FROM t_dispositivos WHERE id_usuario = ?)";
+                    $params[] = $id_usuario;
+                }
+                if ($id_dispositivo) { $conditions[] = "combined.id_dispositivo = ?"; $params[] = $id_dispositivo; }
+                if ($since)          { $conditions[] = "combined.fecha_hora > ?";      $params[] = $since; }
+                if (!empty($conditions)) $sql .= " WHERE " . implode(' AND ', $conditions);
+                $sql .= " ORDER BY combined.fecha_hora DESC LIMIT ?";
             }
 
-            if (!empty($conditions)) {
-                $sql .= " WHERE " . implode(' AND ', $conditions);
-            }
-
-            // Ordenar por fecha (más reciente primero) y limitar
-            $sql .= " ORDER BY combined.fecha_hora DESC LIMIT ?";
-            $params[] = (int)$limit;
-
+            $params[] = $limit;
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            echo json_encode(['success' => true, 'data' => $data]);
+
+            echo json_encode(['success' => true, 'data' => $data, 'count' => count($data)]);
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);
