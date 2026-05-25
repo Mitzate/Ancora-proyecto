@@ -82,15 +82,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
         }
 
-        // Insertar en t_sensores_caidas
+        // Solo guardar si hay caída detectada
+        $param_num   = is_numeric($parametro) ? (float)$parametro : 0;
+        $norm_leg    = function($s) { $t = iconv('UTF-8','ASCII//TRANSLIT',$s??''); return preg_replace('/[^a-z0-9]/','',strtolower($t)); };
+        $ec_n = $norm_leg($estado_caida);
+        $mv_n = $norm_leg($movimiento);
+        $leg_fall = ($param_num >= 80)
+            || (strpos($ec_n,'caid')!==false && strpos($ec_n,'sincaid')===false && strpos($ec_n,'nocaid')===false)
+            || (strpos($mv_n,'caid')!==false && strpos($mv_n,'sincaid')===false && strpos($mv_n,'nocaid')===false);
+
+        if (!$leg_fall) {
+            echo json_encode(['success' => true, 'saved' => false, 'reason' => 'no_fall_detected']);
+            exit;
+        }
+
         $stmt = $pdo->prepare("
-            INSERT INTO t_sensores_caidas 
-            (id_dispositivo, presencia, movimiento, parametro_movimiento, estado_caida) 
+            INSERT INTO t_sensores_caidas
+            (id_dispositivo, presencia, movimiento, parametro_movimiento, estado_caida)
             VALUES (?, ?, ?, ?, ?)
         ");
         $stmt->execute([$device_id, $presencia, $movimiento, $parametro, $estado_caida]);
 
-        echo json_encode(['success' => true, 'id_caida' => $pdo->lastInsertId()]);
+        echo json_encode(['success' => true, 'saved' => true, 'id_caida' => $pdo->lastInsertId()]);
         exit;
     }
     // LOGIN
@@ -643,61 +656,64 @@ $stmt = $pdo->query("SELECT id_dispositivo, Tipo_monitoreo, id_usuario FROM t_di
             exit;
         }
 
-        // Normalizar estado de caída cuando el movimiento supera el umbral (>=70)
         $umbralMovimientoCaida = 80;
+
+        // Detectar caída ANTES de guardar
+        $normalize = function($s) {
+            if (!is_string($s) || $s === '') return '';
+            $trans = iconv('UTF-8', 'ASCII//TRANSLIT', $s);
+            $trans = strtolower($trans);
+            $trans = preg_replace('/[^a-z0-9]/', '', $trans);
+            return $trans;
+        };
+
         $estado_caida_calculado = $estado_caida;
         if (is_numeric($parametro_movimiento) && $parametro_movimiento >= $umbralMovimientoCaida) {
             $estado_caida_calculado = 'Caída por movimiento alto';
         }
-        
+
+        $estado_norm     = $normalize($estado_caida_calculado);
+        $movimiento_norm = $normalize($movimiento);
+        $inmovilidad_norm= $normalize($estado_inmovilidad);
+
+        $is_fall_detected = false;
+        if (is_numeric($parametro_movimiento) && $parametro_movimiento >= $umbralMovimientoCaida) {
+            $is_fall_detected = true;
+        }
+        // Positivo: contiene 'caid' pero NO empieza con 'sincaid' ni 'nocaid'
+        foreach ([$estado_norm, $movimiento_norm, $inmovilidad_norm] as $_n) {
+            if (strpos($_n, 'caid') !== false
+                && strpos($_n, 'sincaid') === false
+                && strpos($_n, 'nocaid')  === false) {
+                $is_fall_detected = true;
+                break;
+            }
+        }
+
+        error_log('is_fall_detected=' . ($is_fall_detected ? '1' : '0') . ' parametro=' . $parametro_movimiento . ' estado_norm=' . $estado_norm);
+
+        // Si no hay caída, no guardar en base de datos
+        if (!$is_fall_detected) {
+            echo json_encode(['success' => true, 'saved' => false, 'reason' => 'no_fall_detected']);
+            exit;
+        }
+
         try {
             $stmt = $pdo->prepare("
-                INSERT INTO t_sensores_caidas 
-                (id_dispositivo, presencia, movimiento, parametro_movimiento, 
+                INSERT INTO t_sensores_caidas
+                (id_dispositivo, presencia, movimiento, parametro_movimiento,
                  estado_caida, estado_inmovilidad)
                 VALUES (?, ?, ?, ?, ?, ?)
             ");
             $stmt->execute([
-                $device_id,
-                $presencia,
-                $movimiento,
-                $parametro_movimiento,
-                $estado_caida_calculado,
-                $estado_inmovilidad
+                $device_id, $presencia, $movimiento,
+                $parametro_movimiento, $estado_caida_calculado, $estado_inmovilidad
             ]);
-            
-            $rows = $stmt->rowCount();
-            error_log('✅ t_sensores_caidas insert rows=' . $rows . ' id_dispositivo=' . $device_id . ' parametro=' . $parametro_movimiento);
+
             $id_caida = $pdo->lastInsertId();
-            
-            // VERIFICAR SI HAY CAÍDA DETECTADA
-            // Normalizar cadenas (quitar acentos y case-insensitive) y buscar 'caid' como subcadena
-            $normalize = function($s) {
-                if (!is_string($s) || $s === '') return '';
-                // transliterate UTF-8 accents to ASCII, then lowercase
-                $trans = iconv('UTF-8', 'ASCII//TRANSLIT', $s);
-                $trans = strtolower($trans);
-                // Keep only letters/numbers for robust matching
-                $trans = preg_replace('/[^a-z0-9]/', '', $trans);
-                return $trans;
-            };
+            error_log('✅ Caída guardada id_caida=' . $id_caida . ' id_dispositivo=' . $device_id);
 
-            $estado_norm = $normalize($estado_caida_calculado ?? '');
-            $movimiento_norm = $normalize($movimiento ?? '');
-            $inmovilidad_norm = $normalize($estado_inmovilidad ?? '');
-
-            $is_fall_detected = false;
-            if ((is_numeric($parametro_movimiento) && $parametro_movimiento >= $umbralMovimientoCaida)) {
-                $is_fall_detected = true;
-            }
-            if (strpos($estado_norm, 'caid') !== false || strpos($movimiento_norm, 'caid') !== false || strpos($inmovilidad_norm, 'caid') !== false) {
-                $is_fall_detected = true;
-            }
-
-            error_log('is_fall_detected=' . ($is_fall_detected ? '1' : '0') . ' - parametro_movimiento=' . $parametro_movimiento . ' - estado_norm=' . $estado_norm . ' - id_caida=' . $id_caida);
-
-            // Devolver id insertado y flag para depuración/confirmación
-            echo json_encode(['success' => true, 'id_caida' => (int)$id_caida, 'is_fall_detected' => $is_fall_detected]);
+            echo json_encode(['success' => true, 'saved' => true, 'id_caida' => (int)$id_caida, 'is_fall_detected' => true]);
             // Continuar con envío de alertas si corresponde
             // solo crear y dispatchear alertas si realmente se trató de una caída
             if ($is_fall_detected && $device_id) {
