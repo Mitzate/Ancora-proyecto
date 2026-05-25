@@ -440,10 +440,17 @@ function isOnline(fechaHora) {
   return (Date.now() - new Date(fechaHora).getTime()) < 5 * 60 * 1000;
 }
 
+function positiveFall(text) {
+  const t = (text ?? '').trim().toLowerCase();
+  if (!t || t === '—') return false;
+  return /ca[ií]d/i.test(t) && !/sin\s+ca[ií]d|no\s+ca[ií]d|sin caida|no caida|without/i.test(t);
+}
+window.positiveFall = positiveFall;
+
 function isFall(r) {
   return Number(r.parametro_movimiento ?? 0) >= 80
-    || /ca[ií]d/i.test(r.estado_caida ?? '')
-    || /ca[ií]d/i.test(r.informacion_movimiento ?? '');
+    || positiveFall(r.estado_caida)
+    || positiveFall(r.informacion_movimiento);
 }
 
 // ── Inicialización ─────────────────────────────────────
@@ -1121,9 +1128,10 @@ function actualizarUI(lectura) {
     if (byId('firebase-ultima-actualizacion')) byId('firebase-ultima-actualizacion').textContent = ts;
 
     // Alerta de caída
-    const esCaida = /ca[ií]d/i.test(lectura.estado_caida || '')
+    const esCaida = (window.positiveFall?.(lectura.estado_caida) ?? false)
                   || Number(lectura.parametro_movimiento ?? 0) >= 80;
-    const tieneMovimiento = /si|yes|true|1|detect|activo/i.test(lectura.movimiento || '');
+    const movStr = (lectura.movimiento || '').trim().toLowerCase();
+    const tieneMovimiento = ['si', 'yes', 'true', '1', 'activo', 'detectado'].includes(movStr);
     const alertEl = byId('firebase-alerta');
     const card    = byId('firebaseCard');
     if (esCaida && alertEl) {
