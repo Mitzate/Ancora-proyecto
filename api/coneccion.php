@@ -1428,6 +1428,194 @@ if (isset($input['action']) && $input['action'] === 'confirm_alert') {
     exit;
 }
 
+if (isset($input['action']) && $input['action'] === 'panic_alert') {
+    error_log("═══════════════════════════════════════════");
+    error_log("🚨 ALERTA DE PÁNICO RECIBIDA");
+    error_log("═══════════════════════════════════════════");
+    
+    $id_dispositivo = $input['id_dispositivo'] ?? null;
+    $id_usuario     = $input['id_usuario'] ?? null;
+    $tipo           = $input['tipo'] ?? 'panico';
+    $mensaje        = $input['mensaje'] ?? 'Alerta de pánico activada manualmente';
+    
+    if (!$id_dispositivo || !$id_usuario) {
+        http_response_code(400);
+        echo json_encode(['error' => 'id_dispositivo e id_usuario son requeridos']);
+        exit;
+    }
+    
+    error_log("📍 Dispositivo: " . $id_dispositivo);
+    error_log("👤 Usuario: " . $id_usuario);
+    error_log("💬 Tipo: " . $tipo);
+    error_log("📝 Mensaje: " . $mensaje);
+    
+    try {
+        // Verificar que el dispositivo exista y pertenezca al usuario
+        $stmt = $pdo->prepare("
+            SELECT d.*, u.nombre, u.apellido_paterno, u.apellido_materno
+            FROM t_dispositivos d
+            JOIN t_usuarios u ON d.id_usuario = u.id_usuario
+            WHERE d.id_dispositivo = ? AND d.id_usuario = ?
+        ");
+        $stmt->execute([$id_dispositivo, $id_usuario]);
+        $device = $stmt->fetch();
+        
+        if (!$device) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Dispositivo no encontrado o no pertenece a este usuario']);
+            exit;
+        }
+        
+        error_log("✅ Dispositivo validado: " . $device['nombre_identificador']);
+        
+        // ⭐ ACTIVAR BUZZER A TRAVÉS DE MQTT
+        error_log("\n🔔 Activando buzzer centralizado (Nodo 4)...");
+        
+        require_once __DIR__ . '/mqtt_helper.php';
+        $buzzerResult = activarBuzzer(1); // Desde el gateway (Nodo 1)
+        
+        error_log("   Resultado MQTT: " . ($buzzerResult['success'] ? '✅ Éxito' : '❌ Error'));
+        
+        // ⭐ GUARDAR ALERTA EN BASE DE DATOS
+        $stmt = $pdo->prepare("
+            INSERT INTO t_alertas_caidas
+            (id_usuario, id_dispositivo, tipo_alerta, titulo_alerta, mensaje, estado_alerta)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+        
+        $stmt->execute([
+            $id_usuario,
+            $id_dispositivo,
+            $tipo,
+            '🚨 Alerta de Pánico Manual',
+            $mensaje,
+            'no_confirmada'
+        ]);
+        
+        $id_alerta = $pdo->lastInsertId();
+        error_log("💾 Alerta guardada en BD: id_alerta=" . $id_alerta);
+        
+        // ⭐ ENVIAR NOTIFICACIONES A CONTACTOS
+        error_log("\n📢 Enviando notificaciones a contactos...");
+        
+        try {
+            $stmt = $pdo->prepare("
+                SELECT 
+                    c.id_contacto, 
+                    c.nombre, 
+                    c.correo,
+                    tu.chat_id,
+                    tu.telegram_username
+                FROM t_contactos c
+                LEFT JOIN t_telegram_usuarios tu ON c.correo = tu.telegram_username
+                WHERE c.id_usuario = ?
+            ");
+            $stmt->execute([$id_usuario]);
+            $contacts = $stmt->fetchAll();
+        } catch (PDOException $e) {
+            // Si falla el JOIN, usar solo t_contactos
+            error_log("⚠️ JOIN con t_telegram_usuarios falló, usando solo t_contactos");
+            $stmt = $pdo->prepare("
+                SELECT 
+                    id_contacto, 
+                    nombre, 
+                    correo,
+                    telegram_chat_id as chat_id,
+                    correo as telegram_username
+                FROM t_contactos
+                WHERE id_usuario = ?
+            ");
+            $stmt->execute([$id_usuario]);
+            $contacts = $stmt->fetchAll();
+        }
+        
+        error_log("   Total contactos encontrados: " . count($contacts));
+        
+        $contactosNotificados = 0;
+        foreach ($contacts as $contact) {
+            // Guardar alerta para cada contacto
+            $stmt = $pdo->prepare("
+                INSERT INTO t_alertas_caidas
+                (id_usuario, id_contacto, id_dispositivo, tipo_alerta, titulo_alerta, mensaje, estado_alerta)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([
+                $id_usuario,
+                $contact['id_contacto'],
+                $id_dispositivo,
+                'panico',
+                '🚨 EMERGENCIA: Alerta de Pánico Manual',
+                'Se ha activado manualmente el botón de pánico en ' . $device['nombre_identificador'],
+                'no_confirmada'
+            ]);
+            
+            // Enviar Telegram si tiene chat_id
+            if (!empty($contact['chat_id'])) {
+                try {
+                    require_once __DIR__ . '/telegram.php';
+                    $msgTelegram = "🚨 *ALERTA DE EMERGENCIA - PÁNICO MANUAL*\n\n";
+                    $msgTelegram .= "📍 Ubicación: " . $device['ubicacion_lugar'] . "\n";
+                    $msgTelegram .= "🔔 Dispositivo: " . $device['nombre_identificador'] . "\n";
+                    $msgTelegram .= "⏰ Hora: " . date('Y-m-d H:i:s') . "\n";
+                    $msgTelegram .= "👤 Usuario: " . $device['nombre'] . " " . $device['apellido_paterno'] . "\n\n";
+                    $msgTelegram .= "💬 Se ha activado el botón de pánico manualmente.\n";
+                    $msgTelegram .= "🔔 El buzzer centralizado (Nodo 4) debe estar sonando ahora.";
+                    
+                    $telegramResult = enviarTelegram(
+                        $contact['chat_id'],
+                        $msgTelegram
+                    );
+                    
+                    if ($telegramResult) {
+                        error_log("   ✅ Telegram enviado a: " . $contact['nombre']);
+                        $contactosNotificados++;
+                    } else {
+                        error_log("   ❌ Error enviando Telegram a: " . $contact['nombre']);
+                    }
+                } catch (Exception $e) {
+                    error_log("   ⚠️ Excepción Telegram: " . $e->getMessage());
+                }
+            } else {
+                error_log("   ⚠️ Contacto sin chat_id: " . $contact['nombre']);
+            }
+        }
+        
+        error_log("\n✅ ALERTA DE PÁNICO PROCESADA EXITOSAMENTE");
+        error_log("   - Buzzer activado: " . ($buzzerResult['success'] ? 'SÍ' : 'NO'));
+        error_log("   - Contactos notificados: " . $contactosNotificados . "/" . count($contacts));
+        error_log("═══════════════════════════════════════════\n");
+        
+        // Responder al cliente
+        http_response_code(200);
+        echo json_encode([
+            'success' => true,
+            'message' => '🚨 Alerta de pánico enviada',
+            'buzzer_activated' => $buzzerResult['success'],
+            'buzzer_duration_ms' => 5000,
+            'contacts_notified' => $contactosNotificados,
+            'alert_id' => (int)$id_alerta
+        ]);
+        
+    } catch (PDOException $e) {
+        error_log("❌ Error BD: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'error' => 'Error al procesar alerta de pánico',
+            'details' => $e->getMessage()
+        ]);
+    } catch (Exception $e) {
+        error_log("❌ Error general: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'error' => 'Error inesperado',
+            'details' => $e->getMessage()
+        ]);
+    }
+    
+    exit;
+}
+
+
 // Si llega aquí, endpoint no encontrado
 http_response_code(400);
 echo json_encode(['error' => 'Acción no reconocida o datos incompletos']);
