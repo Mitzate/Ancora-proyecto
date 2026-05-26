@@ -368,6 +368,69 @@
 
     /* ── Colapso historial ── */
     #historyCollapse .card-body { padding: 1rem; }
+
+    /* ── Botón de pánico ── */
+    @keyframes panicPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(220,53,69,0.7), 0 4px 15px rgba(220,53,69,0.35); }
+      50%      { box-shadow: 0 0 0 10px rgba(220,53,69,0), 0 4px 28px rgba(220,53,69,0.65); }
+    }
+    .btn-panico {
+      background: linear-gradient(135deg, #b02a37, #dc3545) !important;
+      border: 2px solid rgba(220,53,69,0.7) !important;
+      color: #fff !important;
+      font-weight: 700 !important;
+      letter-spacing: .4px;
+      animation: panicPulse 2.2s ease-in-out infinite;
+    }
+    .btn-panico:hover {
+      background: linear-gradient(135deg, #dc3545, #ff6b7a) !important;
+      transform: scale(1.04);
+      animation-play-state: paused;
+    }
+    .btn-panico:active { transform: scale(0.97) !important; }
+
+    /* FAB flotante de pánico */
+    #panicFab {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 1050;
+      width: 62px;
+      height: 62px;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, #b02a37, #dc3545) !important;
+      border: 3px solid rgba(255,255,255,0.22) !important;
+      color: #fff !important;
+      font-size: 1.4rem !important;
+      box-shadow: 0 4px 20px rgba(220,53,69,0.55), 0 2px 8px rgba(0,0,0,0.4) !important;
+      animation: panicPulse 1.8s ease-in-out infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    #panicFab:hover { transform: scale(1.12); animation-play-state: paused; }
+    #panicFab:active { transform: scale(0.95); }
+    #panicFab .fab-label {
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      margin-bottom: 8px;
+      background: rgba(17,40,34,0.95);
+      border: 1px solid rgba(220,53,69,0.4);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: .72rem;
+      font-weight: 700;
+      color: #ff6b7a;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+    #panicFab:hover .fab-label { opacity: 1; }
   </style>
 </head>
 
@@ -539,6 +602,9 @@
                   <button id="alarmasBtn" class="btn btn-sm btn-danger">
                     <i class="bi bi-bell-fill"></i> Alarmas: ON
                   </button>
+                  <button id="panicBtn" class="btn btn-sm btn-panico">
+                    <i class="bi bi-exclamation-octagon-fill"></i> Pánico
+                  </button>
                 </div>
               </div>
               <div class="card-body">
@@ -660,6 +726,43 @@
   </main>
 
 </div><!-- /app-wrapper -->
+
+<!-- Botón de pánico flotante -->
+<button id="panicFab" title="Botón de pánico">
+  <span class="fab-label">EMERGENCIA</span>
+  <i class="bi bi-exclamation-octagon-fill"></i>
+</button>
+
+<!-- ═══════════════ MODAL CONFIRMAR PÁNICO ═══════════════ -->
+<div class="modal fade" id="panicModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-color:rgba(220,53,69,0.55)!important;">
+      <div class="modal-header" style="background:linear-gradient(135deg,#6b1521,#b02a37)!important;border-radius:18px 18px 0 0!important;border-bottom:1px solid rgba(220,53,69,0.35)!important;">
+        <h5 class="modal-title" style="color:#fff!important;font-family:'Playfair Display',serif;">
+          <i class="bi bi-exclamation-octagon-fill me-2" style="color:#ff8a95;"></i>Alerta de emergencia
+        </h5>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div style="font-size:3.5rem;margin-bottom:1rem;line-height:1;">🚨</div>
+        <p class="mb-2" style="font-size:1.05rem;font-weight:600;color:rgba(255,255,255,0.92);">
+          ¿Confirmar alerta de emergencia manual?
+        </p>
+        <p class="mb-0" style="font-size:.85rem;color:rgba(255,255,255,0.55);line-height:1.5;">
+          Se notificará a todos los <strong style="color:rgba(77,184,173,.8);">contactos de emergencia</strong> registrados.<br>
+          Usa este botón si ocurre una emergencia que el sensor no detectó automáticamente.
+        </p>
+      </div>
+      <div class="modal-footer justify-content-center gap-3" style="border-top:1px solid rgba(220,53,69,0.15)!important;">
+        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+          <i class="bi bi-x-lg me-1"></i>Cancelar
+        </button>
+        <button type="button" id="confirmPanicBtn" class="btn btn-danger px-4 fw-bold">
+          <i class="bi bi-exclamation-octagon-fill me-1"></i>Sí, enviar alerta
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════ MODAL REGISTRAR DISPOSITIVO ═══════════════ -->
 <div class="modal fade" id="deviceModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -945,6 +1048,18 @@ function configurarBotones() {
 
   // Alertas
   document.getElementById('refreshAlertsBtn').addEventListener('click', loadSentAlerts);
+
+  // Botón de pánico (card header + FAB flotante)
+  const panicModalEl = document.getElementById('panicModal');
+  const panicModalInst = new bootstrap.Modal(panicModalEl);
+  ['panicBtn', 'panicFab'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', () => panicModalInst.show());
+  });
+  document.getElementById('confirmPanicBtn').addEventListener('click', async () => {
+    panicModalInst.hide();
+    await triggerPanicAlert();
+  });
 }
 
 function actualizarUIMonitoreo() {
@@ -1263,6 +1378,47 @@ async function deleteRecord(id, table) {
     if (json?.success) { showNotification('Registro eliminado', 'success'); await loadHistoryData(); }
     else showNotification('Error: ' + (json?.error||'?'), 'danger');
   } catch(e) { showNotification('Error de red', 'danger'); }
+}
+
+// ── Alerta de pánico manual ─────────────────────────────
+async function triggerPanicAlert() {
+  if (!currentDeviceId || !currentUserId) {
+    showNotification('No hay dispositivo activo para enviar la alerta', 'warning');
+    return;
+  }
+
+  // Feedback visual inmediato
+  const card    = document.getElementById('firebaseCard');
+  const alertEl = document.getElementById('firebase-alerta');
+  card?.classList.add('alert-active');
+  if (alertEl) {
+    alertEl.innerHTML = '<div class="alert alert-danger mb-0 py-1 fw-bold">🚨 ¡ALERTA DE PÁNICO ACTIVADA MANUALMENTE!</div>';
+    setTimeout(() => { alertEl.innerHTML = ''; card?.classList.remove('alert-active'); }, 12000);
+  }
+  if (window.triggerMovementState) window.triggerMovementState('fall', 'Pánico manual');
+  showNotification('🚨 Enviando alerta de emergencia…', 'danger');
+
+  try {
+    const res  = await fetch(API_URL, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        action:        'panic_alert',
+        id_dispositivo: parseInt(currentDeviceId),
+        id_usuario:     parseInt(currentUserId),
+        tipo:           'panico',
+        mensaje:        'Alerta de pánico activada manualmente desde el dashboard'
+      })
+    });
+    const json = await safeJson(res);
+    if (json?.success) {
+      showNotification('✅ Contactos de emergencia notificados', 'success');
+      await loadSentAlerts();
+    } else {
+      showNotification('Alerta enviada (verificar contactos: ' + (json?.error || 'sin detalle') + ')', 'warning');
+    }
+  } catch(e) {
+    showNotification('Error de red al enviar alerta de pánico', 'danger');
+  }
 }
 
 // ── Alertas ─────────────────────────────────────────────
