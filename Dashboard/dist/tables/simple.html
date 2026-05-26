@@ -1,273 +1,237 @@
 <!doctype html>
-<html lang="en">
-  <!--begin::Head-->
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Ancora | Graficas</title>
+<html lang="es">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Ancora | Gráficas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
 
-    <!--begin::Accessibility Meta Tags-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
-    <!--end::Accessibility Meta Tags-->
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" crossorigin="anonymous" media="print" onload="this.media='all'" />
+  <!-- OverlayScrollbars -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" crossorigin="anonymous" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" crossorigin="anonymous" />
+  <!-- AdminLTE -->
+  <link rel="stylesheet" href="../css/adminlte.css" />
 
-    <!--begin::Primary Meta Tags-->
-    <meta name="title" content="AdminLTE 4 | Simple Tables" />
-    <meta name="author" content="ColorlibHQ" />
-    <meta
-      name="description"
-      content="AdminLTE is a Free Bootstrap 5 Admin Dashboard, 30 example pages using Vanilla JS. Fully accessible with WCAG 2.1 AA compliance."
-    />
-    <meta
-      name="keywords"
-      content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard, accessible admin panel, WCAG compliant"
-    />
-    <!--end::Primary Meta Tags-->
+  <style>
+    :root {
+      --teal:        #0c8078;
+      --teal-light:  #12a396;
+      --teal-sage:   #4db8ad;
+      --teal-deep:   #063d38;
+      --teal-forest: #0a5c54;
+      --dark-900:    #060e0d;
+      --dark-800:    #0a1614;
+      --dark-700:    #0f1f1d;
+      --dark-600:    #152925;
+      --dark-400:    #2a4440;
+      --cream:       #f2eeea;
+      --font-display:'Playfair Display', serif;
+      --font-body:   'DM Sans', sans-serif;
+      --card-bg:     rgba(15,31,29,0.82);
+      --card-border: rgba(77,184,173,0.16);
+      --text-main:   rgba(255,255,255,0.85);
+      --text-muted-ancora: rgba(255,255,255,0.45);
+      --transition:  0.35s cubic-bezier(0.22,1,0.36,1);
+    }
 
-    <!--begin::Accessibility Features-->
-    <!-- Skip links will be dynamically added by accessibility.js -->
-    <meta name="supported-color-schemes" content="light dark" />
-    <link rel="preload" href="../css/adminlte.css" as="style" />
-    <!--end::Accessibility Features-->
+    body {
+      background: linear-gradient(145deg, var(--dark-900) 0%, var(--dark-800) 60%, #091812 100%) !important;
+      font-family: var(--font-body) !important;
+      color: var(--text-main) !important;
+    }
 
-    <!--begin::Fonts-->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
-      integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
-      crossorigin="anonymous"
-      media="print"
-      onload="this.media='all'"
-    />
-    <!--end::Fonts-->
+    .app-header {
+      background: rgba(6,14,13,0.88) !important;
+      border-bottom: 1px solid rgba(77,184,173,0.14) !important;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .app-header .nav-link { color: rgba(255,255,255,0.65) !important; transition: color var(--transition); }
+    .app-header .nav-link:hover { color: var(--teal-sage) !important; }
+    .app-header .navbar-badge { font-size: .6rem; }
 
-    <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
-      crossorigin="anonymous"
-    />
-    <!--end::Third Party Plugin(OverlayScrollbars)-->
+    .app-sidebar {
+      background: var(--dark-900) !important;
+      border-right: 1px solid rgba(77,184,173,0.10) !important;
+    }
+    .sidebar-brand { border-bottom: 1px solid rgba(77,184,173,0.12) !important; }
+    .brand-text {
+      font-family: var(--font-display) !important;
+      font-weight: 900 !important;
+      letter-spacing: 2px;
+      color: var(--teal-sage) !important;
+    }
+    .app-sidebar .nav-link { color: rgba(255,255,255,0.55) !important; transition: color var(--transition), background var(--transition); }
+    .app-sidebar .nav-link:hover,
+    .app-sidebar .nav-link.active { color: var(--teal-sage) !important; background: rgba(77,184,173,0.08) !important; }
+    .app-sidebar .nav-link.active { border-left: 3px solid var(--teal-sage); }
+    .app-sidebar .nav-icon { color: var(--teal-sage) !important; opacity: .7; }
 
-    <!--begin::Third Party Plugin(Bootstrap Icons)-->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
-      crossorigin="anonymous"
-    />
-    <!--end::Third Party Plugin(Bootstrap Icons)-->
+    .app-content-header h3 {
+      font-family: var(--font-display) !important;
+      font-weight: 700;
+      color: var(--teal-sage);
+      letter-spacing: -.5px;
+    }
 
-    <!--begin::Required Plugin(AdminLTE)-->
-    <link rel="stylesheet" href="../css/adminlte.css" />
-    <!--end::Required Plugin(AdminLTE)-->
-  </head>
+    .card {
+      background: var(--card-bg) !important;
+      border: 1px solid var(--card-border) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.38), 0 1px 0 rgba(77,184,173,0.08) inset !important;
+      backdrop-filter: blur(8px);
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+    .card:hover { box-shadow: 0 14px 44px rgba(0,0,0,0.48), 0 0 0 1px rgba(77,184,173,0.22) inset !important; }
+
+    .card-header {
+      background: linear-gradient(100deg, var(--teal-deep) 0%, var(--teal-forest) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      border-bottom: 1px solid rgba(77,184,173,0.20) !important;
+      border-radius: 16px 16px 0 0 !important;
+      padding: .9rem 1.2rem !important;
+    }
+    .card-header .card-title,
+    .card-header h3,
+    .card-header h5 {
+      font-family: var(--font-display) !important;
+      font-weight: 700 !important;
+      color: #fff !important;
+      letter-spacing: -.2px;
+    }
+    .card-body { color: var(--text-main); }
+    .card-footer {
+      background: rgba(6,14,13,0.5) !important;
+      border-top: 1px solid rgba(77,184,173,0.10) !important;
+      border-radius: 0 0 16px 16px !important;
+    }
+
+    .text-muted { color: var(--text-muted-ancora) !important; }
+
+    .badge.bg-success   { background: rgba(13,184,140,0.22) !important; color: #3de6c0 !important; border: 1px solid rgba(13,184,140,0.4); }
+    .badge.bg-secondary { background: rgba(255,255,255,0.08) !important; color: rgba(255,255,255,0.55) !important; border: 1px solid rgba(255,255,255,0.1); }
+    .badge.bg-warning   { background: rgba(255,193,7,0.18) !important; color: #ffc107 !important; border: 1px solid rgba(255,193,7,0.35); }
+    .badge.bg-danger    { background: rgba(220,53,69,0.2) !important; color: #ff6b7a !important; border: 1px solid rgba(220,53,69,0.4); }
+    .badge.text-bg-warning { background: rgba(255,193,7,0.18) !important; color: #ffc107 !important; border: 1px solid rgba(255,193,7,0.35); }
+
+    .btn-primary {
+      background: var(--teal) !important;
+      border-color: var(--teal) !important;
+      color: #fff !important;
+    }
+    .btn-primary:hover { background: var(--teal-light) !important; border-color: var(--teal-light) !important; }
+
+    .btn-info {
+      background: rgba(77,184,173,0.15) !important;
+      border-color: rgba(77,184,173,0.35) !important;
+      color: var(--teal-sage) !important;
+    }
+    .btn-info:hover { background: rgba(77,184,173,0.25) !important; }
+
+    .btn-outline-secondary {
+      border-color: rgba(255,255,255,0.2) !important;
+      color: rgba(255,255,255,0.55) !important;
+    }
+    .btn-outline-secondary:hover { background: rgba(255,255,255,0.07) !important; color: rgba(255,255,255,0.85) !important; }
+
+    .dropdown-menu {
+      background: rgba(10,22,20,0.96) !important;
+      border: 1px solid rgba(77,184,173,0.15) !important;
+      backdrop-filter: blur(16px);
+    }
+    .dropdown-item { color: rgba(255,255,255,0.7) !important; }
+    .dropdown-item:hover { background: rgba(77,184,173,0.10) !important; color: var(--teal-sage) !important; }
+    .dropdown-header { color: var(--teal-sage) !important; font-size: .75rem; }
+    .dropdown-divider { border-color: rgba(77,184,173,0.10) !important; }
+    .dropdown-footer { color: var(--teal-sage) !important; }
+
+    .user-header { background: linear-gradient(135deg, var(--teal-deep), var(--teal-forest)) !important; }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(77,184,173,0.25); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(77,184,173,0.45); }
+
+    .app-content { padding-top: 1.5rem; }
+    .app-content-header { border-bottom: 1px solid rgba(77,184,173,0.10); padding: 1rem 0; margin-bottom: .5rem; }
+
+    @keyframes cardFadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .card { animation: cardFadeIn .45s ease forwards; }
+
+    .app-header::after {
+      content:'';
+      position:absolute;
+      bottom:0; left:0; right:0;
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(77,184,173,0.25), transparent);
+    }
+
+    /* Chart.js adaptar colores a fondo oscuro */
+    canvas { filter: none; }
+  </style>
+</head>
   <!--end::Head-->
-  <!--begin::Body-->
   <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
-    <!--begin::App Wrapper-->
-    <div class="app-wrapper">
-      <!--begin::Header-->
-      <nav class="app-header navbar navbar-expand bg-body">
-        <!--begin::Container-->
-        <div class="container-fluid">
-          <!--begin::Start Navbar Links-->
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
-                <i class="bi bi-list"></i>
-              </a>
-            </li>
-            <li class="nav-item d-none d-md-block">
-              <a href="#" class="nav-link">Home</a>
-            </li>
-            <li class="nav-item d-none d-md-block">
-              <a href="#" class="nav-link">Contact</a>
-            </li>
-          </ul>
-          <!--end::Start Navbar Links-->
+  <div class="app-wrapper">
 
-          <!--begin::End Navbar Links-->
-          <ul class="navbar-nav ms-auto">
-            <!--begin::Navbar Search-->
-            <li class="nav-item">
-              <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                <i class="bi bi-search"></i>
-              </a>
-            </li>
-            <!--end::Navbar Search-->
+    <!-- HEADER -->
+    <nav class="app-header navbar navbar-expand bg-body">
+      <div class="container-fluid">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+              <i class="bi bi-list"></i>
+            </a>
+          </li>
+        </ul>
 
-            <!--begin::Messages Dropdown Menu-->
-            <li class="nav-item dropdown">
-              <a class="nav-link" data-bs-toggle="dropdown" href="#">
-                <i class="bi bi-chat-text"></i>
-                <span class="navbar-badge badge text-bg-danger">3</span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                <a href="#" class="dropdown-item">
-                  <!--begin::Message-->
-                  <div class="d-flex">
-                    <div class="flex-shrink-0">
-                      <img
-                        src="../assets/img/user1-128x128.jpg"
-                        alt="User Avatar"
-                        class="img-size-50 rounded-circle me-3"
-                      />
-                    </div>
-                    <div class="flex-grow-1">
-                      <h3 class="dropdown-item-title">
-                        Brad Diesel
-                        <span class="float-end fs-7 text-danger"
-                          ><i class="bi bi-star-fill"></i
-                        ></span>
-                      </h3>
-                      <p class="fs-7">Call me whenever you can...</p>
-                      <p class="fs-7 text-secondary">
-                        <i class="bi bi-clock-fill me-1"></i> 4 Hours Ago
-                      </p>
-                    </div>
-                  </div>
-                  <!--end::Message-->
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <!--begin::Message-->
-                  <div class="d-flex">
-                    <div class="flex-shrink-0">
-                      <img
-                        src="../assets/img/user8-128x128.jpg"
-                        alt="User Avatar"
-                        class="img-size-50 rounded-circle me-3"
-                      />
-                    </div>
-                    <div class="flex-grow-1">
-                      <h3 class="dropdown-item-title">
-                        John Pierce
-                        <span class="float-end fs-7 text-secondary">
-                          <i class="bi bi-star-fill"></i>
-                        </span>
-                      </h3>
-                      <p class="fs-7">I got your message bro</p>
-                      <p class="fs-7 text-secondary">
-                        <i class="bi bi-clock-fill me-1"></i> 4 Hours Ago
-                      </p>
-                    </div>
-                  </div>
-                  <!--end::Message-->
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <!--begin::Message-->
-                  <div class="d-flex">
-                    <div class="flex-shrink-0">
-                      <img
-                        src="../assets/img/user3-128x128.jpg"
-                        alt="User Avatar"
-                        class="img-size-50 rounded-circle me-3"
-                      />
-                    </div>
-                    <div class="flex-grow-1">
-                      <h3 class="dropdown-item-title">
-                        Nora Silvester
-                        <span class="float-end fs-7 text-warning">
-                          <i class="bi bi-star-fill"></i>
-                        </span>
-                      </h3>
-                      <p class="fs-7">The subject goes here</p>
-                      <p class="fs-7 text-secondary">
-                        <i class="bi bi-clock-fill me-1"></i> 4 Hours Ago
-                      </p>
-                    </div>
-                  </div>
-                  <!--end::Message-->
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
-              </div>
-            </li>
-            <!--end::Messages Dropdown Menu-->
+        <ul class="navbar-nav ms-auto align-items-center">
+          <!-- Notifications -->
+          <li class="nav-item dropdown">
+            <a class="nav-link" data-bs-toggle="dropdown" href="#">
+              <i class="bi bi-bell-fill"></i>
+              <span class="navbar-badge badge text-bg-warning">0</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+              <span class="dropdown-item dropdown-header">Sin alertas</span>
+              <div class="dropdown-divider"></div>
+              <a href="../index2.html#alertsSection" class="dropdown-item dropdown-footer">Ver todas las alertas</a>
+            </div>
+          </li>
 
-            <!--begin::Notifications Dropdown Menu-->
-            <li class="nav-item dropdown">
-              <a class="nav-link" data-bs-toggle="dropdown" href="#">
-                <i class="bi bi-bell-fill"></i>
-                <span class="navbar-badge badge text-bg-warning">15</span>
-              </a>
-              <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                <span class="dropdown-item dropdown-header">15 Notifications</span>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="bi bi-envelope me-2"></i> 4 new messages
-                  <span class="float-end text-secondary fs-7">3 mins</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="bi bi-people-fill me-2"></i> 8 friend requests
-                  <span class="float-end text-secondary fs-7">12 hours</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="bi bi-file-earmark-fill me-2"></i> 3 new reports
-                  <span class="float-end text-secondary fs-7">2 days</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item dropdown-footer"> See All Notifications </a>
-              </div>
-            </li>
-            <!--end::Notifications Dropdown Menu-->
+          <!-- Fullscreen -->
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-lte-toggle="fullscreen">
+              <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+              <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display:none"></i>
+            </a>
+          </li>
 
-            <!--begin::Fullscreen Toggle-->
-            <li class="nav-item">
-              <a class="nav-link" href="#" data-lte-toggle="fullscreen">
-                <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
-                <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
-              </a>
-            </li>
-            <!--end::Fullscreen Toggle-->
-
-            <!--begin::User Menu Dropdown-->
-            <li class="nav-item dropdown user-menu">
-              <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                <i class="bi bi-person-circle fs-4"></i>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                <!--begin::User Image-->
-                <li class="user-header text-bg-primary">
-                  <p class="mb-0">Cuenta</p>
-                </li>
-                <!--end::User Image-->
-                <!--begin::Menu Body-->
-                <li class="user-body">
-                  <!--begin::Row-->
-                  <div class="row">
-                    <div class="col-4 text-center">
-                      <a href="#">Followers</a>
-                    </div>
-                    <div class="col-4 text-center">
-                      <a href="#">Sales</a>
-                    </div>
-                    <div class="col-4 text-center">
-                      <a href="#">Friends</a>
-                    </div>
-                  </div>
-                  <!--end::Row-->
-                </li>
-                <!--end::Menu Body-->
-                <!--begin::Menu Footer-->
-                <li class="user-footer">
-                  <a href="#" class="btn btn-default btn-flat">Profile</a>
-                  <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
-                </li>
-                <!--end::Menu Footer-->
-              </ul>
-            </li>
-            <!--end::User Menu Dropdown-->
-          </ul>
-          <!--end::End Navbar Links-->
-        </div>
-        <!--end::Container-->
-      </nav>
-      <!--end::Header-->
+          <!-- User menu -->
+          <li class="nav-item dropdown user-menu">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle" style="font-size:1.5rem;margin-right:.5rem;"></i>
+              <span id="userDisplayName" class="d-none d-md-inline">Usuario</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+              <li class="user-header text-bg-primary">
+                <i class="bi bi-person-circle" style="font-size:4rem;"></i>
+                <p id="userHeaderName">Usuario<small>Miembro de Ancora</small></p>
+              </li>
+              <li class="user-footer">
+                <a href="#" class="btn btn-default btn-flat">Perfil</a>
+                <a href="#" id="logoutBtn" class="btn btn-default btn-flat float-end">Cerrar sesión</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
       <!--begin::Sidebar-->
       <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
         <div class="sidebar-brand">
@@ -328,27 +292,18 @@
       <!--end::Sidebar-->
       <!--begin::App Main-->
       <main class="app-main">
-        <!--begin::App Content Header-->
         <div class="app-content-header">
-          <!--begin::Container-->
           <div class="container-fluid">
-            <!--begin::Row-->
-            <div class="row">
+            <div class="row align-items-center">
               <div class="col-sm-6">
-                <h3 class="mb-0">Resultados</h3>
+                <h3 class="mb-0" style="font-family:'Playfair Display',serif;font-weight:900;letter-spacing:-.5px;">Gráficas de resultados</h3>
               </div>
-              <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-end">
-                
-                  <li class="breadcrumb-item active" aria-current="page">Resultados</li>
-                </ol>
+              <div class="col-sm-6 text-end">
+                <span style="font-size:.75rem;color:rgba(77,184,173,.55);letter-spacing:2px;text-transform:uppercase;font-family:'DM Sans',sans-serif;">Sistema de monitoreo</span>
               </div>
             </div>
-            <!--end::Row-->
           </div>
-          <!--end::Container-->
         </div>
-        <!--end::App Content Header-->
         <!--begin::App Content-->
         <div class="app-content">
           <!--begin::Container-->
@@ -439,6 +394,25 @@
     <script src="../js/adminlte.js"></script>
     <!-- Chart.js for the summary chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+    <script>
+      // Nombre de usuario y logout
+      (function () {
+        const userName = localStorage.getItem('user_name') || localStorage.getItem('nombre_usuario') || 'Usuario';
+        document.addEventListener('DOMContentLoaded', function () {
+          const displayEl = document.getElementById('userDisplayName');
+          const headerEl  = document.getElementById('userHeaderName');
+          if (displayEl) displayEl.textContent = userName;
+          if (headerEl)  headerEl.innerHTML = userName.replace(/</g,'&lt;') + '<small>Miembro de Ancora</small>';
+          const logoutBtn = document.getElementById('logoutBtn');
+          if (logoutBtn) logoutBtn.addEventListener('click', e => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = '../../../index.html';
+          });
+        });
+      })();
+    </script>
+
     <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
     <script>
       const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
