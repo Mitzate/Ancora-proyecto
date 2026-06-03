@@ -492,12 +492,6 @@
 
                 <!-- Filtros -->
                 <div class="filtros-bar">
-                  <label>Tipo:</label>
-                  <select id="filtroTipo">
-                    <option value="">Todos</option>
-                    <option value="caida">Caída</option>
-                    <option value="sueno">Sueño</option>
-                  </select>
                   <label>Estado:</label>
                   <select id="filtroEstado">
                     <option value="">Todos</option>
@@ -700,11 +694,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const timeline   = document.getElementById('alertTimeline');
     const empty      = document.getElementById('telegramEmpty');
     const countLabel = document.getElementById('countLabel');
-    const tipoFiltro  = document.getElementById('filtroTipo').value;
     const estadoFiltro = document.getElementById('filtroEstado').value;
 
     let filtered = telegramData;
-    if (tipoFiltro)   filtered = filtered.filter(a => a.tipo === tipoFiltro);
     if (estadoFiltro) filtered = filtered.filter(a => {
       const est = (a.estado_alerta || '').toLowerCase();
       return estadoFiltro === 'confirmada' ? est === 'confirmada' : est !== 'confirmada';
@@ -796,7 +788,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ── Evento filtros ─────────────────────────────────────
-  document.getElementById('filtroTipo')?.addEventListener('change', renderTimeline);
   document.getElementById('filtroEstado')?.addEventListener('change', renderTimeline);
 
   document.getElementById('refreshBtn')?.addEventListener('click', () => {
