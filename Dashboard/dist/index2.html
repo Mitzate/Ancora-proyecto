@@ -707,32 +707,6 @@
           </div>
         </div>
 
-        <!-- ── ALERTAS ── -->
-        <div class="row mb-4" id="alertsSection">
-          <div class="col-md-8">
-            <div class="card direct-chat direct-chat-warning">
-              <div class="card-header">
-                <h3 class="card-title"><i class="bi bi-bell-fill me-1" style="color:var(--teal-sage,#4db8ad)"></i> Alertas Enviadas</h3>
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                    <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                    <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="direct-chat-messages" id="alertMessagesContainer">
-                  <div class="alert alert-info text-center">Sin alertas enviadas aún.</div>
-                </div>
-              </div>
-              <div class="card-footer">
-                <button id="refreshAlertsBtn" class="btn btn-sm btn-info w-100">
-                  <i class="bi bi-arrow-clockwise"></i> Actualizar alertas
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
 
       </div><!-- /container-fluid -->
     </div><!-- /app-content -->
@@ -920,9 +894,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Carga inicial de datos históricos
   await updateFullDashboard();
 
-  // Alertas
-  loadSentAlerts();
-  setInterval(loadSentAlerts, 8000);
 });
 
 // ── Cargar dispositivos del usuario ────────────────────
@@ -1058,9 +1029,6 @@ function configurarBotones() {
       else showNotification('Error: ' + (json?.error || '?'), 'danger');
     } catch(e) { showNotification('Error de red', 'danger'); }
   });
-
-  // Alertas
-  document.getElementById('refreshAlertsBtn').addEventListener('click', loadSentAlerts);
 
   // Botón de pánico (card header + FAB flotante)
   const panicModalEl = document.getElementById('panicModal');
@@ -1425,61 +1393,12 @@ async function triggerPanicAlert() {
     const json = await safeJson(res);
     if (json?.success) {
       showNotification('✅ Contactos de emergencia notificados', 'success');
-      await loadSentAlerts();
     } else {
       showNotification('Alerta enviada (verificar contactos: ' + (json?.error || 'sin detalle') + ')', 'warning');
     }
   } catch(e) {
     showNotification('Error de red al enviar alerta de pánico', 'danger');
   }
-}
-
-// ── Alertas ─────────────────────────────────────────────
-async function loadSentAlerts() {
-  if (!currentUserId) return;
-  try {
-    const res  = await fetch(API_URL, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'get_sent_alerts', id_usuario: currentUserId, limit:50 })
-    });
-    const json = await safeJson(res);
-    const container = document.getElementById('alertMessagesContainer');
-    const badge     = document.getElementById('alertBadge');
-
-    if (!json?.success || !json.data?.length) {
-      container.innerHTML = '<div class="alert alert-info text-center">Sin alertas enviadas aún.</div>';
-      badge.textContent   = '0';
-      return;
-    }
-
-    badge.textContent = json.data.length;
-    document.getElementById('notifHeader').textContent = json.data.length + ' alertas';
-
-    container.innerHTML = json.data.map(a => {
-      const isCaida = a.tipo === 'caida';
-      const color   = isCaida ? 'danger' : 'warning';
-      const icon    = isCaida ? 'bi-exclamation-triangle' : 'bi-moon';
-      return `
-        <div class="direct-chat-msg">
-          <div class="direct-chat-infos clearfix">
-            <span class="direct-chat-name float-start">
-              <i class="bi ${icon} text-${color}"></i> ${escapeHtml(a.contacto_nombre)}
-            </span>
-            <span class="direct-chat-timestamp float-end">${escapeHtml(a.fecha_hora)}</span>
-          </div>
-          <div class="direct-chat-text">
-            <strong>${escapeHtml(a.titulo_alerta)}</strong><br>
-            <small>📍 ${escapeHtml(a.dispositivo)}</small><br>
-            ${escapeHtml(a.mensaje)}
-            <div class="mt-1">
-              <span class="badge bg-${a.estado_alerta==='confirmada'?'success':'warning'}">
-                ${a.estado_alerta==='confirmada'?'✓ Confirmada':'⏳ Pendiente'}
-              </span>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-  } catch(e) { console.error('loadSentAlerts:', e); }
 }
 
 // ── Modal registro dispositivo ──────────────────────────
