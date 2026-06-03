@@ -173,6 +173,33 @@
 
     /* Chart.js adaptar colores a fondo oscuro */
     canvas { filter: none; }
+
+    /* Tarjetas de estadísticas de caídas */
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.28);
+      transition: box-shadow var(--transition);
+    }
+    .stat-card:hover { box-shadow: 0 10px 34px rgba(0,0,0,0.42); }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--teal-sage);
+    }
+    .stat-value.val-danger { color: #ff6b7a; }
+    .stat-label {
+      font-size: .68rem;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--text-muted-ancora);
+      margin-top: .35rem;
+    }
   </style>
 </head>
   <!--end::Head-->
@@ -308,12 +335,40 @@
         <div class="app-content">
           <!--begin::Container-->
           <div class="container-fluid">
+            <!-- Estadísticas rápidas de caídas -->
+            <div class="row mb-4" id="statsRow" style="display:none;">
+              <div class="col-6 col-md-3 mb-3 mb-md-0">
+                <div class="stat-card text-center">
+                  <div class="stat-value" id="stat-total">—</div>
+                  <div class="stat-label">Registros totales</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 mb-3 mb-md-0">
+                <div class="stat-card text-center">
+                  <div class="stat-value val-danger" id="stat-falls">—</div>
+                  <div class="stat-label">Caídas detectadas</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3 mb-3 mb-md-0">
+                <div class="stat-card text-center">
+                  <div class="stat-value" id="stat-pct">—</div>
+                  <div class="stat-label">Frecuencia de caídas</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="stat-card text-center">
+                  <div class="stat-value" id="stat-peak">—</div>
+                  <div class="stat-label">Hora pico</div>
+                </div>
+              </div>
+            </div>
+
             <!-- Gráfico resumido -->
             <div class="row mb-4">
               <div class="col-12">
                 <div class="card">
                   <div class="card-header">
-                    <h3 class="card-title mb-0">Resumen gráfico</h3>
+                    <h3 class="card-title mb-0" id="chart1Title">Resumen gráfico</h3>
                   </div>
                   <div class="card-body" style="height:280px;">
                     <canvas id="simpleChart" height="220"></canvas>
@@ -440,6 +495,14 @@
           });
         }
 
+        // Chart.js defaults para fondo oscuro
+        if (window.Chart) {
+          Chart.defaults.color          = 'rgba(255,255,255,0.6)';
+          Chart.defaults.borderColor    = 'rgba(77,184,173,0.10)';
+          Chart.defaults.font.family    = "'DM Sans', sans-serif";
+          Chart.defaults.font.size      = 12;
+        }
+
         const chartCanvas = document.getElementById('simpleChart');
         const emptyMsg = document.getElementById('chartEmptyMsg');
         let chartInstance = null;
@@ -485,33 +548,87 @@
           return { id, userId, mode };
         };
 
-        const renderFallsChart = items => {
-          const sorted = [...items].sort(
-            (a, b) => new Date(a.fecha_hora) - new Date(b.fecha_hora)
-          );
-          const labels = sorted.map(row => formatLabel(row.fecha_hora));
-          const data = sorted.map(row => Number(row.parametro_movimiento ?? 1) || 1);
+        // ── Detección de caída (igual que en index2) ───────────────
+        const positiveFall = text => {
+          const t = (text ?? '').trim().toLowerCase();
+          if (!t || t === '—') return false;
+          return /ca[ií]d/i.test(t) && !/sin\s*ca[ií]d|no\s*ca[ií]d|without/i.test(t);
+        };
+        const isFall = r =>
+          Number(r.parametro_movimiento ?? 0) >= 80
+          || positiveFall(r.estado_caida)
+          || positiveFall(r.informacion_movimiento);
 
-          const ctx = chartCanvas.getContext('2d');
-          chartInstance = new Chart(ctx, {
-            type: 'bar',
+        // ── Tarjetas de estadísticas ───────────────────────────────
+        const updateStatsCards = items => {
+          const falls = items.filter(isFall);
+          const pct   = items.length ? ((falls.length / items.length) * 100).toFixed(1) : 0;
+          const byH   = {};
+          falls.forEach(r => {
+            const h = new Date(r.fecha_hora).getHours();
+            byH[h] = (byH[h] || 0) + 1;
+          });
+          const peakH = Object.keys(byH).sort((a,b) => byH[b] - byH[a])[0];
+          const peak  = peakH !== undefined ? `${String(peakH).padStart(2,'0')}:00` : '—';
+          const set   = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+          set('stat-total', items.length);
+          set('stat-falls', falls.length);
+          set('stat-pct',   pct + '%');
+          set('stat-peak',  peak);
+        };
+
+        const renderFallsChart = items => {
+          const sorted = [...items].sort((a,b) => new Date(a.fecha_hora) - new Date(b.fecha_hora));
+          const labels  = sorted.map(row => formatLabel(row.fecha_hora));
+          const values  = sorted.map(row => Number(row.parametro_movimiento ?? 0));
+          const ptColor = values.map(v => v >= 80 ? '#ff6b7a' : '#4db8ad');
+          const ptSize  = values.map(v => v >= 80 ? 7 : 3);
+          const threshold = sorted.map(() => 80);
+
+          if (chartInstance) chartInstance.destroy();
+          chartInstance = new Chart(chartCanvas.getContext('2d'), {
+            type: 'line',
             data: {
               labels,
               datasets: [
                 {
-                  label: 'Eventos de caida',
-                  data,
-                  backgroundColor: '#dc3545',
+                  label: 'Parámetro de movimiento',
+                  data: values,
+                  borderColor: '#4db8ad',
+                  backgroundColor: 'rgba(77,184,173,0.07)',
+                  tension: 0.28,
+                  fill: true,
+                  pointBackgroundColor: ptColor,
+                  pointBorderColor: ptColor,
+                  pointRadius: ptSize,
+                  pointHoverRadius: ptSize.map(s => s + 3),
+                },
+                {
+                  label: 'Umbral caída (≥80)',
+                  data: threshold,
+                  borderColor: 'rgba(220,53,69,0.55)',
+                  borderDash: [6, 4],
+                  borderWidth: 1.5,
+                  pointRadius: 0,
+                  fill: false,
                 },
               ],
             },
             options: {
               responsive: true,
               maintainAspectRatio: false,
-              scales: {
-                y: { beginAtZero: true, ticks: { stepSize: 1 } },
+              plugins: {
+                legend: { position: 'top' },
+                tooltip: {
+                  callbacks: {
+                    afterLabel: ctx => ctx.datasetIndex === 0 && ctx.parsed.y >= 80 ? '⚠ Caída detectada' : '',
+                  },
+                },
               },
-              plugins: { legend: { display: false } },
+              scales: {
+                x: { ticks: { maxTicksLimit: 14, color: 'rgba(255,255,255,0.45)' }, grid: { color: 'rgba(77,184,173,0.07)' } },
+                y: { beginAtZero: true, max: 110, ticks: { color: 'rgba(255,255,255,0.45)' }, grid: { color: 'rgba(77,184,173,0.08)' } },
+              },
             },
           });
         };
@@ -572,35 +689,46 @@
 
         // ===== GRÁFICA 2: Distribución por hora (barras apiladas) =====
         const renderFallsByHour = items => {
+          // Solo cuenta registros donde se detectó caída
+          const falls  = items.filter(isFall);
           const byHour = {};
-          items.forEach(row => {
+          falls.forEach(row => {
             const h = new Date(row.fecha_hora).getHours();
             byHour[h] = (byHour[h] || 0) + 1;
           });
-          const hours = Array.from({ length: 24 }, (_, i) => i);
-          const data = hours.map(h => byHour[h] || 0);
-          const labels = hours.map(h => `${h.toString().padStart(2, '0')}:00`);
+          const hours  = Array.from({ length: 24 }, (_, i) => i);
+          const data   = hours.map(h => byHour[h] || 0);
+          const labels = hours.map(h => `${String(h).padStart(2,'0')}:00`);
+          const maxVal = Math.max(...data, 0);
+          const bgColors = data.map(v => v > 0 && v === maxVal
+            ? 'rgba(220,53,69,0.72)'
+            : v > 0 ? 'rgba(220,53,69,0.38)' : 'rgba(77,184,173,0.12)');
 
-          const ctx = document.getElementById('chart2').getContext('2d');
-          let chart2 = window.chart2Instance;
-          if (chart2) chart2.destroy();
-          window.chart2Instance = new Chart(ctx, {
+          if (window.chart2Instance) window.chart2Instance.destroy();
+          window.chart2Instance = new Chart(document.getElementById('chart2').getContext('2d'), {
             type: 'bar',
             data: {
               labels,
-              datasets: [
-                {
-                  label: 'Caídas por hora',
-                  data,
-                  backgroundColor: '#fd7e14',
-                },
-              ],
+              datasets: [{
+                label: 'Caídas detectadas',
+                data,
+                backgroundColor: bgColors,
+                borderColor: bgColors.map(c => c.replace(/[\d.]+\)$/, '0.9)')),
+                borderWidth: 1,
+                borderRadius: 5,
+              }],
             },
             options: {
               responsive: true,
               maintainAspectRatio: false,
-              scales: { y: { beginAtZero: true } },
-              plugins: { legend: { display: false } },
+              plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => `${ctx.parsed.y} caída${ctx.parsed.y !== 1 ? 's' : ''}` } },
+              },
+              scales: {
+                x: { ticks: { maxRotation: 45, color: 'rgba(255,255,255,0.45)' }, grid: { color: 'rgba(77,184,173,0.06)' } },
+                y: { beginAtZero: true, ticks: { stepSize: 1, color: 'rgba(255,255,255,0.45)' }, grid: { color: 'rgba(77,184,173,0.08)' } },
+              },
             },
           });
         };
@@ -656,26 +784,35 @@
 
         // ===== GRÁFICA 3: Dona/Rosquilla (Caídas vs Inmovilidad o Calidad Sueño) =====
         const renderFallsDonut = items => {
-          const caidas = items.filter(r => (r.informacion_movimiento || '').toLowerCase().includes('caida')).length;
-          const inmovilidad = items.length - caidas;
+          const fallCount   = items.filter(isFall).length;
+          const normalCount = items.length - fallCount;
+          const total       = items.length || 1;
 
-          const ctx = document.getElementById('chart3').getContext('2d');
-          let chart3 = window.chart3Instance;
-          if (chart3) chart3.destroy();
-          window.chart3Instance = new Chart(ctx, {
+          if (window.chart3Instance) window.chart3Instance.destroy();
+          window.chart3Instance = new Chart(document.getElementById('chart3').getContext('2d'), {
             type: 'doughnut',
             data: {
-              labels: ['Caídas', 'Sin caída'],
-              datasets: [
-                {
-                  data: [caidas, inmovilidad],
-                  backgroundColor: ['#dc3545', '#28a745'],
-                },
-              ],
+              labels: [`Caídas (${fallCount})`, `Sin caída (${normalCount})`],
+              datasets: [{
+                data: [fallCount, normalCount],
+                backgroundColor: ['rgba(220,53,69,0.68)', 'rgba(77,184,173,0.38)'],
+                borderColor:     ['rgba(220,53,69,0.9)',  'rgba(77,184,173,0.7)'],
+                borderWidth: 2,
+                hoverOffset: 8,
+              }],
             },
             options: {
               responsive: true,
               maintainAspectRatio: false,
+              cutout: '62%',
+              plugins: {
+                legend: { position: 'bottom', labels: { padding: 16, color: 'rgba(255,255,255,0.65)' } },
+                tooltip: {
+                  callbacks: {
+                    label: ctx => ` ${ctx.label}: ${((ctx.parsed / total) * 100).toFixed(1)}%`,
+                  },
+                },
+              },
             },
           });
         };
@@ -715,35 +852,45 @@
 
         // ===== GRÁFICA 4: Análisis detallado (vitales o parámetros avanzados) =====
         const renderFallsAdvanced = items => {
-          const sorted = [...items].sort((a, b) => new Date(a.fecha_hora) - new Date(b.fecha_hora));
-          const labels = sorted.map(row => formatLabel(row.fecha_hora));
-          const presencia = sorted.map(row => (row.presencia === 'si' || row.presencia === true) ? 1 : 0);
-          const movimiento = sorted.map(row => Number(row.parametro_movimiento ?? 0));
+          // Agrupar caídas y total de registros por día
+          const byDay  = {};
+          const allDay = {};
+          items.forEach(r => {
+            const day = (r.fecha_hora || '').split(' ')[0] || '?';
+            allDay[day] = (allDay[day] || 0) + 1;
+            if (isFall(r)) byDay[day] = (byDay[day] || 0) + 1;
+          });
+          const days        = Object.keys(allDay).sort();
+          const fallsPerDay = days.map(d => byDay[d] || 0);
+          const totalPerDay = days.map(d => allDay[d]);
 
-          const ctx = document.getElementById('chart4').getContext('2d');
-          let chart4 = window.chart4Instance;
-          if (chart4) chart4.destroy();
-          window.chart4Instance = new Chart(ctx, {
-            type: 'line',
+          if (window.chart4Instance) window.chart4Instance.destroy();
+          window.chart4Instance = new Chart(document.getElementById('chart4').getContext('2d'), {
+            type: 'bar',
             data: {
-              labels,
+              labels: days,
               datasets: [
                 {
-                  label: 'Presencia',
-                  data: presencia,
-                  borderColor: '#20c997',
-                  backgroundColor: 'rgba(32, 201, 151, 0.1)',
-                  tension: 0.2,
-                  fill: false,
+                  label: 'Caídas detectadas',
+                  data: fallsPerDay,
+                  backgroundColor: 'rgba(220,53,69,0.48)',
+                  borderColor: 'rgba(220,53,69,0.82)',
+                  borderWidth: 1,
+                  borderRadius: 5,
                   yAxisID: 'y',
+                  order: 2,
                 },
                 {
-                  label: 'Parámetro de movimiento',
-                  data: movimiento,
-                  borderColor: '#6f42c1',
-                  backgroundColor: 'rgba(111, 66, 193, 0.1)',
-                  tension: 0.2,
+                  label: 'Total registros',
+                  data: totalPerDay,
+                  type: 'line',
+                  borderColor: 'rgba(77,184,173,0.6)',
+                  backgroundColor: 'rgba(77,184,173,0.06)',
+                  tension: 0.3,
+                  fill: false,
+                  pointRadius: 4,
                   yAxisID: 'y1',
+                  order: 1,
                 },
               ],
             },
@@ -751,9 +898,13 @@
               responsive: true,
               maintainAspectRatio: false,
               interaction: { mode: 'index', intersect: false },
+              plugins: {
+                legend: { position: 'top', labels: { color: 'rgba(255,255,255,0.65)', padding: 14 } },
+              },
               scales: {
-                y: { position: 'left', beginAtZero: true },
-                y1: { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } },
+                x: { ticks: { color: 'rgba(255,255,255,0.45)' }, grid: { color: 'rgba(77,184,173,0.06)' } },
+                y:  { position: 'left',  beginAtZero: true, ticks: { stepSize: 1, color: 'rgba(255,255,255,0.45)' }, grid: { color: 'rgba(77,184,173,0.08)' }, title: { display: true, text: 'Caídas', color: 'rgba(255,255,255,0.35)' } },
+                y1: { position: 'right', beginAtZero: true, ticks: { color: 'rgba(255,255,255,0.45)' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Registros', color: 'rgba(255,255,255,0.35)' } },
               },
             },
           });
@@ -808,12 +959,18 @@
 
         // ===== Actualizar títulos de gráficas según modo =====
         const updateChartTitles = mode => {
-          document.getElementById('chart2Title').textContent =
-            mode === 'sueno' ? 'Distribución de sueño por hora' : 'Caídas por hora del día';
-          document.getElementById('chart3Title').textContent =
-            mode === 'sueno' ? 'Calidad de sueño' : 'Caídas vs sin evento';
-          document.getElementById('chart4Title').textContent =
-            mode === 'sueno' ? 'Duración y movimiento' : 'Presencia y movimiento';
+          const t = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+          if (mode === 'sueno') {
+            t('chart1Title', 'Frecuencia cardíaca y respiratoria');
+            t('chart2Title', 'Distribución de sueño por hora');
+            t('chart3Title', 'Calidad de sueño');
+            t('chart4Title', 'Duración y movimiento nocturno');
+          } else {
+            t('chart1Title', 'Parámetro de movimiento en el tiempo');
+            t('chart2Title', 'Caídas detectadas por hora del día');
+            t('chart3Title', 'Caídas vs sin evento');
+            t('chart4Title', 'Tendencia diaria de caídas');
+          }
         };
 
         const initChart = async () => {
@@ -897,6 +1054,15 @@
             document.getElementById('chart3EmptyMsg').classList.add('d-none');
             document.getElementById('chart4EmptyMsg').classList.add('d-none');
             updateChartTitles(mode);
+
+            // Tarjetas de estadísticas (solo en modo caídas)
+            const statsRow = document.getElementById('statsRow');
+            if (mode === 'caidas') {
+              if (statsRow) statsRow.style.display = '';
+              updateStatsCards(filtered);
+            } else {
+              if (statsRow) statsRow.style.display = 'none';
+            }
 
             if (chartInstance) chartInstance.destroy();
             if (mode === 'sueno') {
