@@ -335,6 +335,15 @@
         <div class="app-content">
           <!--begin::Container-->
           <div class="container-fluid">
+            <!-- Barra de estado del dispositivo activo -->
+            <div class="device-status-bar" id="deviceStatusBar">
+              <span class="status-dot offline" id="statusDot"></span>
+              <span id="statusText">Cargando datos del dispositivo…</span>
+              <button class="btn-refresh-charts ms-auto" id="refreshChartsBtn">
+                <i class="bi bi-arrow-clockwise"></i> Actualizar
+              </button>
+            </div>
+
             <!-- Estadísticas rápidas de caídas -->
             <div class="row mb-4" id="statsRow" style="display:none;">
               <div class="col-6 col-md-3 mb-3 mb-md-0">
@@ -370,7 +379,8 @@
                   <div class="card-header">
                     <h3 class="card-title mb-0" id="chart1Title">Resumen gráfico</h3>
                   </div>
-                  <div class="card-body" style="height:280px;">
+                  <div class="card-body" style="height:280px;position:relative;">
+                    <div id="chartLoadingOverlay"><div class="spinner-ancora"></div></div>
                     <canvas id="simpleChart" height="220"></canvas>
                     <div id="chartEmptyMsg" class="text-muted small mt-2 d-none">Sin datos para graficar.</div>
                   </div>
@@ -467,6 +477,57 @@
         });
       })();
     </script>
+    <style>
+      .device-status-bar {
+        background: rgba(12,128,120,0.12);
+        border: 1px solid rgba(77,184,173,0.22);
+        border-radius: 12px;
+        padding: .65rem 1.1rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        font-size: .82rem;
+        color: var(--text-muted-ancora);
+      }
+      .device-status-bar .status-dot {
+        width: 9px; height: 9px;
+        border-radius: 50%;
+        background: #3de6c0;
+        box-shadow: 0 0 6px rgba(61,230,192,0.55);
+        flex-shrink: 0;
+      }
+      .device-status-bar .status-dot.offline { background: rgba(255,255,255,0.2); box-shadow: none; }
+      .device-status-bar strong { color: var(--teal-sage); }
+      .device-status-bar .ms-auto { margin-left: auto; }
+      .btn-refresh-charts {
+        background: rgba(77,184,173,0.12);
+        border: 1px solid rgba(77,184,173,0.28);
+        color: var(--teal-sage);
+        border-radius: 8px;
+        padding: .3rem .75rem;
+        font-size: .78rem;
+        cursor: pointer;
+        transition: background .2s;
+      }
+      .btn-refresh-charts:hover { background: rgba(77,184,173,0.22); }
+      #chartLoadingOverlay {
+        position: absolute; inset: 0;
+        background: rgba(17,40,34,0.55);
+        backdrop-filter: blur(3px);
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 0 0 16px 16px;
+        z-index: 10;
+      }
+      .spinner-ancora {
+        width: 36px; height: 36px;
+        border: 3px solid rgba(77,184,173,0.15);
+        border-top-color: var(--teal-sage);
+        border-radius: 50%;
+        animation: spin .75s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 
     <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
     <script>
@@ -536,17 +597,11 @@
           return res.json();
         };
 
-        const getActiveSession = () => fetchJson({ action: 'get_active_session' });
-        const getSensorData = (id, limit = 200) =>
-          fetchJson({ get_sensor_data: true, id_dispositivo: id, limit });
-
-        const getLocalDevice = () => {
-          const id = localStorage.getItem('id_dispositivo');
-          const userId = localStorage.getItem('id_usuario');
-          const mode = localStorage.getItem('monitoring_mode');
-          console.log('LocalStorage Device:', { id, userId, mode });
-          return { id, userId, mode };
-        };
+        const getLocalDevice = () => ({
+          id:     localStorage.getItem('id_dispositivo'),
+          userId: localStorage.getItem('id_usuario'),
+          mode:   localStorage.getItem('monitoring_mode'),
+        });
 
         // ── Detección de caída (igual que en index2) ───────────────
         const positiveFall = text => {
@@ -679,12 +734,24 @@
           });
         };
 
-        const pickMode = (sessionMode, data) => {
-          const normalized = (sessionMode || '').toLowerCase();
-          if (normalized === 'caidas' || normalized === 'caida') return 'caidas';
-          if (normalized === 'sueno' || normalized === 'sueño') return 'sueno';
-          const first = data.find(row => row.origen);
-          return first ? first.origen : 'caidas';
+        const pickMode = sessionMode => {
+          const n = (sessionMode || '').toLowerCase();
+          if (n === 'caidas' || n === 'caida') return 'caidas';
+          if (n === 'sueno'  || n === 'sueño') return 'sueno';
+          return 'caidas'; // default: mostrar gráficas de caídas
+        };
+
+        // ── Barra de estado ────────────────────────────────────────
+        const setStatus = (text, online = false) => {
+          const dot  = document.getElementById('statusDot');
+          const span = document.getElementById('statusText');
+          if (dot)  { dot.classList.toggle('offline', !online); }
+          if (span) span.innerHTML = text;
+        };
+
+        const setLoading = loading => {
+          const ov = document.getElementById('chartLoadingOverlay');
+          if (ov) ov.style.display = loading ? 'flex' : 'none';
         };
 
         // ===== GRÁFICA 2: Distribución por hora (barras apiladas) =====
@@ -973,123 +1040,130 @@
           }
         };
 
+        const destroyAll = () => {
+          if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+          ['chart2Instance', 'chart3Instance', 'chart4Instance'].forEach(k => {
+            if (window[k]) { window[k].destroy(); window[k] = null; }
+          });
+        };
+
+        const showAllEmpty = () => {
+          showEmpty();
+          ['chart2EmptyMsg','chart3EmptyMsg','chart4EmptyMsg'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.classList.remove('d-none');
+          });
+          ['chart2','chart3','chart4'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { const ctx = el.getContext('2d'); ctx.clearRect(0,0,el.width,el.height); }
+          });
+        };
+
+        const hideAllEmpty = () => {
+          hideEmpty();
+          ['chart2EmptyMsg','chart3EmptyMsg','chart4EmptyMsg'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.classList.add('d-none');
+          });
+        };
+
         const initChart = async () => {
           if (!chartCanvas || !window.Chart) return;
+          setLoading(true);
+          setStatus('Cargando datos…');
+          destroyAll();
+
           try {
-            // ⭐ PRIMERO: Obtener dispositivo del usuario logueado
             const { id: localId, userId, mode: localMode } = getLocalDevice();
-            
-            console.log('Iniciando gráficas con:', { localId, userId, localMode });
-            
-            // Si no hay id_dispositivo en localStorage, intentar obtenerlo de check_device
+
+            if (!localId && !userId) {
+              setLoading(false);
+              setStatus('<strong>Sin sesión activa.</strong> Inicia sesión desde el dashboard principal.', false);
+              showAllEmpty();
+              return;
+            }
+
             let deviceId = localId;
-            
+            let deviceName = '';
+
+            // ── Si no hay id_dispositivo, buscar por usuario ─────────
             if (!deviceId && userId) {
-              console.log('Obteniendo dispositivo del usuario:', userId);
-              const checkDeviceRes = await fetchJson({ check_device: true, id_usuario: userId });
-              if (checkDeviceRes.success && checkDeviceRes.hasDevice) {
-                deviceId = checkDeviceRes.device.id_dispositivo;
-                localStorage.setItem('id_dispositivo', deviceId);
-                console.log('Dispositivo obtenido:', deviceId);
+              const checkRes = await fetchJson({ check_device: true, id_usuario: parseInt(userId) });
+              // La API devuelve hasDevices (plural) y devices[] (array)
+              if (checkRes.success && checkRes.hasDevices && checkRes.devices?.length) {
+                const dev = checkRes.devices[0];
+                deviceId   = dev.id_dispositivo;
+                deviceName = dev.nombre_identificador || '';
+                localStorage.setItem('id_dispositivo', String(deviceId));
               }
             }
-            
+
             if (!deviceId) {
-              console.warn('No hay dispositivo disponible para este usuario');
-              showEmpty();
-              document.getElementById('chart2EmptyMsg').classList.remove('d-none');
-              document.getElementById('chart3EmptyMsg').classList.remove('d-none');
-              document.getElementById('chart4EmptyMsg').classList.remove('d-none');
-              return;
-            }
-            
-            // ⭐ OBTENER DATOS DEL SENSOR
-            let allData = [];
-            let mode = 'caidas';
-            
-            try {
-              const sensorRes = await getSensorData(deviceId, 200);
-              allData = Array.isArray(sensorRes.data) ? sensorRes.data : [];
-              console.log('Datos obtenidos del sensor:', allData.length, 'registros');
-              mode = pickMode(localMode, allData);
-              localStorage.setItem('monitoring_mode', mode);
-            } catch (err) {
-              console.error('Error al obtener datos del sensor:', err);
-            }
-
-            // Si no hay datos, mostrar vacío y salir
-            if (!allData.length) {
-              console.warn('Sin datos para graficar');
-              showEmpty();
-              document.getElementById('chart2EmptyMsg').classList.remove('d-none');
-              document.getElementById('chart3EmptyMsg').classList.remove('d-none');
-              document.getElementById('chart4EmptyMsg').classList.remove('d-none');
+              setLoading(false);
+              setStatus('<strong>Sin dispositivo asociado</strong> a este usuario.', false);
+              showAllEmpty();
               return;
             }
 
-            let filtered = allData.filter(row => row.origen === mode);
+            // ── Determinar modo ───────────────────────────────────────
+            const mode = pickMode(localMode);
 
-            // ⭐ FALLBACK: Si no hay datos del modo seleccionado, usar cualquier dato disponible
-            if (!filtered.length && allData.length) {
-              const firstAvailable = allData.find(r => r.origen);
-              if (firstAvailable) {
-                mode = firstAvailable.origen;
-                filtered = allData.filter(row => row.origen === mode);
-                localStorage.setItem('monitoring_mode', mode);
-              }
-            }
+            // ── Pedir datos ya filtrados por modo al servidor ─────────
+            const sensorRes = await fetchJson({
+              get_sensor_data: true,
+              id_dispositivo:  parseInt(deviceId),
+              id_usuario:      userId ? parseInt(userId) : undefined,
+              mode,
+              limit: 300,
+            });
 
-            if (!filtered.length) {
-              console.warn('Sin datos filtrados');
-              showEmpty();
-              document.getElementById('chart2EmptyMsg').classList.remove('d-none');
-              document.getElementById('chart3EmptyMsg').classList.remove('d-none');
-              document.getElementById('chart4EmptyMsg').classList.remove('d-none');
+            const data = Array.isArray(sensorRes.data) ? sensorRes.data : [];
+
+            const userName = localStorage.getItem('user_name') || localStorage.getItem('nombre_usuario') || 'Usuario';
+            const devLabel = deviceName || `Dispositivo ${deviceId}`;
+
+            if (!data.length) {
+              setLoading(false);
+              setStatus(`<strong>${userName}</strong> — ${devLabel} — <span style="color:#ff6b7a">Sin registros históricos de ${mode === 'sueno' ? 'sueño' : 'caídas'}</span>`, true);
+              showAllEmpty();
               return;
             }
 
-            console.log('Renderizando gráficas con modo:', mode, 'y', filtered.length, 'registros');
-            hideEmpty();
-            document.getElementById('chart2EmptyMsg').classList.add('d-none');
-            document.getElementById('chart3EmptyMsg').classList.add('d-none');
-            document.getElementById('chart4EmptyMsg').classList.add('d-none');
+            setLoading(false);
+            setStatus(`<strong>${userName}</strong> — ${devLabel} — <strong style="color:#3de6c0">${data.length}</strong> registros de ${mode === 'sueno' ? 'sueño' : 'caídas'}`, true);
+            hideAllEmpty();
             updateChartTitles(mode);
 
-            // Tarjetas de estadísticas (solo en modo caídas)
             const statsRow = document.getElementById('statsRow');
             if (mode === 'caidas') {
               if (statsRow) statsRow.style.display = '';
-              updateStatsCards(filtered);
+              updateStatsCards(data);
             } else {
               if (statsRow) statsRow.style.display = 'none';
             }
 
-            if (chartInstance) chartInstance.destroy();
             if (mode === 'sueno') {
-              renderSleepChart(filtered);
-              renderSleepByHour(filtered);
-              renderSleepQualityDonut(filtered);
-              renderSleepAdvanced(filtered);
+              renderSleepChart(data);
+              renderSleepByHour(data);
+              renderSleepQualityDonut(data);
+              renderSleepAdvanced(data);
             } else {
-              renderFallsChart(filtered);
-              renderFallsByHour(filtered);
-              renderFallsDonut(filtered);
-              renderFallsAdvanced(filtered);
+              renderFallsChart(data);
+              renderFallsByHour(data);
+              renderFallsDonut(data);
+              renderFallsAdvanced(data);
             }
           } catch (err) {
-            console.error('Error cargando grafica:', err);
-            showEmpty();
+            console.error('Error cargando graficas:', err);
+            setLoading(false);
+            setStatus('Error al cargar datos. Verifica la conexión.', false);
+            showAllEmpty();
           }
         };
 
-        // ⭐ Ejecutar gráficas cuando la página carga Y cuando hay cambios en localStorage
         initChart();
-        
-        // Escuchar cambios en localStorage para actualizar gráficas si el usuario cambia
-        window.addEventListener('storage', () => {
-          console.log('LocalStorage cambió, actualizando gráficas...');
-          initChart();
-        });
+
+        document.getElementById('refreshChartsBtn')?.addEventListener('click', initChart);
+
+        window.addEventListener('storage', () => initChart());
       });
     </script>
     <!--end::OverlayScrollbars Configure-->
