@@ -1146,50 +1146,35 @@ if (isset($input['update_contact']) && !empty($input['id_contacto'])) {
 // ===== ALERTAS ENVIADAS A CONTACTOS =====
 if (isset($input['action']) && $input['action'] === 'get_sent_alerts') {
     $id_usuario = $input['id_usuario'] ?? null;
-    $limit = $input['limit'] ?? 50;
-    
+    $limit = (int)($input['limit'] ?? 50);
+
     if (!$id_usuario) {
         http_response_code(400);
         echo json_encode(['error' => 'id_usuario requerido']);
         exit;
     }
-    
+
     try {
-        // Obtener alertas de caídas
         $stmt = $pdo->prepare("
-            SELECT 
-                ac.id_alerta_caida as id_alerta,
-                'caida' as tipo,
-                ac.timestamp as fecha_hora,
-                tc.nombre as contacto_nombre,
-                d.nombre_identificador as dispositivo,
+            SELECT
+                ac.id_alerta_caida  AS id_alerta,
+                'caida'             AS tipo,
+                ac.timestamp        AS fecha_hora,
+                tc.nombre           AS contacto_nombre,
+                d.nombre_identificador AS dispositivo,
                 ac.mensaje,
                 ac.titulo_alerta,
                 ac.estado_alerta
             FROM t_alertas_caidas ac
-            JOIN t_contactos tc ON ac.id_contacto = tc.id_contacto
-            JOIN t_dispositivos d ON ac.id_dispositivo = d.id_dispositivo
+            LEFT JOIN t_contactos  tc ON ac.id_contacto   = tc.id_contacto
+            LEFT JOIN t_dispositivos d ON ac.id_dispositivo = d.id_dispositivo
             WHERE ac.id_usuario = ?
-            UNION ALL
-            SELECT 
-                as2.id_alerta_sueno as id_alerta,
-                'sueno' as tipo,
-                as2.timestamp as fecha_hora,
-                tc.nombre as contacto_nombre,
-                d.nombre_identificador as dispositivo,
-                as2.mensaje,
-                as2.titulo_alerta,
-                as2.estado_alerta
-            FROM t_alertas_sueño as2
-            JOIN t_contactos tc ON as2.id_contacto = tc.id_contacto
-            JOIN t_dispositivos d ON as2.id_dispositivo = d.id_dispositivo
-            WHERE as2.id_usuario = ?
-            ORDER BY fecha_hora DESC
+            ORDER BY ac.timestamp DESC
             LIMIT ?
         ");
-        $stmt->execute([$id_usuario, $id_usuario, $limit]);
+        $stmt->execute([$id_usuario, $limit]);
         $alertas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
+
         echo json_encode(['success' => true, 'data' => $alertas]);
     } catch (PDOException $e) {
         http_response_code(500);
