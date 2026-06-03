@@ -474,7 +474,7 @@
                 <li class="nav-item" role="presentation">
                   <button class="nav-link" id="tab-fisicas-btn"
                     data-bs-toggle="tab" data-bs-target="#tab-fisicas" type="button" role="tab">
-                    <i class="bi bi-activity me-1"></i> Caídas físicas detectadas
+                    <i class="bi bi-activity me-1"></i> Alertas físicas
                   </button>
                 </li>
               </ul>
@@ -517,15 +517,10 @@
                 </div>
               </div>
 
-              <!-- TAB 2: Caídas físicas detectadas -->
+              <!-- TAB 2: Alertas físicas -->
               <div class="tab-pane fade" id="tab-fisicas" role="tabpanel">
 
                 <div class="filtros-bar">
-                  <label>Mostrar:</label>
-                  <select id="filtroFisicas">
-                    <option value="falls">Solo caídas detectadas</option>
-                    <option value="all">Todos los registros</option>
-                  </select>
                   <label class="ms-auto" style="font-size:.75rem;color:rgba(255,255,255,.3);" id="countLabelFisicas"></label>
                 </div>
 
@@ -761,16 +756,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('');
   }
 
-  // ── Renderizar tabla de caídas físicas ─────────────────
+  // ── Renderizar tabla de alertas físicas (solo caídas) ──
   function renderFisicas() {
-    const wrap     = document.getElementById('fisicasTableWrap');
-    const empty    = document.getElementById('fisicasEmpty');
-    const tbody    = document.getElementById('fisicasBody');
-    const label    = document.getElementById('countLabelFisicas');
-    const soloFalls = document.getElementById('filtroFisicas').value === 'falls';
+    const wrap  = document.getElementById('fisicasTableWrap');
+    const empty = document.getElementById('fisicasEmpty');
+    const tbody = document.getElementById('fisicasBody');
+    const label = document.getElementById('countLabelFisicas');
 
-    const datos = soloFalls ? fisicasData.filter(isFall) : fisicasData;
-    const sorted = [...datos].sort((a,b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
+    const sorted = [...fisicasData.filter(isFall)]
+      .sort((a,b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
 
     label.textContent = sorted.length + ' registro' + (sorted.length !== 1 ? 's' : '');
 
@@ -804,7 +798,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // ── Evento filtros ─────────────────────────────────────
   document.getElementById('filtroTipo')?.addEventListener('change', renderTimeline);
   document.getElementById('filtroEstado')?.addEventListener('change', renderTimeline);
-  document.getElementById('filtroFisicas')?.addEventListener('change', renderFisicas);
 
   document.getElementById('refreshBtn')?.addEventListener('click', () => {
     loadTelegramAlerts();
