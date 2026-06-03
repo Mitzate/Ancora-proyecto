@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Ancora | Historial de Alertas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" crossorigin="anonymous" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="../css/adminlte.css" />
+
+  <style>
+    :root {
+      --teal:        #0c8078;
+      --teal-light:  #12a396;
+      --teal-sage:   #4db8ad;
+      --teal-deep:   #0f5548;
+      --teal-forest: #1a7066;
+      --dark-900:    #112822;
+      --dark-800:    #1a3830;
+      --dark-700:    #1f4038;
+      --dark-600:    #274f47;
+      --card-bg:     rgba(25,62,56,0.85);
+      --card-border: rgba(77,184,173,0.28);
+      --text-main:   rgba(255,255,255,0.92);
+      --text-muted-ancora: rgba(255,255,255,0.62);
+      --transition:  0.35s cubic-bezier(0.22,1,0.36,1);
+      --font-display:'Playfair Display', serif;
+      --font-body:   'DM Sans', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #112822 0%, #1a3830 60%, #152d26 100%) !important;
+      font-family: var(--font-body) !important;
+      color: var(--text-main) !important;
+    }
+
+    .app-header {
+      background: rgba(17,40,34,0.94) !important;
+      border-bottom: 1px solid rgba(77,184,173,0.22) !important;
+      backdrop-filter: blur(14px);
+    }
+    .app-header::after {
+      content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+      background: linear-gradient(90deg, transparent, rgba(77,184,173,0.25), transparent);
+    }
+    .app-header .nav-link { color: rgba(255,255,255,0.65) !important; transition: color var(--transition); }
+    .app-header .nav-link:hover { color: var(--teal-sage) !important; }
+    .app-header .navbar-badge { font-size: .6rem; }
+
+    .app-sidebar {
+      background: var(--dark-900) !important;
+      border-right: 1px solid rgba(77,184,173,0.10) !important;
+    }
+    .sidebar-brand { border-bottom: 1px solid rgba(77,184,173,0.12) !important; }
+    .brand-text {
+      font-family: var(--font-display) !important;
+      font-weight: 900 !important;
+      letter-spacing: 2px;
+      color: var(--teal-sage) !important;
+    }
+    .app-sidebar .nav-link { color: rgba(255,255,255,0.55) !important; transition: color var(--transition), background var(--transition); }
+    .app-sidebar .nav-link:hover,
+    .app-sidebar .nav-link.active { color: var(--teal-sage) !important; background: rgba(77,184,173,0.08) !important; }
+    .app-sidebar .nav-link.active { border-left: 3px solid var(--teal-sage); }
+    .app-sidebar .nav-icon { color: var(--teal-sage) !important; opacity: .7; }
+
+    .app-content-header h3 {
+      font-family: var(--font-display) !important;
+      font-weight: 700;
+      color: var(--teal-sage);
+    }
+
+    .card {
+      background: var(--card-bg) !important;
+      border: 1px solid var(--card-border) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.38), 0 1px 0 rgba(77,184,173,0.08) inset !important;
+      backdrop-filter: blur(8px);
+      transition: box-shadow var(--transition);
+    }
+    .card:hover { box-shadow: 0 14px 44px rgba(0,0,0,0.48), 0 0 0 1px rgba(77,184,173,0.22) inset !important; }
+    .card-header {
+      background: linear-gradient(100deg, var(--teal-deep) 0%, var(--teal-forest) 100%) !important;
+      color: rgba(255,255,255,0.92) !important;
+      border-bottom: 1px solid rgba(77,184,173,0.20) !important;
+      border-radius: 16px 16px 0 0 !important;
+      padding: .9rem 1.2rem !important;
+    }
+    .card-header .card-title, .card-header h3, .card-header h5 {
+      font-family: var(--font-display) !important;
+      font-weight: 700 !important;
+      color: #fff !important;
+    }
+    .card-body  { color: var(--text-main); }
+    .card-footer {
+      background: rgba(6,14,13,0.5) !important;
+      border-top: 1px solid rgba(77,184,173,0.10) !important;
+      border-radius: 0 0 16px 16px !important;
+    }
+    .text-muted { color: var(--text-muted-ancora) !important; }
+
+    .badge.bg-success   { background: rgba(13,184,140,0.22) !important; color: #3de6c0 !important; border: 1px solid rgba(13,184,140,0.4); }
+    .badge.bg-secondary { background: rgba(255,255,255,0.08) !important; color: rgba(255,255,255,0.55) !important; border: 1px solid rgba(255,255,255,0.1); }
+    .badge.bg-warning   { background: rgba(255,193,7,0.18) !important; color: #ffc107 !important; border: 1px solid rgba(255,193,7,0.35); }
+    .badge.bg-danger    { background: rgba(220,53,69,0.2) !important; color: #ff6b7a !important; border: 1px solid rgba(220,53,69,0.4); }
+    .badge.text-bg-warning { background: rgba(255,193,7,0.18) !important; color: #ffc107 !important; }
+
+    .btn-primary { background: var(--teal) !important; border-color: var(--teal) !important; color: #fff !important; }
+    .btn-primary:hover { background: var(--teal-light) !important; border-color: var(--teal-light) !important; }
+    .btn-info { background: rgba(77,184,173,0.15) !important; border-color: rgba(77,184,173,0.35) !important; color: var(--teal-sage) !important; }
+    .btn-info:hover { background: rgba(77,184,173,0.25) !important; }
+    .btn-outline-secondary { border-color: rgba(255,255,255,0.2) !important; color: rgba(255,255,255,0.55) !important; }
+    .btn-outline-secondary:hover { background: rgba(255,255,255,0.07) !important; color: rgba(255,255,255,0.85) !important; }
+
+    .dropdown-menu { background: rgba(20,52,46,0.97) !important; border: 1px solid rgba(77,184,173,0.25) !important; backdrop-filter: blur(16px); }
+    .dropdown-item { color: rgba(255,255,255,0.7) !important; }
+    .dropdown-item:hover { background: rgba(77,184,173,0.10) !important; color: var(--teal-sage) !important; }
+    .dropdown-header { color: var(--teal-sage) !important; font-size: .75rem; }
+    .dropdown-divider { border-color: rgba(77,184,173,0.10) !important; }
+    .dropdown-footer { color: var(--teal-sage) !important; }
+    .user-header { background: linear-gradient(135deg, var(--teal-deep), var(--teal-forest)) !important; }
+
+    .table { color: var(--text-main) !important; border-color: rgba(77,184,173,0.10) !important; }
+    .table th, .table td { border-color: rgba(77,184,173,0.10) !important; vertical-align: middle; }
+    .table-light, .table-light th { background: rgba(77,184,173,0.08) !important; color: var(--teal-sage) !important; }
+    .table-sm td, .table-sm th { padding: .4rem .6rem; font-size: .82rem; }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(77,184,173,0.25); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(77,184,173,0.45); }
+
+    .app-content { padding-top: 1.5rem; }
+    .app-content-header { border-bottom: 1px solid rgba(77,184,173,0.10); padding: 1rem 0; margin-bottom: .5rem; }
+    @keyframes cardFadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .card { animation: cardFadeIn .45s ease forwards; }
+
+    /* ── Stat cards ── */
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.28);
+      transition: box-shadow var(--transition);
+    }
+    .stat-card:hover { box-shadow: 0 10px 34px rgba(0,0,0,0.42); }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--teal-sage);
+    }
+    .stat-value.val-danger  { color: #ff6b7a; }
+    .stat-value.val-warning { color: #ffc107; }
+    .stat-value.val-success { color: #3de6c0; }
+    .stat-label {
+      font-size: .68rem;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--text-muted-ancora);
+      margin-top: .35rem;
+    }
+    .stat-icon {
+      font-size: 1.6rem;
+      opacity: .55;
+      margin-bottom: .25rem;
+    }
+
+    /* ── Nav tabs para alertas ── */
+    .nav-tabs-ancora {
+      border-bottom: 1px solid rgba(77,184,173,0.18);
+      gap: .25rem;
+      flex-wrap: nowrap;
+    }
+    .nav-tabs-ancora .nav-link {
+      color: rgba(255,255,255,0.55) !important;
+      border: 1px solid transparent !important;
+      border-radius: 10px 10px 0 0 !important;
+      padding: .6rem 1.25rem;
+      font-size: .88rem;
+      font-weight: 500;
+      transition: color var(--transition), background var(--transition);
+    }
+    .nav-tabs-ancora .nav-link:hover { color: var(--teal-sage) !important; background: rgba(77,184,173,0.07) !important; }
+    .nav-tabs-ancora .nav-link.active {
+      color: var(--teal-sage) !important;
+      background: var(--card-bg) !important;
+      border-color: rgba(77,184,173,0.28) rgba(77,184,173,0.28) var(--card-bg) !important;
+    }
+
+    /* ── Timeline de alertas ── */
+    .alert-timeline { position: relative; padding-left: 2rem; }
+    .alert-timeline::before {
+      content: '';
+      position: absolute;
+      left: .6rem;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, rgba(77,184,173,0.4), rgba(77,184,173,0.05));
+      border-radius: 2px;
+    }
+    .alert-item {
+      position: relative;
+      margin-bottom: 1.1rem;
+      padding: .85rem 1rem;
+      background: rgba(6,14,13,0.45);
+      border: 1px solid rgba(77,184,173,0.12);
+      border-radius: 12px;
+      transition: border-color var(--transition);
+    }
+    .alert-item:hover { border-color: rgba(77,184,173,0.28); }
+    .alert-item::before {
+      content: '';
+      position: absolute;
+      left: -1.45rem;
+      top: 50%; transform: translateY(-50%);
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      border: 2px solid;
+    }
+    .alert-item.tipo-caida::before  { background: rgba(220,53,69,0.6); border-color: #ff6b7a; }
+    .alert-item.tipo-panico::before { background: rgba(180,0,0,0.7);   border-color: #dc3545; }
+    .alert-item.tipo-sueno::before  { background: rgba(13,110,253,0.5); border-color: #6ea8fe; }
+
+    .alert-item .alert-badge {
+      font-size: .7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: .25em .6em;
+      border-radius: 6px;
+    }
+    .alert-item .alert-contacto { font-size: .8rem; color: var(--teal-sage); }
+    .alert-item .alert-titulo   { font-weight: 700; font-size: .95rem; margin-bottom: .2rem; }
+    .alert-item .alert-mensaje  { font-size: .83rem; color: rgba(255,255,255,.65); }
+    .alert-item .alert-meta     { font-size: .75rem; color: rgba(255,255,255,.38); margin-top: .4rem; }
+    .alert-item .alert-status   { float: right; }
+
+    /* ── Tabla caídas físicas ── */
+    .fall-row-alert { background: rgba(220,53,69,0.08) !important; }
+
+    /* ── Loading spinner ── */
+    .loading-spinner {
+      display: flex; align-items: center; justify-content: center;
+      padding: 3rem 0; color: var(--teal-sage);
+      gap: .75rem; font-size: .9rem;
+    }
+    .spinner-ancora {
+      width: 28px; height: 28px;
+      border: 3px solid rgba(77,184,173,0.15);
+      border-top-color: var(--teal-sage);
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted-ancora);
+    }
+    .empty-state i { font-size: 3rem; opacity: .3; margin-bottom: .75rem; display: block; }
+    .empty-state p { margin: 0; font-size: .9rem; }
+
+    /* ── Filtros ── */
+    .filtros-bar {
+      display: flex;
+      gap: .75rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .filtros-bar select, .filtros-bar input {
+      background: rgba(6,14,13,0.6) !important;
+      border: 1px solid rgba(77,184,173,0.2) !important;
+      color: var(--text-main) !important;
+      border-radius: 8px !important;
+      font-size: .83rem;
+      padding: .35rem .7rem;
+    }
+    .filtros-bar select option { background: #1a3830; }
+    .filtros-bar label { font-size: .8rem; color: var(--text-muted-ancora); white-space: nowrap; }
+  </style>
+</head>
+
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+<div class="app-wrapper">
+
+  <!-- HEADER -->
+  <nav class="app-header navbar navbar-expand bg-body">
+    <div class="container-fluid">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+            <i class="bi bi-list"></i>
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item dropdown">
+          <a class="nav-link" data-bs-toggle="dropdown" href="#">
+            <i class="bi bi-bell-fill"></i>
+            <span class="navbar-badge badge text-bg-warning" id="alertBadge">0</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+            <span class="dropdown-item dropdown-header">Alertas enviadas</span>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item dropdown-footer">Ver todas las alertas</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" data-lte-toggle="fullscreen">
+            <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+            <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display:none"></i>
+          </a>
+        </li>
+        <li class="nav-item dropdown user-menu">
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle" style="font-size:1.5rem;margin-right:.5rem;"></i>
+            <span id="userDisplayName" class="d-none d-md-inline">Usuario</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+            <li class="user-header text-bg-primary">
+              <i class="bi bi-person-circle" style="font-size:4rem;"></i>
+              <p id="userHeaderName">Usuario<small>Miembro de Ancora</small></p>
+            </li>
+            <li class="user-footer">
+              <a href="#" class="btn btn-default btn-flat">Perfil</a>
+              <a href="#" id="logoutBtn" class="btn btn-default btn-flat float-end">Cerrar sesión</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+    <div class="sidebar-brand">
+      <a href="../index2.html" class="brand-link">
+        <img src="../assets/img/AdminLTELogo.png" alt="Logo" class="brand-image opacity-75 shadow" />
+        <span class="brand-text fw-light">ANCORA</span>
+      </a>
+    </div>
+    <div class="sidebar-wrapper">
+      <nav class="mt-2">
+        <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation" data-accordion="false">
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon bi bi-speedometer"></i>
+              <p>Dashboard <i class="nav-arrow bi bi-chevron-right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="../index2.html" class="nav-link">
+                  <i class="nav-icon bi bi-circle"></i><p>Dashboard</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon bi bi-pencil-square"></i>
+              <p>Contactos <i class="nav-arrow bi bi-chevron-right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="../forms/general.html" class="nav-link">
+                  <i class="nav-icon bi bi-circle"></i><p>Contactos de emergencia</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon bi bi-bar-chart-fill"></i>
+              <p>Gráficas <i class="nav-arrow bi bi-chevron-right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="../tables/simple.html" class="nav-link">
+                  <i class="nav-icon bi bi-circle"></i><p>Resultados obtenidos</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link active">
+              <i class="nav-icon bi bi-bell-fill"></i>
+              <p>Alertas <i class="nav-arrow bi bi-chevron-right"></i></p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="../tables/alertas.html" class="nav-link active">
+                  <i class="nav-icon bi bi-circle"></i><p>Historial de alertas</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="app-main">
+    <div class="app-content-header">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="col-sm-6">
+            <h3 class="mb-0">Historial de Alertas</h3>
+          </div>
+          <div class="col-sm-6 text-end">
+            <span style="font-size:.75rem;color:rgba(77,184,173,.55);letter-spacing:2px;text-transform:uppercase;">Sistema de monitoreo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-content">
+      <div class="container-fluid">
+
+        <!-- Tarjetas de estadísticas -->
+        <div class="row mb-4" id="statsRow">
+          <div class="col-6 col-md-3 mb-3 mb-md-0">
+            <div class="stat-card text-center">
+              <div class="stat-icon"><i class="bi bi-bell-fill"></i></div>
+              <div class="stat-value" id="stat-total">—</div>
+              <div class="stat-label">Total notificaciones</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3 mb-3 mb-md-0">
+            <div class="stat-card text-center">
+              <div class="stat-icon" style="color:#ff6b7a"><i class="bi bi-exclamation-triangle-fill"></i></div>
+              <div class="stat-value val-danger" id="stat-caidas">—</div>
+              <div class="stat-label">Alertas de caída</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3 mb-3 mb-md-0">
+            <div class="stat-card text-center">
+              <div class="stat-icon" style="color:#ffc107"><i class="bi bi-hourglass-split"></i></div>
+              <div class="stat-value val-warning" id="stat-pendientes">—</div>
+              <div class="stat-label">Pendientes</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-card text-center">
+              <div class="stat-icon" style="color:#3de6c0"><i class="bi bi-check-circle-fill"></i></div>
+              <div class="stat-value val-success" id="stat-confirmadas">—</div>
+              <div class="stat-label">Confirmadas</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs principales -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <ul class="nav nav-tabs-ancora nav-tabs border-0 mb-0 flex-wrap" id="alertaTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="tab-telegram-btn"
+                    data-bs-toggle="tab" data-bs-target="#tab-telegram" type="button" role="tab">
+                    <i class="bi bi-send-fill me-1"></i> Notificaciones de Telegram
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="tab-fisicas-btn"
+                    data-bs-toggle="tab" data-bs-target="#tab-fisicas" type="button" role="tab">
+                    <i class="bi bi-activity me-1"></i> Caídas físicas detectadas
+                  </button>
+                </li>
+              </ul>
+              <button class="btn btn-sm btn-info" id="refreshBtn">
+                <i class="bi bi-arrow-clockwise"></i> Actualizar
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body">
+
+            <!-- TAB 1: Alertas enviadas por Telegram -->
+            <div class="tab-content">
+              <div class="tab-pane fade show active" id="tab-telegram" role="tabpanel">
+
+                <!-- Filtros -->
+                <div class="filtros-bar">
+                  <label>Tipo:</label>
+                  <select id="filtroTipo">
+                    <option value="">Todos</option>
+                    <option value="caida">Caída</option>
+                    <option value="sueno">Sueño</option>
+                  </select>
+                  <label>Estado:</label>
+                  <select id="filtroEstado">
+                    <option value="">Todos</option>
+                    <option value="confirmada">Confirmadas</option>
+                    <option value="no_confirmada">Pendientes</option>
+                  </select>
+                  <label class="ms-auto" style="font-size:.75rem;color:rgba(255,255,255,.3);" id="countLabel"></label>
+                </div>
+
+                <div id="telegramLoading" class="loading-spinner">
+                  <div class="spinner-ancora"></div> Cargando notificaciones…
+                </div>
+                <div class="alert-timeline" id="alertTimeline" style="display:none;"></div>
+                <div id="telegramEmpty" class="empty-state d-none">
+                  <i class="bi bi-bell-slash"></i>
+                  <p>No se encontraron alertas enviadas.</p>
+                </div>
+              </div>
+
+              <!-- TAB 2: Caídas físicas detectadas -->
+              <div class="tab-pane fade" id="tab-fisicas" role="tabpanel">
+
+                <div class="filtros-bar">
+                  <label>Mostrar:</label>
+                  <select id="filtroFisicas">
+                    <option value="falls">Solo caídas detectadas</option>
+                    <option value="all">Todos los registros</option>
+                  </select>
+                  <label class="ms-auto" style="font-size:.75rem;color:rgba(255,255,255,.3);" id="countLabelFisicas"></label>
+                </div>
+
+                <div id="fisicasLoading" class="loading-spinner">
+                  <div class="spinner-ancora"></div> Cargando registros del sensor…
+                </div>
+                <div class="table-responsive" id="fisicasTableWrap" style="display:none;">
+                  <table class="table table-bordered table-sm" id="fisicasTable">
+                    <thead class="table-light">
+                      <tr>
+                        <th>#</th>
+                        <th>Fecha / Hora</th>
+                        <th>Dispositivo</th>
+                        <th>Parámetro mov.</th>
+                        <th>Estado caída</th>
+                        <th>Información</th>
+                        <th>Resultado</th>
+                      </tr>
+                    </thead>
+                    <tbody id="fisicasBody"></tbody>
+                  </table>
+                </div>
+                <div id="fisicasEmpty" class="empty-state d-none">
+                  <i class="bi bi-activity"></i>
+                  <p>No hay registros de caídas físicas.</p>
+                </div>
+              </div>
+            </div><!-- /tab-content -->
+
+          </div><!-- /card-body -->
+        </div><!-- /card -->
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer"></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<script src="../js/adminlte.js"></script>
+
+<script>
+(function () {
+  const userName = localStorage.getItem('user_name') || localStorage.getItem('nombre_usuario') || 'Usuario';
+  document.addEventListener('DOMContentLoaded', () => {
+    const dEl = document.getElementById('userDisplayName');
+    const hEl = document.getElementById('userHeaderName');
+    if (dEl) dEl.textContent = userName;
+    if (hEl) hEl.innerHTML = userName.replace(/</g,'&lt;') + '<small>Miembro de Ancora</small>';
+    document.getElementById('logoutBtn')?.addEventListener('click', e => {
+      e.preventDefault(); localStorage.clear(); window.location.href = '../../../index.html';
+    });
+  });
+})();
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const API_URL   = '../../api/coneccion.php';
+  const userId    = localStorage.getItem('id_usuario');
+  const deviceId  = localStorage.getItem('id_dispositivo');
+
+  function escHtml(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  async function apiFetch(payload) {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+
+  // ── Fall detection (misma lógica que index2) ───────────
+  const positiveFall = text => {
+    const t = (text ?? '').trim().toLowerCase();
+    if (!t || t === '—') return false;
+    return /ca[ií]d/i.test(t) && !/sin\s*ca[ií]d|no\s*ca[ií]d|without/i.test(t);
+  };
+  const isFall = r =>
+    Number(r.parametro_movimiento ?? 0) >= 80
+    || positiveFall(r.estado_caida)
+    || positiveFall(r.informacion_movimiento);
+
+  // ── Estado ─────────────────────────────────────────────
+  let telegramData  = [];
+  let fisicasData   = [];
+
+  // ── Cargar alertas de Telegram ─────────────────────────
+  async function loadTelegramAlerts() {
+    const loading = document.getElementById('telegramLoading');
+    const timeline = document.getElementById('alertTimeline');
+    const empty   = document.getElementById('telegramEmpty');
+
+    loading.style.display  = 'flex';
+    timeline.style.display = 'none';
+    empty.classList.add('d-none');
+
+    if (!userId) {
+      loading.style.display = 'none';
+      empty.classList.remove('d-none');
+      return;
+    }
+
+    try {
+      const res = await apiFetch({ action: 'get_sent_alerts', id_usuario: userId, limit: 200 });
+      telegramData = res.success && Array.isArray(res.data) ? res.data : [];
+    } catch (e) {
+      console.error('loadTelegramAlerts:', e);
+      telegramData = [];
+    }
+
+    loading.style.display = 'none';
+    updateStats();
+    renderTimeline();
+  }
+
+  // ── Cargar caídas físicas ──────────────────────────────
+  async function loadFisicasData() {
+    const loading = document.getElementById('fisicasLoading');
+    const wrap    = document.getElementById('fisicasTableWrap');
+    const empty   = document.getElementById('fisicasEmpty');
+
+    loading.style.display = 'flex';
+    wrap.style.display    = 'none';
+    empty.classList.add('d-none');
+
+    if (!userId && !deviceId) {
+      loading.style.display = 'none';
+      empty.classList.remove('d-none');
+      return;
+    }
+
+    try {
+      const payload = {
+        get_sensor_data: true,
+        mode: 'caidas',
+        limit: 500,
+      };
+      if (userId)   payload.id_usuario    = parseInt(userId);
+      if (deviceId) payload.id_dispositivo = parseInt(deviceId);
+
+      const res = await apiFetch(payload);
+      fisicasData = res.success && Array.isArray(res.data) ? res.data : [];
+    } catch (e) {
+      console.error('loadFisicasData:', e);
+      fisicasData = [];
+    }
+
+    loading.style.display = 'none';
+    renderFisicas();
+  }
+
+  // ── Actualizar estadísticas ────────────────────────────
+  function updateStats() {
+    const total       = telegramData.length;
+    const caidas      = telegramData.filter(a => a.tipo === 'caida').length;
+    const pendientes  = telegramData.filter(a => (a.estado_alerta || '').toLowerCase() !== 'confirmada').length;
+    const confirmadas = telegramData.filter(a => (a.estado_alerta || '').toLowerCase() === 'confirmada').length;
+
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('stat-total',      total);
+    set('stat-caidas',     caidas);
+    set('stat-pendientes', pendientes);
+    set('stat-confirmadas',confirmadas);
+    document.getElementById('alertBadge').textContent = total;
+  }
+
+  // ── Renderizar timeline ────────────────────────────────
+  function renderTimeline() {
+    const timeline   = document.getElementById('alertTimeline');
+    const empty      = document.getElementById('telegramEmpty');
+    const countLabel = document.getElementById('countLabel');
+    const tipoFiltro  = document.getElementById('filtroTipo').value;
+    const estadoFiltro = document.getElementById('filtroEstado').value;
+
+    let filtered = telegramData;
+    if (tipoFiltro)   filtered = filtered.filter(a => a.tipo === tipoFiltro);
+    if (estadoFiltro) filtered = filtered.filter(a => {
+      const est = (a.estado_alerta || '').toLowerCase();
+      return estadoFiltro === 'confirmada' ? est === 'confirmada' : est !== 'confirmada';
+    });
+
+    countLabel.textContent = filtered.length + ' resultado' + (filtered.length !== 1 ? 's' : '');
+
+    if (!filtered.length) {
+      timeline.style.display = 'none';
+      empty.classList.remove('d-none');
+      return;
+    }
+    empty.classList.add('d-none');
+    timeline.style.display = 'block';
+
+    timeline.innerHTML = filtered.map(a => {
+      const esCaida    = a.tipo === 'caida';
+      const esPanico   = (a.titulo_alerta || '').toLowerCase().includes('pánico') || (a.titulo_alerta || '').toLowerCase().includes('panico');
+      const clase      = esPanico ? 'tipo-panico' : esCaida ? 'tipo-caida' : 'tipo-sueno';
+      const colorBadge = esPanico ? 'bg-danger'  : esCaida  ? 'bg-danger'  : 'bg-primary';
+      const labelTipo  = esPanico ? '🚨 Pánico manual' : esCaida ? '⚠ Caída detectada' : '🌙 Sueño';
+      const confirmado = (a.estado_alerta || '').toLowerCase() === 'confirmada';
+      const statusHtml = confirmado
+        ? '<span class="badge bg-success">✓ Confirmada</span>'
+        : '<span class="badge bg-warning">⏳ Pendiente</span>';
+
+      const icono = esPanico
+        ? '<i class="bi bi-exclamation-octagon-fill text-danger me-2"></i>'
+        : esCaida
+          ? '<i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>'
+          : '<i class="bi bi-moon-fill me-2" style="color:#6ea8fe"></i>';
+
+      return `
+        <div class="alert-item ${clase}">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="alert-titulo">${icono}${escHtml(a.titulo_alerta || 'Alerta')}</div>
+              <div class="alert-mensaje">${escHtml(a.mensaje || '—')}</div>
+              <div class="alert-meta">
+                <i class="bi bi-person me-1"></i>${escHtml(a.contacto_nombre || '—')} &nbsp;·&nbsp;
+                <i class="bi bi-phone me-1"></i>${escHtml(a.dispositivo || '—')} &nbsp;·&nbsp;
+                <i class="bi bi-clock me-1"></i>${escHtml(a.fecha_hora || '—')}
+                &nbsp;&nbsp;<span class="alert-badge ${colorBadge}" style="background:transparent;border:1px solid currentColor;">${labelTipo}</span>
+              </div>
+            </div>
+            <div class="alert-status ms-2 text-nowrap">${statusHtml}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Renderizar tabla de caídas físicas ─────────────────
+  function renderFisicas() {
+    const wrap     = document.getElementById('fisicasTableWrap');
+    const empty    = document.getElementById('fisicasEmpty');
+    const tbody    = document.getElementById('fisicasBody');
+    const label    = document.getElementById('countLabelFisicas');
+    const soloFalls = document.getElementById('filtroFisicas').value === 'falls';
+
+    const datos = soloFalls ? fisicasData.filter(isFall) : fisicasData;
+    const sorted = [...datos].sort((a,b) => new Date(b.fecha_hora) - new Date(a.fecha_hora));
+
+    label.textContent = sorted.length + ' registro' + (sorted.length !== 1 ? 's' : '');
+
+    if (!sorted.length) {
+      wrap.style.display = 'none';
+      empty.classList.remove('d-none');
+      return;
+    }
+    empty.classList.add('d-none');
+    wrap.style.display = 'block';
+
+    tbody.innerHTML = sorted.map((r, i) => {
+      const fall  = isFall(r);
+      const param = Number(r.parametro_movimiento ?? 0);
+      const paramColor = param >= 80 ? 'style="color:#ff6b7a;font-weight:700"' : '';
+      const resultBadge = fall
+        ? '<span class="badge bg-danger">🚨 Caída</span>'
+        : '<span class="badge bg-success">✅ Sin novedad</span>';
+      return `<tr class="${fall ? 'fall-row-alert' : ''}">
+        <td>${i + 1}</td>
+        <td style="white-space:nowrap">${escHtml(r.fecha_hora || '—')}</td>
+        <td>${escHtml(r.nombre_identificador || `Dispositivo ${r.id_dispositivo}`)}</td>
+        <td ${paramColor}>${param}</td>
+        <td>${escHtml(r.estado_caida || '—')}</td>
+        <td>${escHtml(r.informacion_movimiento || '—')}</td>
+        <td>${resultBadge}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── Evento filtros ─────────────────────────────────────
+  document.getElementById('filtroTipo')?.addEventListener('change', renderTimeline);
+  document.getElementById('filtroEstado')?.addEventListener('change', renderTimeline);
+  document.getElementById('filtroFisicas')?.addEventListener('change', renderFisicas);
+
+  document.getElementById('refreshBtn')?.addEventListener('click', () => {
+    loadTelegramAlerts();
+    loadFisicasData();
+  });
+
+  // Recargar caídas al hacer click en tab
+  document.getElementById('tab-fisicas-btn')?.addEventListener('shown.bs.tab', () => {
+    if (!fisicasData.length) loadFisicasData();
+  });
+
+  // ── Iniciar ────────────────────────────────────────────
+  loadTelegramAlerts();
+  loadFisicasData();
+
+  // ── OverlayScrollbars ──────────────────────────────────
+  const sidebar = document.querySelector('.sidebar-wrapper');
+  if (sidebar && OverlayScrollbarsGlobal?.OverlayScrollbars && window.innerWidth > 992) {
+    OverlayScrollbarsGlobal.OverlayScrollbars(sidebar, {
+      scrollbars: { theme: 'os-theme-light', autoHide: 'leave', clickScroll: true },
+    });
+  }
+});
+</script>
+</body>
+</html>
