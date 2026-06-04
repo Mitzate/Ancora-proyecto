@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         error_log("Comparación: " . ($usuario['contrasena'] === $input['contrasena'] ? 'COINCIDEN' : 'NO COINCIDEN'));
     }
     
-    if ($usuario && $usuario['contrasena'] === $input['contrasena']) {
+    if ($usuario && password_verify($input['contrasena'], $usuario['contrasena'])) {
         error_log("Login exitoso para usuario ID: " . $usuario['id_usuario']);
             // ⭐ Buscar dispositivo del usuario y guardar sesión activa
             $stmt = $pdo->prepare("SELECT id_dispositivo FROM t_dispositivos WHERE id_usuario = ? LIMIT 1");
@@ -213,7 +213,7 @@ if (isset($input['get_user_devices']) && !empty($input['id_usuario'])) {
         $input['apellido_paterno'],
         $input['apellido_materno'],
         $input['correo'],
-        $input['contrasena']
+        password_hash($input['contrasena'], PASSWORD_BCRYPT, ['cost' => 12])
     ]);
     $newUserId = $pdo->lastInsertId();
     echo json_encode([
