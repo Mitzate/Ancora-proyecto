@@ -159,7 +159,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$correo]);
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($usuario && password_verify($input['contrasena'], $usuario['contrasena'])) {
+        $passwordOk = false;
+        if ($usuario) {
+            if (str_starts_with($usuario['contrasena'], '$2')) {
+                $passwordOk = password_verify($input['contrasena'], $usuario['contrasena']);
+            } else {
+                $passwordOk = ($input['contrasena'] === $usuario['contrasena']);
+            }
+        }
+
+        if ($usuario && $passwordOk) {
             // Limpiar intentos fallidos
             $pdo->prepare("DELETE FROM t_login_intentos WHERE ip = ?")->execute([$ip]);
 
