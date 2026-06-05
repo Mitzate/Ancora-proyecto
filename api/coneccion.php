@@ -59,6 +59,10 @@ function getRealIP(): string {
     return '0.0.0.0';
 }
 
+function sanitizeInput(string $v): string {
+    return htmlspecialchars(trim(stripslashes($v)), ENT_QUOTES, 'UTF-8');
+}
+
 // Decodificar el cuerpo una sola vez
 $input = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -126,6 +130,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
+        $correo = filter_var(trim($input['correo']), FILTER_SANITIZE_EMAIL);
+        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Formato de correo electrónico inválido.']);
+            exit;
+        }
+
         // ── Rate limiting: máx 5 intentos / 15 min por IP ─
         $ip          = getRealIP();
         $maxIntentos = 5;
@@ -145,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // ──────────────────────────────────────────────────
 
         $stmt = $pdo->prepare("SELECT * FROM t_usuarios WHERE correo_electronico = ?");
-        $stmt->execute([$input['correo']]);
+        $stmt->execute([$correo]);
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($usuario && password_verify($input['contrasena'], $usuario['contrasena'])) {
@@ -302,9 +313,20 @@ if (isset($input['get_user_devices']) && !empty($input['id_usuario'])) {
             exit;
         }
 
+        $nombre  = sanitizeInput($input['nombre']);
+        $ap      = sanitizeInput($input['apellido_paterno']);
+        $am      = sanitizeInput($input['apellido_materno']);
+        $correo  = filter_var(trim($input['correo']), FILTER_SANITIZE_EMAIL);
+
+        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Formato de correo electrónico inválido.']);
+            exit;
+        }
+
         // Verificar si el correo ya existe
         $stmt = $pdo->prepare("SELECT id_usuario FROM t_usuarios WHERE correo_electronico = ?");
-        $stmt->execute([$input['correo']]);
+        $stmt->execute([$correo]);
         if ($stmt->fetch()) {
             http_response_code(409);
             echo json_encode(['error' => 'Este correo ya esta en uso.']);
@@ -315,10 +337,10 @@ if (isset($input['get_user_devices']) && !empty($input['id_usuario'])) {
        try {
     $stmt = $pdo->prepare("INSERT INTO t_usuarios (nombre, apellido_paterno, apellido_materno, correo_electronico, contrasena) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([
-        $input['nombre'],
-        $input['apellido_paterno'],
-        $input['apellido_materno'],
-        $input['correo'],
+        $nombre,
+        $ap,
+        $am,
+        $correo,
         password_hash($input['contrasena'], PASSWORD_BCRYPT, ['cost' => 12])
     ]);
     $newUserId = $pdo->lastInsertId();
