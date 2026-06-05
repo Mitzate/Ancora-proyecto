@@ -47,7 +47,16 @@ try {
     exit;
 }
 
-// Manejo de OPTIONS ya atendido arriba
+// ── Helpers ──────────────────────────────────────────────
+function getRealIP(): string {
+    foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $h) {
+        if (!empty($_SERVER[$h])) {
+            $ip = trim(explode(',', $_SERVER[$h])[0]);
+            if (filter_var($ip, FILTER_VALIDATE_IP)) return $ip;
+        }
+    }
+    return '0.0.0.0';
+}
 
 // Decodificar el cuerpo una sola vez
 $input = [];
@@ -107,64 +116,95 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     // LOGIN
- if (isset($input['login']) && $input['login'] === true) {
-    error_log("=== PROCESANDO LOGIN ===");
-    error_log("Correo recibido: " . $input['correo']);
-    error_log("Contraseña recibida: " . $input['contrasena']);
-    
-    if (!isset($input['correo'], $input['contrasena'])) {
-        error_log("ERROR: Faltan campos");
-        http_response_code(400);
-        echo json_encode(['error' => 'Faltan campos requeridos']);
-        exit;
-    }
-    
-    $stmt = $pdo->prepare("SELECT * FROM t_usuarios WHERE correo_electronico = ?");
-    $stmt->execute([$input['correo']]);
-    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    error_log("Usuario encontrado en BD: " . ($usuario ? 'SÍ' : 'NO'));
-    if ($usuario) {
-        error_log("Contraseña BD: " . $usuario['contrasena']);
-        error_log("Contraseña input: " . $input['contrasena']);
-        error_log("Comparación: " . ($usuario['contrasena'] === $input['contrasena'] ? 'COINCIDEN' : 'NO COINCIDEN'));
-    }
-    
-    if ($usuario && password_verify($input['contrasena'], $usuario['contrasena'])) {
-        error_log("Login exitoso para usuario ID: " . $usuario['id_usuario']);
-            // ⭐ Buscar dispositivo del usuario y guardar sesión activa
+    if (isset($input['login']) && $input['login'] === true) {
+        error_log("=== PROCESANDO LOGIN ===");
+
+        if (!isset($input['correo'], $input['contrasena'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Faltan campos requeridos']);
+            exit;
+        }
+
+        // ── Rate limiting: máx 5 intentos / 15 min por IP ─
+        $ip          = getRealIP();
+        $maxIntentos = 5;
+        $ventanaMins = 15; // ventana para contar intentos
+        $bloqueoMins = 5;  // duración del bloqueo
+
+        $stmt = $pdo->prepare("SELECT intentos, primer_intento, bloqueado_hasta FROM t_login_intentos WHERE ip = ?");
+        $stmt->execute([$ip]);
+        $rl = $stmt->fetch();
+
+        if ($rl && $rl['bloqueado_hasta'] && strtotime($rl['bloqueado_hasta']) > time()) {
+            $restante = max(1, (int) ceil((strtotime($rl['bloqueado_hasta']) - time()) / 60));
+            http_response_code(429);
+            echo json_encode(['error' => "Demasiados intentos fallidos. Intenta de nuevo en {$restante} minuto(s)."]);
+            exit;
+        }
+        // ──────────────────────────────────────────────────
+
+        $stmt = $pdo->prepare("SELECT * FROM t_usuarios WHERE correo_electronico = ?");
+        $stmt->execute([$input['correo']]);
+        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($usuario && password_verify($input['contrasena'], $usuario['contrasena'])) {
+            error_log("Login exitoso para usuario ID: " . $usuario['id_usuario']);
+
+            // Limpiar intentos fallidos al loguearse correctamente
+            $pdo->prepare("DELETE FROM t_login_intentos WHERE ip = ?")->execute([$ip]);
+
             $stmt = $pdo->prepare("SELECT id_dispositivo FROM t_dispositivos WHERE id_usuario = ? LIMIT 1");
             $stmt->execute([$usuario['id_usuario']]);
             $device = $stmt->fetch();
-            
+
             if ($device) {
-                // ⭐ GUARDAR SESIÓN ACTIVA
                 $stmt = $pdo->prepare("
-                    INSERT INTO t_sesion_activa (id_usuario, id_dispositivo) 
+                    INSERT INTO t_sesion_activa (id_usuario, id_dispositivo)
                     VALUES (?, ?)
-                    ON DUPLICATE KEY UPDATE 
+                    ON DUPLICATE KEY UPDATE
                         id_dispositivo = VALUES(id_dispositivo),
                         timestamp_login = CURRENT_TIMESTAMP
                 ");
-                 $stmt->execute([$usuario['id_usuario'], $device['id_dispositivo']]);
-                 $sessionSaved = true;  // ← DEFINE LA VARIABLE
+                $stmt->execute([$usuario['id_usuario'], $device['id_dispositivo']]);
+                $sessionSaved = true;
             } else {
-                $sessionSaved = false; // ← DEFINE LA VARIABLE
+                $sessionSaved = false;
             }
-            
-            // Nombre completo del usuario
+
             $nombreCompleto = trim($usuario['nombre'] . ' ' . $usuario['apellido_paterno'] . ' ' . $usuario['apellido_materno']);
-            
+
             echo json_encode([
-                'success' => true,
-                'nombre' => $nombreCompleto,
-                'user_name' => $nombreCompleto,  // Campo adicional para claridad
-                'id_usuario' => $usuario['id_usuario'],
-                'device_id' => $device['id_dispositivo'] ?? null,
+                'success'       => true,
+                'nombre'        => $nombreCompleto,
+                'user_name'     => $nombreCompleto,
+                'id_usuario'    => $usuario['id_usuario'],
+                'device_id'     => $device['id_dispositivo'] ?? null,
                 'session_saved' => $sessionSaved
             ]);
         } else {
-            error_log("Login fallido");
+            error_log("Login fallido desde IP: {$ip}");
+
+            // Registrar intento fallido
+            if ($rl) {
+                $ventanaActiva = strtotime($rl['primer_intento']) > (time() - $ventanaMins * 60);
+                if ($ventanaActiva) {
+                    $nuevos = $rl['intentos'] + 1;
+                    if ($nuevos >= $maxIntentos) {
+                        $pdo->prepare("UPDATE t_login_intentos SET intentos = ?, bloqueado_hasta = DATE_ADD(NOW(), INTERVAL ? MINUTE) WHERE ip = ?")
+                            ->execute([$nuevos, $bloqueoMins, $ip]);
+                    } else {
+                        $pdo->prepare("UPDATE t_login_intentos SET intentos = ? WHERE ip = ?")
+                            ->execute([$nuevos, $ip]);
+                    }
+                } else {
+                    // Ventana expirada: reiniciar contador
+                    $pdo->prepare("UPDATE t_login_intentos SET intentos = 1, primer_intento = NOW(), bloqueado_hasta = NULL WHERE ip = ?")
+                        ->execute([$ip]);
+                }
+            } else {
+                $pdo->prepare("INSERT INTO t_login_intentos (ip) VALUES (?)")->execute([$ip]);
+            }
+
             http_response_code(401);
             echo json_encode(['error' => 'Correo o contraseña incorrectos.']);
         }
