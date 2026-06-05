@@ -3,6 +3,7 @@
 
 // Importar funciones de Telegram
 require_once __DIR__ . '/telegram.php';
+require_once __DIR__ . '/Mailer.php';
 
 $host = 'localhost';
 $dbname = 'u574321597_ancora';
@@ -148,39 +149,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($usuario && password_verify($input['contrasena'], $usuario['contrasena'])) {
-            error_log("Login exitoso para usuario ID: " . $usuario['id_usuario']);
-
-            // Limpiar intentos fallidos al loguearse correctamente
+            // Limpiar intentos fallidos
             $pdo->prepare("DELETE FROM t_login_intentos WHERE ip = ?")->execute([$ip]);
 
-            $stmt = $pdo->prepare("SELECT id_dispositivo FROM t_dispositivos WHERE id_usuario = ? LIMIT 1");
-            $stmt->execute([$usuario['id_usuario']]);
-            $device = $stmt->fetch();
+            // Generar código 2FA de 6 dígitos
+            $codigo = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-            if ($device) {
-                $stmt = $pdo->prepare("
-                    INSERT INTO t_sesion_activa (id_usuario, id_dispositivo)
-                    VALUES (?, ?)
-                    ON DUPLICATE KEY UPDATE
-                        id_dispositivo = VALUES(id_dispositivo),
-                        timestamp_login = CURRENT_TIMESTAMP
-                ");
-                $stmt->execute([$usuario['id_usuario'], $device['id_dispositivo']]);
-                $sessionSaved = true;
-            } else {
-                $sessionSaved = false;
+            // Invalidar códigos anteriores e insertar el nuevo
+            $pdo->prepare("UPDATE t_2fa_codigos SET usado = 1 WHERE id_usuario = ?")->execute([$usuario['id_usuario']]);
+            $pdo->prepare("INSERT INTO t_2fa_codigos (id_usuario, codigo, expira) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 5 MINUTE))")
+                ->execute([$usuario['id_usuario'], $codigo]);
+
+            // Enviar código por email
+            $html = '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f5f5f5;padding:20px;">'
+                  . '<div style="max-width:480px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">'
+                  . '<div style="background:#0c8078;padding:24px;text-align:center;">'
+                  . '<h1 style="color:#fff;margin:0;font-size:1.5rem;">Áncora</h1>'
+                  . '<p style="color:rgba(255,255,255,0.8);margin:4px 0 0;font-size:0.85rem;">Sistema de Monitoreo</p>'
+                  . '</div>'
+                  . '<div style="padding:32px;text-align:center;">'
+                  . '<p style="color:#333;margin:0 0 24px;font-size:0.95rem;">Tu código de verificación es:</p>'
+                  . '<div style="background:#f0faf9;border:2px solid #0c8078;border-radius:12px;padding:20px;margin-bottom:24px;">'
+                  . '<span style="font-size:2.5rem;font-weight:bold;color:#0c8078;letter-spacing:8px;">' . $codigo . '</span>'
+                  . '</div>'
+                  . '<p style="color:#666;font-size:0.85rem;margin:0;">Este código es válido por <strong>5 minutos</strong>.</p>'
+                  . '<p style="color:#999;font-size:0.80rem;margin:8px 0 0;">Si no solicitaste esto, ignora este mensaje.</p>'
+                  . '</div></div></body></html>';
+
+            $mailer = new Mailer();
+            $enviado = $mailer->send($usuario['correo_electronico'], 'Tu código de verificación — Ancora', $html);
+            if (!$enviado) {
+                error_log("Mailer falló para usuario " . $usuario['id_usuario']);
             }
 
-            $nombreCompleto = trim($usuario['nombre'] . ' ' . $usuario['apellido_paterno'] . ' ' . $usuario['apellido_materno']);
-
-            echo json_encode([
-                'success'       => true,
-                'nombre'        => $nombreCompleto,
-                'user_name'     => $nombreCompleto,
-                'id_usuario'    => $usuario['id_usuario'],
-                'device_id'     => $device['id_dispositivo'] ?? null,
-                'session_saved' => $sessionSaved
-            ]);
+            echo json_encode(['needs_2fa' => true, 'id_usuario' => (int)$usuario['id_usuario']]);
         } else {
             error_log("Login fallido desde IP: {$ip}");
 
@@ -210,6 +212,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         exit;
     }
+    // ── Verificar código 2FA ────────────────────────────────────────────
+    if (isset($input['verify_2fa']) && $input['verify_2fa'] === true) {
+        if (!isset($input['id_usuario'], $input['codigo'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Faltan campos requeridos']);
+            exit;
+        }
+
+        $id_usuario = (int)$input['id_usuario'];
+        $codigo     = trim($input['codigo']);
+
+        $stmt = $pdo->prepare("
+            SELECT id, codigo FROM t_2fa_codigos
+            WHERE id_usuario = ? AND usado = 0 AND expira > NOW()
+            ORDER BY id DESC LIMIT 1
+        ");
+        $stmt->execute([$id_usuario]);
+        $row = $stmt->fetch();
+
+        if (!$row || !hash_equals($row['codigo'], $codigo)) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Código incorrecto o expirado.']);
+            exit;
+        }
+
+        // Marcar código como usado
+        $pdo->prepare("UPDATE t_2fa_codigos SET usado = 1 WHERE id = ?")->execute([$row['id']]);
+
+        // Obtener datos del usuario y crear sesión
+        $stmt = $pdo->prepare("SELECT * FROM t_usuarios WHERE id_usuario = ?");
+        $stmt->execute([$id_usuario]);
+        $usuario = $stmt->fetch();
+
+        $stmt = $pdo->prepare("SELECT id_dispositivo FROM t_dispositivos WHERE id_usuario = ? LIMIT 1");
+        $stmt->execute([$id_usuario]);
+        $device = $stmt->fetch();
+
+        if ($device) {
+            $pdo->prepare("
+                INSERT INTO t_sesion_activa (id_usuario, id_dispositivo)
+                VALUES (?, ?)
+                ON DUPLICATE KEY UPDATE
+                    id_dispositivo = VALUES(id_dispositivo),
+                    timestamp_login = CURRENT_TIMESTAMP
+            ")->execute([$id_usuario, $device['id_dispositivo']]);
+            $sessionSaved = true;
+        } else {
+            $sessionSaved = false;
+        }
+
+        $nombreCompleto = trim($usuario['nombre'] . ' ' . $usuario['apellido_paterno'] . ' ' . $usuario['apellido_materno']);
+
+        echo json_encode([
+            'success'       => true,
+            'nombre'        => $nombreCompleto,
+            'user_name'     => $nombreCompleto,
+            'id_usuario'    => $id_usuario,
+            'device_id'     => $device['id_dispositivo'] ?? null,
+            'session_saved' => $sessionSaved
+        ]);
+        exit;
+    }
+    // ───────────────────────────────────────────────────────────────────
+
 ///////////////////
     // Obtener todos los dispositivos del usuario
 if (isset($input['get_user_devices']) && !empty($input['id_usuario'])) {

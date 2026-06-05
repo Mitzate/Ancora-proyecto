@@ -555,6 +555,44 @@
 
     </div>
 
+    <!-- ══ PANEL 2FA ════════════════════════════════════ -->
+    <div class="login-panel" id="panel-2fa">
+
+        <div class="msg-box" id="msg-2fa"></div>
+
+        <div style="text-align:center; margin-bottom:24px;">
+            <div style="width:56px;height:56px;background:rgba(12,128,120,0.15);border:1px solid rgba(77,184,173,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <i class="fas fa-shield-alt" style="color:var(--teal-lt);font-size:1.4rem;"></i>
+            </div>
+            <h3 style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.3rem;color:#fff;margin-bottom:8px;">Verificación en dos pasos</h3>
+            <p style="font-size:0.82rem;color:rgba(255,255,255,0.45);line-height:1.6;margin:0;">
+                Te enviamos un código de 6 dígitos a tu correo.<br>Válido por <strong style="color:var(--teal-lt);">5 minutos</strong>.
+            </p>
+        </div>
+
+        <div class="field">
+            <label>Código de verificación</label>
+            <div class="field-wrap">
+                <i class="fas fa-key"></i>
+                <input type="text" id="twoFaCode" placeholder="000000"
+                       maxlength="6" autocomplete="one-time-code" inputmode="numeric"
+                       style="letter-spacing:10px;text-align:center;font-size:1.3rem;padding-left:16px;">
+            </div>
+        </div>
+
+        <button type="button" class="btn-submit" id="btn2faSubmit">
+            Verificar código
+        </button>
+
+        <div style="text-align:center;margin-top:16px;">
+            <button type="button" id="btn2faResend"
+                    style="background:none;border:none;color:var(--teal-lt);font-size:0.80rem;cursor:pointer;font-family:'DM Sans',sans-serif;opacity:0.8;transition:opacity 0.3s;">
+                ¿No recibiste el código? Reenviar
+            </button>
+        </div>
+
+    </div>
+
     <!-- ══ PANEL REGISTRO ══════════════════════════════ -->
     <div class="login-panel" id="panel-register">
 
@@ -714,8 +752,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ════════════════════════════════════════
-       LOGIN
+       LOGIN + 2FA
     ════════════════════════════════════════ */
+    var twoFaPendingUserId  = null;
+    var twoFaPendingEmail   = null;
+    var twoFaPendingPass    = null;
+
+    async function finalizarLogin(data) {
+        if (data.nombre)     localStorage.setItem('nombre_usuario', data.nombre);
+        if (data.id_usuario) localStorage.setItem('id_usuario', data.id_usuario);
+
+        try {
+            var dRes  = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ check_device: true, id_usuario: data.id_usuario })
+            });
+            var dData = await dRes.json();
+            if (dData.success && dData.hasDevice) {
+                var tipo = (dData.device.tipo_monitoreo || '').toLowerCase();
+                var modo = (tipo.includes('sueno') || tipo.includes('sueño')) ? 'sueno' : 'caidas';
+                localStorage.setItem('id_dispositivo', dData.device.id_dispositivo);
+                localStorage.setItem('monitoring_mode', modo);
+            }
+        } catch(err) { /* continúa igual */ }
+
+        showMsg('2fa', '¡Verificado! Redirigiendo...', 'success');
+        setTimeout(function(){ window.location.href = DASHBOARD_URL; }, 800);
+    }
+
     var loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
@@ -752,30 +817,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
-                if (res.ok && data && data.success) {
-                    if (data.nombre)     localStorage.setItem('nombre_usuario', data.nombre);
-                    if (data.id_usuario) localStorage.setItem('id_usuario', data.id_usuario);
+                if (res.ok && data && data.needs_2fa) {
+                    twoFaPendingUserId = data.id_usuario;
+                    twoFaPendingEmail  = email;
+                    twoFaPendingPass   = password;
+                    setLoading(btn, false, 'Ingresar al sistema');
+                    switchPanel('2fa');
+                    document.getElementById('twoFaCode').focus();
 
-                    /* Busca dispositivo del usuario */
-                    if (data.id_usuario) {
-                        try {
-                            var dRes  = await fetch(API_URL, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ check_device: true, id_usuario: data.id_usuario })
-                            });
-                            var dData = await dRes.json();
-                            if (dData.success && dData.hasDevice) {
-                                var tipo = (dData.device.tipo_monitoreo || '').toLowerCase();
-                                var modo = (tipo.includes('sueno') || tipo.includes('sueño')) ? 'sueno' : 'caidas';
-                                localStorage.setItem('id_dispositivo', dData.device.id_dispositivo);
-                                localStorage.setItem('monitoring_mode', modo);
-                            }
-                        } catch(err) { /* continúa igual */ }
-                    }
-
-                    showMsg('login', '¡Bienvenido! Redirigiendo...', 'success');
-                    setTimeout(function(){ window.location.href = DASHBOARD_URL; }, 800);
+                } else if (res.ok && data && data.success) {
+                    // Compatibilidad (sin 2FA activo)
+                    await finalizarLogin(data);
 
                 } else {
                     showMsg('login', (data && data.error) ? data.error : 'Correo o contraseña incorrectos.', 'error');
@@ -786,6 +838,82 @@ document.addEventListener('DOMContentLoaded', function () {
                 showMsg('login', 'Error de red: ' + err.message, 'error');
                 setLoading(btn, false, 'Ingresar al sistema');
             }
+        });
+    }
+
+    /* ── Verificar código 2FA ── */
+    var btn2fa = document.getElementById('btn2faSubmit');
+    if (btn2fa) {
+        btn2fa.addEventListener('click', async function() {
+            var codigo = document.getElementById('twoFaCode').value.trim();
+            if (codigo.length !== 6 || !/^\d{6}$/.test(codigo)) {
+                showMsg('2fa', 'Ingresa el código de 6 dígitos.', 'error');
+                return;
+            }
+
+            setLoading(btn2fa, true, 'Verificar código');
+
+            try {
+                var res  = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ verify_2fa: true, id_usuario: twoFaPendingUserId, codigo: codigo })
+                });
+                var data = await res.json();
+
+                if (res.ok && data && data.success) {
+                    await finalizarLogin(data);
+                } else {
+                    showMsg('2fa', (data && data.error) ? data.error : 'Código incorrecto.', 'error');
+                    setLoading(btn2fa, false, 'Verificar código');
+                    document.getElementById('twoFaCode').value = '';
+                    document.getElementById('twoFaCode').focus();
+                }
+            } catch(err) {
+                showMsg('2fa', 'Error de red: ' + err.message, 'error');
+                setLoading(btn2fa, false, 'Verificar código');
+            }
+        });
+    }
+
+    /* ── Reenviar código ── */
+    var btnResend = document.getElementById('btn2faResend');
+    if (btnResend) {
+        btnResend.addEventListener('click', async function() {
+            if (!twoFaPendingEmail || !twoFaPendingPass) return;
+            btnResend.disabled = true;
+            btnResend.textContent = 'Enviando...';
+
+            try {
+                var res  = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ login: true, correo: twoFaPendingEmail, contrasena: twoFaPendingPass })
+                });
+                var data = await res.json();
+                if (res.ok && data && data.needs_2fa) {
+                    showMsg('2fa', 'Código reenviado a tu correo.', 'success');
+                    document.getElementById('twoFaCode').value = '';
+                    document.getElementById('twoFaCode').focus();
+                } else {
+                    showMsg('2fa', 'No se pudo reenviar el código.', 'error');
+                }
+            } catch(err) {
+                showMsg('2fa', 'Error de red.', 'error');
+            }
+
+            setTimeout(function() {
+                btnResend.disabled = false;
+                btnResend.textContent = '¿No recibiste el código? Reenviar';
+            }, 30000);
+        });
+    }
+
+    /* ── Enviar con Enter en campo de código ── */
+    var codeInput = document.getElementById('twoFaCode');
+    if (codeInput) {
+        codeInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') btn2fa && btn2fa.click();
         });
     }
 
