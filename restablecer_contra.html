@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <title>Ancora — Recuperar contraseña</title>
+    <title>Ancora — Nueva contraseña</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -214,65 +214,94 @@
     <a href="login.html" class="login-logo">Áncora</a>
     <span class="login-tagline">Sistema de Monitoreo</span>
 
-    <!-- ══ PASO 1: Ingresar correo ══════════════════════════ -->
-    <div id="step-email">
+    <!-- ══ CARGANDO ═══════════════════════════════════════════ -->
+    <div id="step-loading" style="text-align:center; padding:32px 0;">
+        <div style="width:40px;height:40px;border:3px solid rgba(77,184,173,0.2);border-top-color:var(--teal-lt);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.35);">Verificando enlace...</p>
+    </div>
+
+    <!-- ══ TOKEN INVÁLIDO ══════════════════════════════════════ -->
+    <div id="step-invalid" style="display:none; text-align:center;">
+        <div style="width:64px;height:64px;background:rgba(179,38,30,0.12);border:1px solid rgba(179,38,30,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+            <i class="fas fa-times" style="color:#ff8a80;font-size:1.5rem;"></i>
+        </div>
+        <h3 style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.3rem;color:#fff;margin-bottom:12px;">Enlace inválido</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.45);line-height:1.7;margin:0 0 28px;">
+            Este enlace ha expirado o ya fue utilizado.<br>Puedes solicitar uno nuevo.
+        </p>
+        <a href="recuperar_contra.html" class="btn-submit" style="padding:14px;">
+            Solicitar nuevo enlace
+        </a>
+        <a href="login.html" class="back-link">← Volver al inicio de sesión</a>
+    </div>
+
+    <!-- ══ FORMULARIO ═════════════════════════════════════════ -->
+    <div id="step-form" style="display:none;">
 
         <div style="text-align:center; margin-bottom:24px;">
             <div style="width:56px;height:56px;background:rgba(12,128,120,0.15);border:1px solid rgba(77,184,173,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-                <i class="fas fa-key" style="color:var(--teal-lt);font-size:1.3rem;"></i>
+                <i class="fas fa-lock" style="color:var(--teal-lt);font-size:1.3rem;"></i>
             </div>
-            <h3 style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.3rem;color:#fff;margin-bottom:8px;">Recuperar contraseña</h3>
+            <h3 style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.3rem;color:#fff;margin-bottom:8px;">Nueva contraseña</h3>
             <p style="font-size:0.82rem;color:rgba(255,255,255,0.45);line-height:1.6;margin:0;">
-                Ingresa tu correo y te enviaremos un enlace<br>para restablecer tu contraseña.
+                Elige una contraseña segura de al menos 8 caracteres.
             </p>
         </div>
 
-        <div class="msg-box" id="msg-recover"></div>
+        <div class="msg-box" id="msg-reset"></div>
 
-        <form id="recoverForm" novalidate>
+        <form id="resetForm" novalidate>
             <div class="field">
-                <label>Correo electrónico</label>
+                <label>Nueva contraseña</label>
                 <div class="field-wrap">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="recoverEmail" placeholder="tu@email.com" autocomplete="email">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="newPassword" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
                 </div>
             </div>
-            <button type="submit" class="btn-submit" id="btnRecover">
-                Enviar enlace de recuperación
+            <div class="field">
+                <label>Confirmar contraseña</label>
+                <div class="field-wrap">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="confirmPassword" placeholder="Repite tu contraseña" autocomplete="new-password">
+                </div>
+            </div>
+            <button type="submit" class="btn-submit" id="btnReset">
+                Restablecer contraseña
             </button>
         </form>
 
     </div>
 
-    <!-- ══ PASO 2: Correo enviado ════════════════════════════ -->
-    <div id="step-success" style="display:none;">
-        <div style="text-align:center;">
-            <div style="width:64px;height:64px;background:rgba(12,128,120,0.15);border:1px solid rgba(77,184,173,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
-                <i class="fas fa-paper-plane" style="color:var(--teal-lt);font-size:1.5rem;"></i>
-            </div>
-            <h3 style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.3rem;color:#fff;margin-bottom:12px;">Correo enviado</h3>
-            <p style="font-size:0.85rem;color:rgba(255,255,255,0.45);line-height:1.7;margin:0 0 8px;">
-                Si ese correo está registrado, recibirás un enlace de recuperación en los próximos minutos.
-            </p>
-            <p style="font-size:0.78rem;color:rgba(255,255,255,0.25);margin:0 0 28px;">
-                Revisa también tu carpeta de spam.
-            </p>
-            <a href="login.html" class="btn-submit" style="padding:14px;">
-                Volver al inicio de sesión
-            </a>
+    <!-- ══ ÉXITO ══════════════════════════════════════════════ -->
+    <div id="step-success" style="display:none; text-align:center;">
+        <div style="width:64px;height:64px;background:rgba(12,128,120,0.15);border:1px solid rgba(77,184,173,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+            <i class="fas fa-check" style="color:var(--teal-lt);font-size:1.6rem;"></i>
         </div>
+        <h3 style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.3rem;color:#fff;margin-bottom:12px;">¡Contraseña restablecida!</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.45);line-height:1.7;margin:0 0 28px;">
+            Tu contraseña ha sido actualizada correctamente.<br>Ya puedes iniciar sesión.
+        </p>
+        <a href="login.html" class="btn-submit" style="padding:14px;">
+            Ir al inicio de sesión
+        </a>
     </div>
 
-    <a href="login.html" class="back-link">← Volver al inicio de sesión</a>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
     var API_URL = window.location.origin + '/api/coneccion.php';
+    var token   = new URLSearchParams(window.location.search).get('token');
+
+    function showStep(name) {
+        ['loading', 'invalid', 'form', 'success'].forEach(function(s) {
+            document.getElementById('step-' + s).style.display = (s === name) ? 'block' : 'none';
+        });
+    }
 
     function showMsg(text, type) {
-        var el = document.getElementById('msg-recover');
+        var el = document.getElementById('msg-reset');
         el.textContent = text;
         el.className = 'msg-box ' + type;
         clearTimeout(el._t);
@@ -282,39 +311,64 @@ document.addEventListener('DOMContentLoaded', function () {
     function setLoading(btn, loading) {
         if (loading) {
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-btn"></span>Enviando...';
+            btn.innerHTML = '<span class="spinner-btn"></span>Restableciendo...';
         } else {
             btn.disabled = false;
-            btn.textContent = 'Enviar enlace de recuperación';
+            btn.textContent = 'Restablecer contraseña';
         }
     }
 
-    document.getElementById('recoverForm').addEventListener('submit', async function(e) {
+    // Verificar token al cargar la página
+    async function verifyToken() {
+        if (!token) { showStep('invalid'); return; }
+
+        try {
+            var res  = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ verify_reset_token: true, token: token })
+            });
+            var data = await res.json();
+            showStep(data.valid ? 'form' : 'invalid');
+        } catch(err) {
+            showStep('invalid');
+        }
+    }
+
+    verifyToken();
+
+    document.getElementById('resetForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        var email = document.getElementById('recoverEmail').value.trim();
-        var btn   = document.getElementById('btnRecover');
+        var pass  = document.getElementById('newPassword').value;
+        var pass2 = document.getElementById('confirmPassword').value;
+        var btn   = document.getElementById('btnReset');
 
-        if (!email || !/^[\w.\-]+@[\w.\-]+\.\w{2,}$/.test(email)) {
-            showMsg('Ingresa un correo electrónico válido.', 'error');
+        if (pass.length < 8) {
+            showMsg('La contraseña debe tener mínimo 8 caracteres.', 'error');
+            return;
+        }
+        if (pass !== pass2) {
+            showMsg('Las contraseñas no coinciden.', 'error');
             return;
         }
 
         setLoading(btn, true);
 
         try {
-            await fetch(API_URL, {
+            var res  = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    forgot_password: true,
-                    correo: email,
-                    origin: window.location.origin
-                })
+                body: JSON.stringify({ reset_password: true, token: token, contrasena: pass })
             });
-            // Siempre mostrar éxito — no revelar si el correo existe
-            document.getElementById('step-email').style.display   = 'none';
-            document.getElementById('step-success').style.display = 'block';
+            var data = await res.json();
+
+            if (res.ok && data.success) {
+                showStep('success');
+            } else {
+                showMsg((data && data.error) ? data.error : 'Error al restablecer la contraseña.', 'error');
+                setLoading(btn, false);
+            }
         } catch(err) {
             showMsg('Error de red. Intenta de nuevo.', 'error');
             setLoading(btn, false);

@@ -48,6 +48,22 @@ try {
     exit;
 }
 
+// Crear tabla de recuperación de contraseña si no existe
+try {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS t_password_reset (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        id_usuario INT NOT NULL,
+        token VARCHAR(64) NOT NULL,
+        expira DATETIME NOT NULL,
+        usado TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_token (token),
+        INDEX idx_usuario (id_usuario)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+} catch (PDOException $e) {
+    error_log("No se pudo crear t_password_reset: " . $e->getMessage());
+}
+
 // ── Helpers ──────────────────────────────────────────────
 function getRealIP(): string {
     foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $h) {
@@ -1130,6 +1146,123 @@ $stmt = $pdo->query("SELECT id_dispositivo, Tipo_monitoreo, id_usuario FROM t_di
             }
         }
         
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
+    // ── Recuperar contraseña ─────────────────────────────────
+    if (isset($input['forgot_password']) && $input['forgot_password'] === true) {
+        if (!isset($input['correo'])) {
+            echo json_encode(['success' => true]);
+            exit;
+        }
+
+        $correo = filter_var(trim($input['correo']), FILTER_SANITIZE_EMAIL);
+        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            // Siempre éxito para no revelar si el correo existe
+            echo json_encode(['success' => true]);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("SELECT id_usuario, nombre FROM t_usuarios WHERE correo_electronico = ?");
+        $stmt->execute([$correo]);
+        $usuario = $stmt->fetch();
+
+        if ($usuario) {
+            $token  = bin2hex(random_bytes(32));
+            $origin = rtrim($input['origin'] ?? ((!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost')), '/');
+
+            // Invalidar tokens anteriores
+            $pdo->prepare("UPDATE t_password_reset SET usado = 1 WHERE id_usuario = ?")->execute([$usuario['id_usuario']]);
+
+            // Guardar nuevo token (expira en 30 minutos)
+            $pdo->prepare("INSERT INTO t_password_reset (id_usuario, token, expira) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))")
+                ->execute([$usuario['id_usuario'], $token]);
+
+            $resetUrl = $origin . '/restablecer_contra.html?token=' . $token;
+
+            $html = '<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;background:#f5f5f5;padding:20px;">'
+                  . '<div style="max-width:480px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">'
+                  . '<div style="background:#0c8078;padding:24px;text-align:center;">'
+                  . '<h1 style="color:#fff;margin:0;font-size:1.5rem;">Áncora</h1>'
+                  . '<p style="color:rgba(255,255,255,0.8);margin:4px 0 0;font-size:0.85rem;">Sistema de Monitoreo</p>'
+                  . '</div>'
+                  . '<div style="padding:32px;">'
+                  . '<p style="color:#333;margin:0 0 16px;">Hola ' . htmlspecialchars($usuario['nombre']) . ',</p>'
+                  . '<p style="color:#333;margin:0 0 24px;">Recibimos una solicitud para restablecer la contraseña de tu cuenta. Haz clic en el botón para crear una nueva.</p>'
+                  . '<div style="text-align:center;margin-bottom:24px;">'
+                  . '<a href="' . htmlspecialchars($resetUrl) . '" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#0c8078,#063d38);color:#fff;text-decoration:none;border-radius:10px;font-size:0.95rem;font-weight:500;">Restablecer contraseña</a>'
+                  . '</div>'
+                  . '<p style="color:#666;font-size:0.85rem;margin:0 0 8px;">Este enlace es válido por <strong>30 minutos</strong>.</p>'
+                  . '<p style="color:#999;font-size:0.80rem;margin:0;">Si no solicitaste esto, puedes ignorar este correo.</p>'
+                  . '</div></div></body></html>';
+
+            $mailer = new Mailer();
+            $mailer->send($correo, 'Restablecer contraseña — Ancora', $html);
+        }
+
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
+    // ── Verificar token de reset ─────────────────────────────
+    if (isset($input['verify_reset_token'])) {
+        $token = trim($input['token'] ?? '');
+        if (empty($token)) {
+            echo json_encode(['valid' => false]);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("
+            SELECT id FROM t_password_reset
+            WHERE token = ? AND usado = 0 AND expira > NOW()
+            LIMIT 1
+        ");
+        $stmt->execute([$token]);
+        $row = $stmt->fetch();
+
+        echo json_encode(['valid' => (bool)$row]);
+        exit;
+    }
+
+    // ── Restablecer contraseña ───────────────────────────────
+    if (isset($input['reset_password']) && $input['reset_password'] === true) {
+        $token     = trim($input['token'] ?? '');
+        $contrasena = $input['contrasena'] ?? '';
+
+        if (empty($token) || empty($contrasena)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Datos incompletos.']);
+            exit;
+        }
+
+        if (strlen($contrasena) < 8) {
+            http_response_code(400);
+            echo json_encode(['error' => 'La contraseña debe tener mínimo 8 caracteres.']);
+            exit;
+        }
+
+        $stmt = $pdo->prepare("
+            SELECT id, id_usuario FROM t_password_reset
+            WHERE token = ? AND usado = 0 AND expira > NOW()
+            LIMIT 1
+        ");
+        $stmt->execute([$token]);
+        $row = $stmt->fetch();
+
+        if (!$row) {
+            http_response_code(400);
+            echo json_encode(['error' => 'El enlace ha expirado o ya fue utilizado.']);
+            exit;
+        }
+
+        $hash = password_hash($contrasena, PASSWORD_BCRYPT, ['cost' => 12]);
+        $pdo->prepare("UPDATE t_usuarios SET contrasena = ? WHERE id_usuario = ?")
+            ->execute([$hash, $row['id_usuario']]);
+
+        $pdo->prepare("UPDATE t_password_reset SET usado = 1 WHERE id = ?")
+            ->execute([$row['id']]);
+
         echo json_encode(['success' => true]);
         exit;
     }
