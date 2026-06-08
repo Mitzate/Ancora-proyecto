@@ -529,9 +529,28 @@ if (isset($input['check_device']) && !empty($input['id_usuario'])) {
             echo json_encode(['success' => false, 'error' => 'MAC no proporcionada']);
             exit;
         }
-        
-        // Preferir asociar con dispositivo SIN MAC (pendiente)
-$stmt = $pdo->query("SELECT id_dispositivo, Tipo_monitoreo, id_usuario FROM t_dispositivos WHERE mac_address IS NULL OR mac_address = '' ORDER BY id_dispositivo DESC LIMIT 1");
+
+        // ── 1. Si esta MAC ya está registrada, devolverla directamente ──
+        $stmtMac = $pdo->prepare("
+            SELECT id_dispositivo, Tipo_monitoreo, id_usuario
+            FROM t_dispositivos
+            WHERE mac_address = ?
+            LIMIT 1
+        ");
+        $stmtMac->execute([$mac]);
+        $deviceExistente = $stmtMac->fetch();
+        if ($deviceExistente) {
+            echo json_encode([
+                'success'      => true,
+                'device_id'    => (int)$deviceExistente['id_dispositivo'],
+                'user_id'      => (int)($deviceExistente['id_usuario'] ?? 0),
+                'current_mode' => $deviceExistente['Tipo_monitoreo'] ?? 'ninguno'
+            ]);
+            exit;
+        }
+
+        // ── 2. Si no existe, buscar dispositivo sin MAC (pendiente de asignar) ──
+        $stmt = $pdo->query("SELECT id_dispositivo, Tipo_monitoreo, id_usuario FROM t_dispositivos WHERE mac_address IS NULL OR mac_address = '' ORDER BY id_dispositivo DESC LIMIT 1");
         $pendingDevice = $stmt->fetch();
 
     if ($pendingDevice) {
@@ -1564,6 +1583,46 @@ if (isset($input['action']) && $input['action'] === 'esp32_get_status') {
         }
         exit;
     }
+
+// ============================================
+// ENDPOINT PARA ESP32 — Chat IDs de contactos
+// ============================================
+if (isset($input['action']) && $input['action'] === 'get_telegram_contacts') {
+    $id_usuario = $input['id_usuario'] ?? null;
+
+    if (!$id_usuario) {
+        http_response_code(400);
+        echo json_encode(['error' => 'id_usuario requerido', 'chat_ids' => []]);
+        exit;
+    }
+
+    try {
+        // Prioridad: campo directo telegram_chat_id > JOIN con t_telegram_usuarios
+        $stmt = $pdo->prepare("
+            SELECT DISTINCT
+                COALESCE(NULLIF(c.telegram_chat_id, ''), tu.chat_id) AS chat_id,
+                c.nombre
+            FROM t_contactos c
+            LEFT JOIN t_telegram_usuarios tu ON c.correo = tu.telegram_username
+            WHERE c.id_usuario = ?
+              AND COALESCE(NULLIF(c.telegram_chat_id, ''), tu.chat_id) IS NOT NULL
+        ");
+        $stmt->execute([$id_usuario]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $chatIds = array_values(array_filter(array_column($rows, 'chat_id')));
+
+        echo json_encode([
+            'success'  => true,
+            'chat_ids' => $chatIds,
+            'count'    => count($chatIds)
+        ]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage(), 'chat_ids' => []]);
+    }
+    exit;
+}
 
 // ===== SESIÓN ACTIVA =====
 // ===== SESIÓN ACTIVA (POST) =====
