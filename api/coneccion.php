@@ -608,24 +608,11 @@ if (isset($input['check_device']) && !empty($input['id_usuario'])) {
         exit;
         }
 
-        // Fallback: usar tabla de pendientes
-        $stmt = $pdo->prepare("SELECT * FROM t_dispositivos_pendientes WHERE mac_address = ?");
-        $stmt->execute([$mac]);
-        $pending = $stmt->fetch();
-        
-        if (!$pending) {
-            $cod_pendiente = substr(md5($mac . time()), 0, 6);
-            $stmt = $pdo->prepare("INSERT INTO t_dispositivos_pendientes (mac_address, cod_pendiente) VALUES (?, ?)");
-            $stmt->execute([$mac, $cod_pendiente]);
-        } else {
-            $cod_pendiente = $pending['cod_pendiente'];
-        }
-        
+        // Sin dispositivo disponible para asignar — respuesta limpia sin depender de tabla pendientes
         echo json_encode([
-            'success' => true,
+            'success' => false,
             'pending' => true,
-            'cod_pendiente' => $cod_pendiente,
-            'message' => 'Esperando configuración'
+            'message' => 'No hay dispositivo pendiente de asignación. Registra el dispositivo desde el panel web.'
         ]);
         exit;
     }
