@@ -1584,26 +1584,57 @@ if (isset($input['action']) && $input['action'] === 'get_telegram_contacts') {
     }
 
     try {
-        // Prioridad: campo directo telegram_chat_id > JOIN con t_telegram_usuarios
-        $stmt = $pdo->prepare("
-            SELECT DISTINCT
-                COALESCE(NULLIF(c.telegram_chat_id, ''), tu.chat_id) AS chat_id,
-                c.nombre
-            FROM t_contactos c
-            LEFT JOIN t_telegram_usuarios tu ON c.correo = tu.telegram_username
-            WHERE c.id_usuario = ?
-              AND COALESCE(NULLIF(c.telegram_chat_id, ''), tu.chat_id) IS NOT NULL
-        ");
-        $stmt->execute([$id_usuario]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $chatIds = [];   // chat_id => nombre  (deduplicado)
 
-        $chatIds = array_values(array_filter(array_column($rows, 'chat_id')));
+        // ── Fuente 1: telegram_chat_id registrado manualmente en t_contactos ─────
+        $s1 = $pdo->prepare("
+            SELECT DISTINCT telegram_chat_id AS chat_id, nombre
+            FROM t_contactos
+            WHERE id_usuario = ?
+              AND telegram_chat_id IS NOT NULL
+              AND telegram_chat_id <> ''
+        ");
+        $s1->execute([$id_usuario]);
+        foreach ($s1->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $id = trim($r['chat_id']);
+            if ($id !== '') $chatIds[$id] = $r['nombre'] ?? '';
+        }
+
+        // ── Fuente 2: el propio usuario tiene cuenta en el bot de Telegram ───────
+        // Une correo_electronico del usuario con telegram_username en el bot
+        $s2 = $pdo->prepare("
+            SELECT DISTINCT tu.chat_id, u.nombre
+            FROM t_telegram_usuarios tu
+            INNER JOIN t_usuarios u ON u.correo_electronico = tu.telegram_username
+            WHERE u.id_usuario = ?
+        ");
+        $s2->execute([$id_usuario]);
+        foreach ($s2->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $id = trim($r['chat_id']);
+            if ($id !== '') $chatIds[$id] = $r['nombre'] ?? '';
+        }
+
+        // ── Fuente 3: contacto registrado en el bot con su correo como username ──
+        $s3 = $pdo->prepare("
+            SELECT DISTINCT tu.chat_id, c.nombre
+            FROM t_contactos c
+            INNER JOIN t_telegram_usuarios tu ON c.correo = tu.telegram_username
+            WHERE c.id_usuario = ?
+        ");
+        $s3->execute([$id_usuario]);
+        foreach ($s3->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $id = trim($r['chat_id']);
+            if ($id !== '') $chatIds[$id] = $r['nombre'] ?? '';
+        }
+
+        $ids = array_keys($chatIds);
 
         echo json_encode([
             'success'  => true,
-            'chat_ids' => $chatIds,
-            'count'    => count($chatIds)
+            'chat_ids' => $ids,
+            'count'    => count($ids)
         ]);
+
     } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(['error' => $e->getMessage(), 'chat_ids' => []]);
