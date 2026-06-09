@@ -450,6 +450,9 @@
                       <div class="mb-3">
                         <label for="correo_contacto" class="form-label">Nombre de usuario de Telegram</label>
                         <input type="text" class="form-control" id="correo_contacto" placeholder="ingresa tu usuario sin @" required>
+                        <div class="form-text" style="color:rgba(77,184,173,.7);font-size:.78rem;">
+                          El contacto debe enviar <strong>/start</strong> al bot de Telegram para quedar vinculado y recibir alertas.
+                        </div>
                       </div>
                       <div id="contactError" class="alert alert-danger d-none" role="alert"></div>
                       <div id="contactSuccess" class="alert alert-success d-none" role="alert"></div>
@@ -465,7 +468,10 @@
                 <div class="card card-info card-outline mb-4">
                   <div class="card-header d-flex align-items-center justify-content-between">
                     <div class="card-title mb-0">Mis Contactos de Emergencia</div>
-                    <button id="refreshContactsBtn" class="btn btn-sm btn-info">Refrescar</button>
+                    <div class="d-flex gap-2">
+                      <button id="syncTelegramBtn" class="btn btn-sm btn-success" title="Buscar chat_ids de contactos que ya enviaron /start al bot">Sincronizar Telegram</button>
+                      <button id="refreshContactsBtn" class="btn btn-sm btn-info">Refrescar</button>
+                    </div>
                   </div>
                   <div class="card-body">
                     <div id="contactosTableContainer" class="table-responsive">
@@ -693,6 +699,37 @@
 
         // Refrescar lista
         refreshContactsBtn.addEventListener('click', loadContacts);
+
+        // Sincronizar Telegram
+        document.getElementById('syncTelegramBtn').addEventListener('click', async function () {
+          this.disabled = true;
+          this.textContent = 'Sincronizando...';
+          try {
+            const resp = await fetch('../../../api/coneccion.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'sync_telegram_contacts', id_usuario: idUsuario })
+            });
+            const rj = await safeJson(resp);
+            if (rj && rj.success) {
+              contactSuccess.textContent = rj.vinculados > 0
+                ? `Sincronización completada: ${rj.vinculados} contacto(s) vinculados con Telegram.`
+                : 'Sincronización completada. Ningún contacto nuevo vinculado (deben enviar /start al bot primero).';
+              contactSuccess.classList.remove('d-none');
+              contactError.classList.add('d-none');
+              await loadContacts();
+            } else {
+              contactError.textContent = (rj && rj.error) || 'Error al sincronizar.';
+              contactError.classList.remove('d-none');
+            }
+          } catch (e) {
+            contactError.textContent = 'Error de red: ' + e.message;
+            contactError.classList.remove('d-none');
+          } finally {
+            this.disabled = false;
+            this.textContent = 'Sincronizar Telegram';
+          }
+        });
 
         // Manejar envío del formulario de edición
         document.getElementById('editContactForm').addEventListener('submit', async function (e) {

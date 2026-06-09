@@ -119,7 +119,18 @@ if (trim(strtolower($text)) === '/start') {
             $respuesta .= "• No necesitas hacer nada más, ¡ya estás listo!\n\n";
             $respuesta .= "Mantén este chat activo para recibir notificaciones importantes.";
         }
-        
+
+        // Auto-link: si este username está en t_contactos, guardar el chat_id ahí también
+        if ($username) {
+            $upd = $pdo->prepare("UPDATE t_contactos SET telegram_chat_id = ? WHERE correo = ?");
+            $upd->execute([$chat_id, $username]);
+            $linked = $upd->rowCount();
+            if ($linked > 0) {
+                error_log("✅ Auto-vinculado chat_id $chat_id a $linked contacto(s) con username: @$username");
+                $respuesta .= "\n\n✅ Tu cuenta ha sido vinculada como contacto de emergencia en ANCORA.";
+            }
+        }
+
         // Enviar mensaje de confirmación al usuario
         enviarAlertaTelegram($chat_id, $respuesta, 'HTML');
         

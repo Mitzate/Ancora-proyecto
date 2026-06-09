@@ -1450,6 +1450,32 @@ if (isset($input['update_contact']) && !empty($input['id_contacto'])) {
     exit;
 }
 
+// ===== SINCRONIZAR TELEGRAM DE CONTACTOS =====
+if (isset($input['action']) && $input['action'] === 'sync_telegram_contacts') {
+    $id_usuario = $input['id_usuario'] ?? null;
+    if (!$id_usuario) {
+        http_response_code(400);
+        echo json_encode(['error' => 'id_usuario requerido']);
+        exit;
+    }
+    try {
+        // Actualizar telegram_chat_id en t_contactos cruzando con t_telegram_usuarios
+        $stmt = $pdo->prepare("
+            UPDATE t_contactos c
+            INNER JOIN t_telegram_usuarios tu ON c.correo = tu.telegram_username
+            SET c.telegram_chat_id = tu.chat_id
+            WHERE c.id_usuario = ?
+        ");
+        $stmt->execute([$id_usuario]);
+        $vinculados = $stmt->rowCount();
+        echo json_encode(['success' => true, 'vinculados' => $vinculados]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 // ===== ALERTAS ENVIADAS A CONTACTOS =====
 if (isset($input['action']) && $input['action'] === 'get_sent_alerts') {
     $id_usuario = $input['id_usuario'] ?? null;
