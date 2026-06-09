@@ -1401,8 +1401,17 @@ if (isset($input['get_contacts']) && !empty($input['id_usuario'])) {
 
 if (isset($input['delete_contact']) && !empty($input['id_contacto'])) {
     try {
+        $idContacto = (int)$input['id_contacto'];
+        $idUsuario  = (int)$input['id_usuario'];
+
+        // Desvincular de alertas antes de eliminar (preserva historial)
+        $pdo->prepare("UPDATE t_alertas_caidas SET id_contacto = NULL WHERE id_contacto = ?")->execute([$idContacto]);
+        try {
+            $pdo->prepare("UPDATE t_alertas_sueño SET id_contacto = NULL WHERE id_contacto = ?")->execute([$idContacto]);
+        } catch (PDOException $e) { /* ignorar si tabla no existe */ }
+
         $stmt = $pdo->prepare("DELETE FROM t_contactos WHERE id_contacto = ? AND id_usuario = ?");
-        $stmt->execute([$input['id_contacto'], $input['id_usuario']]);
+        $stmt->execute([$idContacto, $idUsuario]);
         echo json_encode(['success' => true, 'message' => 'Contacto eliminado correctamente']);
     } catch (PDOException $e) {
         http_response_code(500);
