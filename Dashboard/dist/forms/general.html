@@ -475,12 +475,13 @@
                             <th>#</th>
                             <th>Nombre</th>
                             <th>Parentesco</th>
-                            <th>Correo</th>
+                            <th>Usuario Telegram</th>
+                            <th>Estado</th>
                             <th>Acción</th>
                           </tr>
                         </thead>
                         <tbody id="contactosTableBody">
-                          <tr><td colspan="5" class="text-center text-muted">Cargando contactos...</td></tr>
+                          <tr><td colspan="6" class="text-center text-muted">Cargando contactos...</td></tr>
                         </tbody>
                       </table>
                     </div>
@@ -674,7 +675,9 @@
 
             const rj = await safeJson(resp);
             if (resp.ok && rj && rj.success) {
-              contactSuccess.textContent = 'Contacto agregado correctamente.';
+              contactSuccess.textContent = rj.telegram_vinculado
+                ? 'Contacto agregado y Telegram vinculado automáticamente.'
+                : 'Contacto agregado. Telegram pendiente (el contacto debe registrarse en el bot primero).';
               contactSuccess.classList.remove('d-none');
               contactForm.reset();
               await loadContacts();
@@ -754,7 +757,7 @@
               renderContacts(rj.data);
             } else {
               document.getElementById('noContactosMsg').classList.remove('d-none');
-              document.getElementById('contactosTableBody').innerHTML = '<tr><td colspan="5" class="text-center">No hay contactos</td></tr>';
+              document.getElementById('contactosTableBody').innerHTML = '<tr><td colspan="6" class="text-center">No hay contactos</td></tr>';
             }
           } catch (e) {
             console.error('Error al cargar contactos:', e);
@@ -768,18 +771,24 @@
 
           if (!contacts || contacts.length === 0) {
             noMsg.classList.remove('d-none');
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay contactos</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay contactos</td></tr>';
             return;
           }
 
           noMsg.classList.add('d-none');
           let html = '';
           contacts.forEach((c, idx) => {
+            const tgUsername = c.correo ? '@' + escapeHtml(c.correo) : '—';
+            const vinculado  = c.telegram_chat_id && c.telegram_chat_id !== '';
+            const badge = vinculado
+              ? '<span class="badge bg-success">Vinculado</span>'
+              : '<span class="badge bg-secondary">Pendiente</span>';
             html += `<tr>
               <td>${idx + 1}</td>
               <td>${escapeHtml(c.nombre)}</td>
               <td>${escapeHtml(c.parentesco)}</td>
-              <td>${escapeHtml(c.correo)}</td>
+              <td>${tgUsername}</td>
+              <td>${badge}</td>
               <td>
                 <button class="btn btn-sm btn-warning" onclick="openEditContactModal(${c.id_contacto}, '${escapeHtml(c.nombre)}', '${c.parentesco}', '${c.correo}')">Editar</button>
                 <button class="btn btn-sm btn-danger" onclick="deleteContact(${c.id_contacto}, ${idUsuario})">Eliminar</button>

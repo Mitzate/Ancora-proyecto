@@ -1365,9 +1365,20 @@ if (isset($input['add_contact']) && !empty($input['id_usuario'])) {
 
     try {
         $telegram_chat_id = $input['telegram_chat_id'] ?? null;
+        // Auto-link: buscar chat_id en t_telegram_usuarios usando el username ingresado
+        if (!$telegram_chat_id && !empty($input['correo'])) {
+            $tgLookup = $pdo->prepare("SELECT chat_id FROM t_telegram_usuarios WHERE telegram_username = ? LIMIT 1");
+            $tgLookup->execute([trim($input['correo'])]);
+            $tgRow = $tgLookup->fetch();
+            if ($tgRow) $telegram_chat_id = $tgRow['chat_id'];
+        }
         $stmt = $pdo->prepare("INSERT INTO t_contactos (id_usuario, nombre, parentesco, correo, telegram_chat_id) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([$input['id_usuario'], $input['nombre'], $input['parentesco'], $input['correo'], $telegram_chat_id]);
-        echo json_encode(['success' => true, 'message' => 'Contacto agregado correctamente']);
+        echo json_encode([
+            'success'           => true,
+            'message'           => 'Contacto agregado correctamente',
+            'telegram_vinculado' => !empty($telegram_chat_id)
+        ]);
     } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(['error' => 'Error al agregar contacto: ' . $e->getMessage()]);
@@ -1409,9 +1420,20 @@ if (isset($input['update_contact']) && !empty($input['id_contacto'])) {
 
     try {
         $telegram_chat_id = $input['telegram_chat_id'] ?? null;
+        // Auto-link: buscar chat_id en t_telegram_usuarios usando el username ingresado
+        if (!$telegram_chat_id && !empty($input['correo'])) {
+            $tgLookup = $pdo->prepare("SELECT chat_id FROM t_telegram_usuarios WHERE telegram_username = ? LIMIT 1");
+            $tgLookup->execute([trim($input['correo'])]);
+            $tgRow = $tgLookup->fetch();
+            if ($tgRow) $telegram_chat_id = $tgRow['chat_id'];
+        }
         $stmt = $pdo->prepare("UPDATE t_contactos SET nombre = ?, parentesco = ?, correo = ?, telegram_chat_id = ? WHERE id_contacto = ? AND id_usuario = ?");
         $stmt->execute([$input['nombre'], $input['parentesco'], $input['correo'], $telegram_chat_id, $input['id_contacto'], $input['id_usuario']]);
-        echo json_encode(['success' => true, 'message' => 'Contacto actualizado correctamente']);
+        echo json_encode([
+            'success'           => true,
+            'message'           => 'Contacto actualizado correctamente',
+            'telegram_vinculado' => !empty($telegram_chat_id)
+        ]);
     } catch (PDOException $e) {
         http_response_code(500);
         echo json_encode(['error' => 'Error al actualizar contacto: ' . $e->getMessage()]);
